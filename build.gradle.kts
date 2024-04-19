@@ -1,4 +1,8 @@
 buildscript {
+    extra.apply{
+        set("compose_ui_version", "1.4.0")
+    }
+
     dependencies {
         classpath(libs.google.services)
     }
