@@ -2,6 +2,7 @@ package com.example.pizzasatpovo.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
@@ -19,6 +20,7 @@ enum class PizzaScreens {
 }
 
 @Composable
+@Preview(showBackground = true)
 fun PizzasAtPovoApp(
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
