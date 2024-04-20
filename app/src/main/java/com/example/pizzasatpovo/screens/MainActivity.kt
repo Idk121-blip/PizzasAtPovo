@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pizzasatpovo.data.UserData
 import com.example.pizzasatpovo.presentation.profile.ProfileScreen
 import com.google.android.gms.auth.api.identity.Identity
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
@@ -46,7 +47,9 @@ class MainActivity : ComponentActivity() {
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
-
+    override fun onStart() {
+        super.onStart()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -63,10 +66,14 @@ class MainActivity : ComponentActivity() {
                             val state by viewModel.state.collectAsStateWithLifecycle()
 
                             LaunchedEffect(key1 = Unit) {
-                                if (googleAuthUiClient.getSignedInUser() != null) {
-                                    navController.navigate("profile")
+                                lifecycleScope.launch {
+                                    googleAuthUiClient.retrieveUserData()
+                                    if (googleAuthUiClient.getSignedInUser() != null) {
+                                        navController.navigate("profile")
+                                    }
                                 }
                             }
+
 
                             val launcher = rememberLauncherForActivityResult(
                                 contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -89,7 +96,6 @@ class MainActivity : ComponentActivity() {
                                         "Sign in successful",
                                         Toast.LENGTH_LONG
                                     ).show()
-
                                     navController.navigate("profile")
                                     viewModel.resetState()
                                 }
@@ -100,7 +106,7 @@ class MainActivity : ComponentActivity() {
                                 onSignInClick = {
                                     lifecycleScope.launch {
 
-                                        val (signInIntentSender, prova) = googleAuthUiClient.signIn()
+                                        val signInIntentSender = googleAuthUiClient.signIn()
                                         launcher.launch(
                                             IntentSenderRequest.Builder(
                                                 signInIntentSender ?: return@launch
@@ -121,12 +127,10 @@ class MainActivity : ComponentActivity() {
                                                 "Signed out",
                                                 Toast.LENGTH_LONG
                                             ).show()
-
                                             navController.popBackStack()
                                         }
                                     }
                                 )
-
                         }
                     }
                 }
