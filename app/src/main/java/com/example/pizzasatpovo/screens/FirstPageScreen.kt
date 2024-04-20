@@ -43,8 +43,10 @@ class FirstPageScreen() {
     private val uniColor: Color =  Color(0xffce0e2d)
 
     @Composable
-    @Preview(showBackground = true)
-    fun FirstPage(modifier: Modifier = Modifier){
+    fun FirstPage(
+        modifier: Modifier = Modifier,
+        onLoginButtonClicked: () -> Unit,
+    ){
         Box(modifier = modifier
             .fillMaxSize()
         ){
@@ -57,6 +59,7 @@ class FirstPageScreen() {
                     .fillMaxSize()
             )
         }
+
         Box(modifier = modifier){
             Column(
                 verticalArrangement = Arrangement.Bottom,
@@ -82,7 +85,7 @@ class FirstPageScreen() {
                     DisplayText()
                 }
                 Row {
-                    DisplayButton()
+                    DisplayButton( onLoginButtonClicked )
                 }
                 Row (
                     modifier = modifier
@@ -135,9 +138,12 @@ class FirstPageScreen() {
     }
 
     @Composable
-    fun DisplayButton(modifier: Modifier = Modifier){
+    fun DisplayButton(
+        onLoginButtonClicked: () -> Unit,
+        modifier: Modifier = Modifier
+    ){
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onLoginButtonClicked,
             colors = ButtonDefaults.buttonColors(uniColor),
             shape = RoundedCornerShape(25),
             modifier = modifier
