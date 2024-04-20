@@ -22,7 +22,6 @@ class GoogleAuthUiClient(
     private val auth = Firebase.auth
     private var userData:UserData?=null
     suspend fun signIn(): IntentSender? {
-
         val result = try {
             oneTapClient.beginSignIn(
                 buildSignInRequest()
@@ -41,35 +40,35 @@ class GoogleAuthUiClient(
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         return try {
-            val user = auth.signInWithCredential(googleCredentials).await().user
+            val firebaseUser = auth.signInWithCredential(googleCredentials).await().user
             SignInResult(
-                data = user?.run {
-                    var user1: UserData? = null
+                data = firebaseUser?.run {
+                    var user: UserData? = null
                     val db = Firebase.firestore
                     val userRef = db.collection("users").document(uid)
                     userRef.get()
                         .addOnSuccessListener { documentSnapshot ->
                             if (documentSnapshot.exists()) {
-                                user1= documentSnapshot.toObject(UserData::class.java)
+                                user= documentSnapshot.toObject(UserData::class.java)
 
                             } else {
-                                user1 = UserData(
+                                user = UserData(
                                     name = displayName,
                                     credit = 50.0,
                                     image = photoUrl?.toString(),
                                 )
 
-                                db.collection("users").document(uid).set(user1!!)
+                                db.collection("users").document(uid).set(user!!)
 
                             }
                         }
                         .addOnFailureListener { e ->
                             println(e)
                         }.await()
-                    userData=user1
+                    userData=user
                     println(userData)
-                    println(user1)
-                    user1
+                    println(user)
+                    user
                 },
                 errorMessage = null
             )
@@ -101,16 +100,11 @@ class GoogleAuthUiClient(
         userData
     }
     suspend fun retrieveUserData(): UserData? = auth.currentUser?.run {
-        var user: UserData? = null
         val db = Firebase.firestore
         val userRef = db.collection("users").document(uid)
         println(userRef)
-        val pizzaRef = db.collection("pizze").document("Margherita")
-        println(pizzaRef)
-        user = userRef.get().await().toObject(UserData::class.java)
-        println(user)
-        userData= user
-        user
+        userData= userRef.get().await().toObject(UserData::class.java)
+        userData
     }
 
 
