@@ -102,7 +102,6 @@ class GoogleAuthUiClient(
     suspend fun retrieveUserData(): UserData? = auth.currentUser?.run {
         val db = Firebase.firestore
         val userRef = db.collection("users").document(uid)
-        println(userRef)
         userData= userRef.get().await().toObject(UserData::class.java)
         userData
     }
@@ -119,7 +118,7 @@ class GoogleAuthUiClient(
                 val user = UserData(
                     name = displayName,
                     credit = 50.0,
-                    favourites = listOf(pizzaRef),
+                    favourites = arrayListOf(pizzaRef),
                     image = photoUrl?.toString(),
                     orders = null
                 )
