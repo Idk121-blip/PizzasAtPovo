@@ -45,7 +45,18 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza trovata con successo", pizza)
     }
 
-    suspend fun getPizzas(): ResponseData<ArrayList<Pizza>>{
-        return ResponseData()
+    suspend fun getPizzas(): ResponseData<ArrayList<Pizza>>? =auth.currentUser?.run{
+        val db = Firebase.firestore
+        val pizzasArray:ArrayList<Pizza> = arrayListOf()
+        val pizzasQuery= db.collection("pizzas")
+            .get()
+            .addOnSuccessListener {
+
+        }.await()
+        for (pizzaSnapshot in pizzasQuery){
+            pizzasArray.add(pizzaSnapshot.toObject(Pizza::class.java))
+        }
+
+        return ResponseData(true, "Fetchd successfully", pizzasArray)
     }
 }

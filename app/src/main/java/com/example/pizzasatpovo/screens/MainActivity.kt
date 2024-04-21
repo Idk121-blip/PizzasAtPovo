@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,7 +31,7 @@ import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
-import kotlin.math.sign
+import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
 
@@ -55,10 +54,10 @@ class MainActivity : ComponentActivity() {
             ComposeGoogleSignInCleanArchitectureTheme {
                 // A surface container using the 'background' color from the theme
 
-                //sign_in_button()
-                Surface(){
-                    PizzasAtPovoApp()
-                }
+                sign_in_button()
+//                Surface(){
+//                    PizzasAtPovoApp()
+//                }
             }
         }
     }
@@ -70,16 +69,22 @@ class MainActivity : ComponentActivity() {
             color = MaterialTheme.colorScheme.background
         ) {
             val navController = rememberNavController()
+            var pizza:Pizza?
             NavHost(navController = navController, startDestination = "sign_in") {
                 composable("sign_in") {
                     val viewModel = viewModel<SignInViewModel>()
                     val state by viewModel.state.collectAsStateWithLifecycle()
 
                     LaunchedEffect(key1 = Unit) {
-                        if (googleAuthUiClient.getSignedInUser() != null) {
-                            navController.navigate("profile")
+                        lifecycleScope.launch {
+                            googleAuthUiClient.retrieveUserData()
+
+                            if (googleAuthUiClient.getSignedInUser() != null) {
+                                navController.navigate("profile")
+                            }
                         }
                     }
+
 
                     val launcher = rememberLauncherForActivityResult(
                         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -102,7 +107,6 @@ class MainActivity : ComponentActivity() {
                                 "Sign in successful",
                                 Toast.LENGTH_LONG
                             ).show()
-
                             navController.navigate("profile")
                             viewModel.resetState()
                         }
@@ -124,24 +128,70 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 composable("profile") {
+                    val calendar = Calendar.getInstance().apply {
+                        set(2024, Calendar.APRIL, 21, 12, 0, 0) // April 25, 2024, 12:00 PM
+                    }
                     ProfileScreen(
                         userData = googleAuthUiClient.getSignedInUser(),
                         onSignOut = {
                             lifecycleScope.launch {
-                                googleAuthUiClient.signOut()
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Signed out",
-                                    Toast.LENGTH_LONG
-                                ).show()
 
+                                //SENDING ORDERS:
+                                /*
+                                val retrievedPizza = sendRetrieveData.getPizza("Margherita")
+                                if (retrievedPizza == null){
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Something went wrong with auth",
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                                    return@launch
+                                }
+                                if (!retrievedPizza.isSuccessful){
+                                    Toast.makeText(
+                                        applicationContext,
+                                        retrievedPizza.message,
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                                    return@launch
+                                }
+                                pizza= retrievedPizza.retrievedObject
+                                val orderResponse= sendRetrieveData.sendOrder(pizza= pizza!!, pickupTime = Timestamp.now(), price = 4.4)
+                                if (orderResponse==null){
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Something went wrong with google Auth",
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                                    return@launch
+                                }
+                                if (orderResponse.isSuccessful){
+                                    Toast.makeText(
+                                        applicationContext,
+                                        orderResponse.message,
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                                }
+
+                                */
+                                val reqRespone= sendRetrieveData.getPizzas()
+
+                                if (reqRespone!=null){
+                                    println(reqRespone.retrievedObject)
+                                }
+                                //googleAuthUiClient.signOut()
                                 navController.popBackStack()
                             }
                         }
                     )
-
                 }
             }
+
         }
     }
 }
+
+
+
+
+
