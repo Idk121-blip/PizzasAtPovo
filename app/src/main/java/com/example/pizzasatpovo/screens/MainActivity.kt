@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
                         onSignInClick = {
                             lifecycleScope.launch {
 
-                                val (signInIntentSender, prova) = googleAuthUiClient.signIn()
+                                val signInIntentSender = googleAuthUiClient.signIn()
                                 launcher.launch(
                                     IntentSenderRequest.Builder(
                                         signInIntentSender ?: return@launch
