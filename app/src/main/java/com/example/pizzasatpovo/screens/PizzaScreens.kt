@@ -114,7 +114,7 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.LoginPage.name
         ){
             var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzas()
+            ListOfPizzasScreen().ListOfPizzasPage()
         }
     }
 }
