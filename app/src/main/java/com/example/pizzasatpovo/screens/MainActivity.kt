@@ -1,32 +1,19 @@
 package com.example.pizzasatpovo.screens
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,23 +21,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.Pizza
-import com.example.pizzasatpovo.data.UserData
-import com.example.pizzasatpovo.presentation.OrderSender
+import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.profile.ProfileScreen
 import com.google.android.gms.auth.api.identity.Identity
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInScreen
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import kotlin.math.sign
+import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
 
@@ -59,6 +39,9 @@ class MainActivity : ComponentActivity() {
             context = applicationContext,
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
+    }
+    private val  sendRetrieveData by lazy{
+        SendRetrieveData(googleAuthUiClient)
     }
     override fun onStart() {
         super.onStart()
@@ -74,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val navController = rememberNavController()
-                    val orderSender= OrderSender(googleAuthUiClient)
+
                     var pizza:Pizza? = null
                     NavHost(navController = navController, startDestination = "sign_in") {
                         composable("sign_in") {
@@ -84,7 +67,7 @@ class MainActivity : ComponentActivity() {
                             LaunchedEffect(key1 = Unit) {
                                 lifecycleScope.launch {
                                     googleAuthUiClient.retrieveUserData()
-                                    pizza = orderSender.getPizza("Margherita")
+
                                     if (googleAuthUiClient.getSignedInUser() != null) {
                                         navController.navigate("profile")
                                     }
@@ -134,17 +117,27 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("profile") {
+                            val calendar = Calendar.getInstance().apply {
+                                set(2024, Calendar.APRIL, 21, 12, 0, 0) // April 25, 2024, 12:00 PM
+                            }
                                 ProfileScreen(
                                     userData = googleAuthUiClient.getSignedInUser(),
                                     onSignOut = {
                                         lifecycleScope.launch {
-                                            orderSender.sendOrder(pizza= pizza!!, pickupTime = LocalDate.parse("2018-12-14T09:55:00"), price = 4.4)
+                                            pizza = sendRetrieveData.getPizza("Margherita")
+                                            val orderResponse= sendRetrieveData.sendOrder(pizza= pizza!!, pickupTime = Timestamp.now(), price = 4.4)
                                             googleAuthUiClient.signOut()
-                                            Toast.makeText(
-                                                applicationContext,
-                                                "Signed out",
-                                                Toast.LENGTH_LONG
-                                            ).show()
+                                            if (orderResponse!=null){
+                                                if (orderResponse.isSuccessful){
+                                                    Toast.makeText(
+                                                        applicationContext,
+                                                        orderResponse.message,
+                                                        Toast.LENGTH_LONG,
+                                                    ).show()
+
+                                                }
+                                            }
+
                                             navController.popBackStack()
                                         }
                                     }

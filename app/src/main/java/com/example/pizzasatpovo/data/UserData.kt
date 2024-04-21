@@ -1,8 +1,7 @@
 package com.example.pizzasatpovo.data
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 data class UserData(val name: String?= "",
                     val role: String= "User",
@@ -15,8 +14,8 @@ data class Pizza(val name: String= "", val toppings: ArrayList<DocumentReference
 
 data class Topping(val name:String, val allergen: String, val vegetarian: Boolean)
 
-data class Orders(val topping: ArrayList<DocumentReference>,
-                  val price: Double,
-                  val image: String,
-                  val uid: String,
-                  val date: LocalDate)
+data class Order(val topping: ArrayList<DocumentReference>,
+                 val price: Double,
+                 val image: String,
+                 val uid: String,
+                 val date: Timestamp)
