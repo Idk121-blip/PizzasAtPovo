@@ -55,9 +55,9 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
 
                 sign_in_button()
-//                Surface(){
-//                    PizzasAtPovoApp()
-//                }
+                Surface(){
+                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
+                }
             }
         }
     }
@@ -116,7 +116,6 @@ class MainActivity : ComponentActivity() {
                         state = state,
                         onSignInClick = {
                             lifecycleScope.launch {
-
                                 val signInIntentSender = googleAuthUiClient.signIn()
                                 launcher.launch(
                                     IntentSenderRequest.Builder(
@@ -179,7 +178,7 @@ class MainActivity : ComponentActivity() {
                                 if (reqRespone!=null){
                                     println(reqRespone.retrievedObject)
                                 }
-                                //googleAuthUiClient.signOut()
+                                googleAuthUiClient.signOut()
                                 navController.popBackStack()
                             }
                         }
@@ -189,6 +188,8 @@ class MainActivity : ComponentActivity() {
 
         }
     }
+
+
 }
 
 

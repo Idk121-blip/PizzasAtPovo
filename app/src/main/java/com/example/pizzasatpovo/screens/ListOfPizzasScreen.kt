@@ -53,10 +53,11 @@ class ListOfPizzasScreen() {
 
     @Composable
     @Preview(showBackground = true)
-    fun LoginPage(
+    fun ListOfPizzas(
+        modifier: Modifier = Modifier,
         onBackButtonClicked: () -> Unit = {},
         onLoginButtonClicked: () -> Unit = {},
-        modifier: Modifier = Modifier
+
     ){
 
         Box(modifier = modifier
