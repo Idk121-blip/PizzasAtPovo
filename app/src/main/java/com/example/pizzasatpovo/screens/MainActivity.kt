@@ -1,4 +1,5 @@
 package com.example.pizzasatpovo.screens
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -6,9 +7,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,13 +22,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.profile.ProfileScreen
+import com.google.android.gms.auth.api.identity.Identity
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInScreen
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
-import com.google.android.gms.auth.api.identity.Identity
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
+import kotlin.math.sign
 
 class MainActivity : ComponentActivity() {
 
@@ -35,8 +42,13 @@ class MainActivity : ComponentActivity() {
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
-
-    
+    private val  sendRetrieveData by lazy{
+        SendRetrieveData(googleAuthUiClient)
+    }
+    override fun onStart() {
+        super.onStart()
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -101,7 +113,7 @@ class MainActivity : ComponentActivity() {
                         onSignInClick = {
                             lifecycleScope.launch {
 
-                                val (signInIntentSender, prova) = googleAuthUiClient.signIn()
+                                val signInIntentSender = googleAuthUiClient.signIn()
                                 launcher.launch(
                                     IntentSenderRequest.Builder(
                                         signInIntentSender ?: return@launch

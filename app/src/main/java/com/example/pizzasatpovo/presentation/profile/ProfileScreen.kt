@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.pizzasatpovo.presentation.sign_in.UserData
+import com.example.pizzasatpovo.data.UserData
 
 @Composable
 fun ProfileScreen(
@@ -27,9 +27,9 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(userData?.profilePictureUrl != null) {
+        if(userData?.image != null) {
             AsyncImage(
-                model = userData.profilePictureUrl,
+                model = userData.image,
                 contentDescription = "Profile picture",
                 modifier = Modifier
                     .size(150.dp)
@@ -38,9 +38,9 @@ fun ProfileScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-        if(userData?.username != null) {
+        if(userData?.name != null) {
             Text(
-                text = userData.username,
+                text = userData.name,
                 textAlign = TextAlign.Center,
                 fontSize = 36.sp,
                 fontWeight = FontWeight.SemiBold

@@ -10,8 +10,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.presentation.sign_in.SignInResult
-import com.example.pizzasatpovo.presentation.sign_in.UserData
+import com.example.pizzasatpovo.data.UserData
+import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
@@ -20,9 +20,8 @@ class GoogleAuthUiClient(
     private val oneTapClient: SignInClient
 ) {
     private val auth = Firebase.auth
-
-    suspend fun signIn(): Pair<IntentSender?, Boolean> {
-
+    private var userData:UserData?=null
+    suspend fun signIn(): IntentSender? {
         val result = try {
             oneTapClient.beginSignIn(
                 buildSignInRequest()
@@ -33,7 +32,7 @@ class GoogleAuthUiClient(
             null
         }
 
-        return Pair(result?.pendingIntent?.intentSender, true)
+        return result?.pendingIntent?.intentSender
     }
 
     suspend fun signInWithIntent(intent: Intent): SignInResult {
@@ -41,15 +40,35 @@ class GoogleAuthUiClient(
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         return try {
-            println(googleIdToken)
-            val user = auth.signInWithCredential(googleCredentials).await().user
+            val firebaseUser = auth.signInWithCredential(googleCredentials).await().user
             SignInResult(
-                data = user?.run {
-                    UserData(
-                        userId = uid,
-                        username = displayName,
-                        profilePictureUrl = photoUrl?.toString()
-                    )
+                data = firebaseUser?.run {
+                    var user: UserData? = null
+                    val db = Firebase.firestore
+                    val userRef = db.collection("users").document(uid)
+                    userRef.get()
+                        .addOnSuccessListener { documentSnapshot ->
+                            if (documentSnapshot.exists()) {
+                                user= documentSnapshot.toObject(UserData::class.java)
+
+                            } else {
+                                user = UserData(
+                                    name = displayName,
+                                    credit = 50.0,
+                                    image = photoUrl?.toString(),
+                                )
+
+                                db.collection("users").document(uid).set(user!!)
+
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            println(e)
+                        }.await()
+                    userData=user
+                    println(userData)
+                    println(user)
+                    user
                 },
                 errorMessage = null
             )
@@ -63,6 +82,10 @@ class GoogleAuthUiClient(
         }
     }
 
+
+
+
+
     suspend fun signOut() {
         try {
             oneTapClient.signOut().await()
@@ -74,12 +97,39 @@ class GoogleAuthUiClient(
     }
 
     fun getSignedInUser(): UserData? = auth.currentUser?.run {
-        UserData(
-            userId = uid,
-            username = displayName,
-            profilePictureUrl = photoUrl?.toString()
-        )
+        userData
     }
+    suspend fun retrieveUserData(): UserData? = auth.currentUser?.run {
+        val db = Firebase.firestore
+        val userRef = db.collection("users").document(uid)
+        userData= userRef.get().await().toObject(UserData::class.java)
+        userData
+    }
+
+
+
+
+    private fun getUserInformation(): Boolean? = auth.currentUser?.run {
+        val db = Firebase.firestore
+        val userRef = db.collection("users").document(uid)
+        val pizzaRef= db.collection("pizze").document("Margherita")
+        db.runTransaction { transaction ->
+            if (!transaction.get(userRef).exists()) {
+                val user = UserData(
+                    name = displayName,
+                    credit = 50.0,
+                    favourites = arrayListOf(pizzaRef),
+                    image = photoUrl?.toString(),
+                    orders = null
+                )
+                transaction.set(userRef, user)
+            }
+        }
+
+
+        true
+    }
+
 
     private fun buildSignInRequest(): BeginSignInRequest {
         return BeginSignInRequest.Builder()
