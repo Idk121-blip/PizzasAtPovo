@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.Topping
 
 class ListOfPizzasScreen() {
     private val sizeTitle: TextUnit = 50.sp
@@ -72,6 +73,7 @@ class ListOfPizzasScreen() {
         onBackButtonClicked: () -> Unit = {},
         onLoginButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
+        toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         modifier: Modifier = Modifier,
 
     ){
@@ -121,7 +123,7 @@ class ListOfPizzasScreen() {
                             modifier = modifier
                                 .padding(10.dp)
                         )
-                        ListOfPizzas(pizzas)
+                        ListOfPizzas(pizzas, toppings)
                     }
                 }
             }
@@ -161,10 +163,13 @@ class ListOfPizzasScreen() {
     @Composable
     fun ListOfPizzas(
         pizzas: ArrayList<Pizza>,
+        toppings: ArrayList<ArrayList<Topping>>,
         modifier: Modifier = Modifier
     ){
         var array: ArrayList<Triple<Int, String, String>> = ArrayList();
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
+        if (pizzas.size>0){
+            array.add(Triple(R.drawable.ic_launcher_background, pizzas[0].name, toppings[0][0].name))
+        }
         array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
         array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
         array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))

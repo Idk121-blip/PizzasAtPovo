@@ -126,7 +126,6 @@ class GoogleAuthUiClient(
             }
         }
 
-
         true
     }
 
