@@ -1,7 +1,9 @@
 package com.example.pizzasatpovo.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -23,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
@@ -149,18 +153,22 @@ class FirstPageScreen() {
             modifier = modifier
         ) {
             Text(
-                text = "PROCEDI AL LOGIN",
+                text = "LOGIN CON GOOGLE",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = modifier
                     .padding(end = 50.dp) //usare lo space between?
             )
             Spacer(modifier = Modifier.width(10.dp))
+
             Image(
-                painter = painterResource(id = R.drawable.right_arrow),
-                contentDescription = "Next page",
+                painter = painterResource(id = R.drawable.google_icon),
+                contentDescription = "Login with Google",
                 modifier = modifier
                     .size(30.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .padding(4.dp)
             )
         }
     }
