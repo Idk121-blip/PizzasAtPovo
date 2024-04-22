@@ -13,6 +13,7 @@ enum class PizzaScreens {
     FirstPage,
     LoginPage,
     ListOfPizzas,
+    Favourites,
     NewPizza,
     RecentOrders,
     Account

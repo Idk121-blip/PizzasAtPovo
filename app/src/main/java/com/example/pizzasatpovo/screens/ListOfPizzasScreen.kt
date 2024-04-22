@@ -2,7 +2,6 @@ package com.example.pizzasatpovo.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,31 +21,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.AddCircle
-import androidx.compose.material.icons.sharp.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Shapes
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,19 +43,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -76,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.ui.components.Bars
 
 class ListOfPizzasScreen() {
     private val sizeTitle: TextUnit = 50.sp
@@ -114,107 +95,51 @@ class ListOfPizzasScreen() {
                 .fillMaxSize()
         ) {
             Column {
-                AppBar()
-                Row {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                Bars().AppBar()
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = modifier
+                        .fillMaxSize()
+                ) {
+                    SearchBar(
                         modifier = modifier
-                            .fillMaxSize()
-                    ) {
-                        SearchBar(
-                            modifier = modifier
-                                .padding(10.dp)
-                        )
-                        ListOfPizzas(pizzas)
-                    }
+                            .padding(10.dp)
+                    )
+                    ListOfPizzas(pizzas)
                 }
             }
         }
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .fillMaxSize()
-        ){
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.nav_bar),
-                    contentDescription = "NavBar",
-                    alignment = Alignment.BottomCenter,
-                    modifier = modifier
-                        .fillMaxSize()
-                )
-            }
-            Box (
-                modifier = modifier
-                    .fillMaxSize()
-                    .align(Alignment.BottomCenter)
-            ){
-                Navbar(
-                    modifier = modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(0.dp, 10.dp)
-                )
-            }
-        }
+        Bars().BottomBar(screen = PizzaScreens.ListOfPizzas)
     }
     
-    @Composable
-    fun AppBar(modifier: Modifier = Modifier){
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier
-                .padding(0.dp, 5.dp)
-        ){
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "Back to login",
-                modifier = Modifier
-                    .height(48.dp)
-                    .weight(0.15F)
-                    .fillMaxWidth()
-            )
-            Text(
-                text = "Pizza at Povo",
-                fontSize = 20.sp,
-                fontWeight = weightText,
-                textAlign = TextAlign.Center,
-                modifier = modifier
-                    .weight(0.7F)
-            )
-            Spacer(
-                modifier = modifier
-                    .weight(0.15F)
-            )
-        }
-    }
+
 
 
     @Composable
     fun SearchBar(modifier: Modifier = Modifier){
-        var text by remember{ mutableStateOf("Ciccio") }
-        Column {
-            OutlinedTextField(
-                value = text,
-                onValueChange = {
-                    text = it
-                },
-                leadingIcon = { Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search"
-                ) },
-                textStyle = TextStyle(
-                    textAlign = TextAlign.Start
-                ),
-                shape = RoundedCornerShape(50.dp),
-                placeholder = { Text(text = "Cerca ...") },
-                singleLine = true,
-                modifier = modifier
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .height(40.dp)
-            )
-        }
+        var text by remember{ mutableStateOf("") }
 
+        OutlinedTextField(
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            leadingIcon = { Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = "Search"
+            ) },
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start
+            ),
+            shape = RoundedCornerShape(50.dp),
+            label = null,
+            placeholder = { Text(text = "Cerca ...") },
+            singleLine = true,
+            modifier = modifier
+                .clip(CircleShape)
+                .background(Color.White)
+                //.height(40.dp)
+        )
     }
 
     @Composable
@@ -244,6 +169,10 @@ class ListOfPizzasScreen() {
             array.forEach { pizza ->
                 PizzaCard(image = pizza.first, name = pizza.second, toppings = pizza.third)
             }
+            Spacer(
+                modifier = modifier
+                    .height(60.dp)
+            )
         }
     }
 
@@ -279,12 +208,28 @@ class ListOfPizzasScreen() {
                 Column {
                     Text(
                         text = "$name",
-                        fontWeight = weightText
+                        fontWeight = weightText,
+                        fontSize = 18.sp
                     )
-                    Text(text = "$toppings")
-                    Row {
-                        Allergen()
-                        Allergen()
+                    Text(
+                        text = "Pomodoro, mozzarella, salamino piccante, ",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 16.sp
+                    )
+                    Row (
+                        modifier = modifier
+                            .fillMaxSize()
+                    ){
+                        Allergen(
+                            modifier = modifier.align(Alignment.Bottom)
+                        )
+                        Allergen(
+                            modifier = modifier.align(Alignment.Bottom)
+                        )
+                        Allergen(
+                            modifier = modifier.align(Alignment.Bottom)
+                        )
                     }
                 }
             }
@@ -298,7 +243,7 @@ class ListOfPizzasScreen() {
             modifier = modifier
                 .padding(top = 2.dp, end = 5.dp, bottom = 2.dp)
                 .width(30.dp)
-                .fillMaxHeight()
+                .height(30.dp)
         ){
             Image(
                 painter = painterResource(id = R.drawable.back_icon),
@@ -310,62 +255,5 @@ class ListOfPizzasScreen() {
         }
     }
 
-    @Composable
-    fun Navbar(modifier : Modifier = Modifier){
-        Row(
-            //verticalAlignment = Alignment.Bottom,
-            modifier = modifier
-                .fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Home,
-                contentDescription = "List of pizzas",
-                modifier = Modifier
-                    .size(dimIcons)
-                    .weight(0.2F)
-            )
-            Icon(
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = "Favourite pizzas",
-                modifier = Modifier
-                    .size(dimIcons)
-                    .weight(0.2F)
-            )
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = "Recent orders",
-                modifier = Modifier
-                    .size(dimIcons)
-                    .weight(0.2F)
-            )
-            Icon(
-                imageVector = Icons.Filled.AccountCircle,
-                contentDescription = "Account",
-                modifier = Modifier
-                    .size(dimIcons)
-                    .weight(0.2F)
-            )
-        }
-        Button(
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(Color.Red),
-            content = {
-                Image(
-                    painter = painterResource(id = R.drawable.plus_icon),
-                    contentDescription = "Add pizza",
-                    contentScale = ContentScale.Fit,
-                    modifier = modifier
 
-                )
-            },
-            onClick = { /*TODO*/ },
-            contentPadding = PaddingValues(),
-            modifier = modifier
-                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                .size(50.dp)
-                .offset(0.dp, (-20).dp)
-
-        )
-
-    }
 }
