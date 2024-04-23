@@ -20,11 +20,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 enum class PizzaScreens {
     FirstPage,
@@ -60,52 +66,45 @@ fun PizzasAtPovoApp(
             LaunchedEffect(key1 = Unit) {
                 lifecycleScope.launch {
                     googleAuthUiClient.retrieveUserData()
-                    println(googleAuthUiClient.getSignedInUser())
-
                     if (googleAuthUiClient.getSignedInUser() != null) {
-                        val reqRespone= sendRetrieveData.getPizzas()
-
-                        if (reqRespone!=null){
-
-
-                            if (reqRespone.isSuccessful) {
-                                pizzas = reqRespone.retrievedObject!!
-                                println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-                                println(pizzas)
-                                for (pizza in pizzas){
-                                    val pizzaTopping: ArrayList<Topping> = arrayListOf()
-                                    var add = false
-                                    for (toppingRef in pizza.toppings!!){
-                                        val topping= sendRetrieveData.getToppingByRef(toppingRef)
-                                        println(toppingRef)
-                                        println(topping)
-                                        if (topping != null) {
-                                            pizzaTopping.add(topping.retrievedObject!!)
-                                            add=true
-                                        }
-                                    }
-                                    if (add){
-                                        toppings.add(pizzaTopping)
-                                    }
-                                }
-                            println(toppings)
-                            }else{
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Error retrieving pizzas",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                        if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
+                            val (returnedPizzas, returnedToppings) = userLogged(applicationContext, sendRetrieveData)
+                            pizzas= returnedPizzas
+                            toppings= returnedToppings
+                            navController.navigate(PizzaScreens.ListOfPizzas.name)
                         }else{
-                            Toast.makeText(
-                                applicationContext,
-                                "Error retrieving pizzas",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+
+                            val ordersRef = database.getReference("orders")
+                            ordersRef.addChildEventListener(object : ChildEventListener {
+                                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                                    // Handle new order added
+                                    val newOrder = snapshot.getValue(RealTimeOrder::class.java)
+                                    println(newOrder)
+                                    // Process the new order
+                                }
+
+                                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                                    // Handle order changed
+                                    val newOrder = snapshot.getValue(RealTimeOrder::class.java)
+
+                                    // Update the order in your app
+                                }
+
+                                override fun onChildRemoved(snapshot: DataSnapshot) {
+                                    // Handle order removed
+                                    // Remove the order from your app
+                                }
+
+                                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                                    // Handle order moved
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    // Handle error
+                                }
+                            })
                         }
-
-
-                        navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }
                 }
             }
@@ -135,8 +134,7 @@ fun PizzasAtPovoApp(
                                 var add = false
                                 for (toppingRef in pizza.toppings!!){
                                     val topping= sendRetrieveData.getToppingByRef(toppingRef)
-                                    println(toppingRef)
-                                    println(topping)
+
                                     if (topping != null) {
                                         pizzaTopping.add(topping.retrievedObject!!)
                                         add=true
@@ -192,4 +190,44 @@ fun PizzasAtPovoApp(
             ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings)
         }
     }
+}
+
+
+suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData): Pair<ArrayList<Pizza>, ArrayList<ArrayList<Topping>>> {
+    var pizzas: ArrayList<Pizza> = arrayListOf()
+    var toppings: ArrayList<ArrayList<Topping>> = arrayListOf()
+    val reqRespone= sendRetrieveData.getPizzas()
+    if (reqRespone!=null){
+        if (reqRespone.isSuccessful) {
+            pizzas = reqRespone.retrievedObject!!
+            for (pizza in pizzas){
+                val pizzaTopping: ArrayList<Topping> = arrayListOf()
+                var add = false
+                for (toppingRef in pizza.toppings!!){
+                    val topping= sendRetrieveData.getToppingByRef(toppingRef)
+
+                    if (topping != null) {
+                        pizzaTopping.add(topping.retrievedObject!!)
+                        add=true
+                    }
+                }
+                if (add){
+                    toppings.add(pizzaTopping)
+                }
+            }
+        }else{
+            Toast.makeText(
+                applicationContext,
+                "Error retrieving pizzas",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }else{
+        Toast.makeText(
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+    return Pair(pizzas, toppings)
 }

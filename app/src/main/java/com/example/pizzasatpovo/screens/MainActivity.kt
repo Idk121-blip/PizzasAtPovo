@@ -1,6 +1,7 @@
 package com.example.pizzasatpovo.screens
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -22,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.profile.ProfileScreen
 import com.google.android.gms.auth.api.identity.Identity
@@ -30,6 +32,12 @@ import com.example.pizzasatpovo.presentation.sign_in.SignInScreen
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
 import com.google.firebase.Timestamp
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -53,8 +61,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeGoogleSignInCleanArchitectureTheme {
                 // A surface container using the 'background' color from the theme
-
-                sign_in_button()
+//
+                //sign_in_button()
                 Surface(){
                     PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
                 }
@@ -173,12 +181,30 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 */
-                                val reqRespone= sendRetrieveData.getPizzas()
+                                val retrievedPizza = sendRetrieveData.getPizza("Margherita")
+                                pizza= retrievedPizza!!.retrievedObject
+                                val reqResponse= sendRetrieveData.getPizzas()
 
-                                if (reqRespone!=null){
-                                    println(reqRespone.retrievedObject)
+                                if (reqResponse!=null){
+                                    //println(reqResponse.retrievedObject)
                                 }
-                                googleAuthUiClient.signOut()
+
+                                sendRetrieveData.sendRTOrderd(pizza!!, date = "22-04-2024 14:30", 2);
+
+                                //send
+
+                                val ResponseFavourites= sendRetrieveData.retrieveFavourites()
+
+                                if (ResponseFavourites!=null){
+                                    if (ResponseFavourites.isSuccessful){
+                                        println(ResponseFavourites.retrievedObject)
+                                    }
+                                }
+
+
+
+
+                                //googleAuthUiClient.signOut()
                                 navController.popBackStack()
                             }
                         }

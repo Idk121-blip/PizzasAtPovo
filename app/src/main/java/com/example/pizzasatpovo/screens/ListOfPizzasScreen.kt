@@ -20,11 +20,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -45,6 +48,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
@@ -191,10 +196,11 @@ class ListOfPizzasScreen() {
     }
 
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SearchBar(modifier: Modifier = Modifier){
         var text by remember{ mutableStateOf("Ciccio") }
-        Column {
+
             OutlinedTextField(
                 value = text,
                 onValueChange = {
@@ -215,7 +221,8 @@ class ListOfPizzasScreen() {
                     .background(Color.White)
                     .height(40.dp)
             )
-        }
+
+
 
     }
 
@@ -374,3 +381,12 @@ class ListOfPizzasScreen() {
 
     }
 }
+
+
+
+
+
+
+
+
+
