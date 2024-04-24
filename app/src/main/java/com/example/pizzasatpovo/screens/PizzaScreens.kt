@@ -107,11 +107,11 @@ fun PizzasAtPovoApp(
 
             LaunchedEffect(key1 = state.isSignInSuccessful) {
                 if (state.isSignInSuccessful) {
-                    val reqRespone= sendRetrieveData.getPizzas()
+                    val listResponseData= sendRetrieveData.getPizzas()
 
-                    if (reqRespone!=null){
-                        if (reqRespone.isSuccessful) {
-                            pizzas = reqRespone.retrievedObject!!
+                    if (listResponseData!=null){
+                        if (listResponseData.isSuccessful) {
+                            pizzas = listResponseData.retrievedObject!!
                             for (pizza in pizzas){
                                 val pizzaTopping: ArrayList<Topping> = arrayListOf()
                                 var add = false
@@ -170,7 +170,10 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
             var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings)
+
+
+
+            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings, )
         }
         composable(route= PizzaScreens.ChefOrders.name){
 

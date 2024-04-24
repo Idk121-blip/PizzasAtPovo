@@ -73,16 +73,13 @@ class ListOfPizzasScreen() {
     private val uniColor: Color =  Color(0xffce0e2d)
     private val dimIcons: Dp = 30.dp
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     @Preview(showBackground = true)
     fun ListOfPizzasPage(
         onDetailsButtonClicked: () -> Unit = {},
-        onLoginButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         modifier: Modifier = Modifier,
-
         ){
 
         Box(modifier = modifier
