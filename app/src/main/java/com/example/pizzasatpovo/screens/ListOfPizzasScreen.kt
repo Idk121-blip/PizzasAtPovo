@@ -67,6 +67,7 @@ import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
+import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 
 class ListOfPizzasScreen() {
     private val sizeTitle: TextUnit = 50.sp
@@ -77,12 +78,14 @@ class ListOfPizzasScreen() {
     private val dimIcons: Dp = 30.dp
 
     @Composable
-    @Preview(showBackground = true)
+
     fun ListOfPizzasPage(
         onDetailsButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
+        viewModel: SignInViewModel,
         modifier: Modifier = Modifier,
+
         ){
 
         Box(modifier = modifier
@@ -116,7 +119,8 @@ class ListOfPizzasScreen() {
                     ListOfPizzas(
                         onDetailsButtonClicked,
                         pizzas,
-                        toppings
+                        toppings,
+                        viewModel
                     )
                 }
             }
@@ -162,6 +166,7 @@ class ListOfPizzasScreen() {
         onDetailsButtonClicked: () -> Unit,
         pizzas: ArrayList<Pizza>,
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
+        viewModel: SignInViewModel,
         modifier: Modifier = Modifier
     ){
         Column (
@@ -178,11 +183,16 @@ class ListOfPizzasScreen() {
             for (i in 0..<pizzas.size)
             {
                 PizzaCard(
-                    onNavbarButtonClicked = onDetailsButtonClicked,
+                    onNavbarButtonClicked = {
+                        viewModel.setPizza(RetrievedPizza("Margherita", image = "", toppings = arrayListOf()))
+                        println("wft")
+                        onDetailsButtonClicked()
+                    },
                     image = pizzas[i].image,
                     name = pizzas[i].name,
                     toppings = toppings[i],
-                    pizza= pizzas[i]
+                    pizza= RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
+                    viewModel
                 )
             }
             Spacer(
@@ -198,14 +208,18 @@ class ListOfPizzasScreen() {
         image: String,
         name: String,
         toppings: ArrayList<Topping>,
-        pizza: Pizza,
+        pizza: RetrievedPizza,
+        viewModel: SignInViewModel,
         modifier: Modifier = Modifier
     ){
         var toppingForCard=""
         for (topping in toppings){
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
         }
-        println(toppingForCard)
+
+        toppingForCard= toppingForCard.removeSuffix(", ")
+
+
         Card (
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
@@ -215,14 +229,18 @@ class ListOfPizzasScreen() {
                 .width(350.dp)
                 .height(140.dp)
                 .padding(0.dp, 10.dp)
-                .clickable { onNavbarButtonClicked() }
+                .clickable {
+                    onNavbarButtonClicked()
+                }
         ){
             Row (
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(20.dp)
             ){
-                AsyncImage(model = image, contentDescription = "pizza image", modifier= modifier.fillMaxHeight().padding(end= 15.dp))
+                AsyncImage(model = image, contentDescription = "pizza image", modifier= modifier
+                    .fillMaxHeight()
+                    .padding(end = 15.dp))
                 Column {
                     Text(
                         text = "$name",

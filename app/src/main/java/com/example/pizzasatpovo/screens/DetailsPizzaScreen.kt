@@ -61,6 +61,9 @@ class DetailsPizzaScreen {
         onDetailsButtonClicked: () -> Unit = {},
         modifier: Modifier = Modifier
     ){
+
+
+
         Box(modifier = modifier
             .fillMaxSize()
         ){

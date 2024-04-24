@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,11 +24,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.RealTimeOrder
+import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
@@ -62,6 +66,8 @@ fun PizzasAtPovoApp(
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ){
+    val viewModel = viewModel<SignInViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     NavHost(
         navController = navController,
         startDestination = PizzaScreens.FirstPage.name,
@@ -73,8 +79,7 @@ fun PizzasAtPovoApp(
         composable(
             route = PizzaScreens.FirstPage.name
         ){
-            val viewModel = viewModel<SignInViewModel>()
-            val state by viewModel.state.collectAsStateWithLifecycle()
+
 
             LaunchedEffect(key1 = Unit) {
                 lifecycleScope.launch {
@@ -171,7 +176,12 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
             var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings, )
+            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings, viewModel = viewModel, onDetailsButtonClicked = {
+                println("DIOCANE")
+                navController.navigate(PizzaScreens.DetailsPizza.name)})
+        }
+        composable(route= PizzaScreens.DetailsPizza.name){
+            DetailsPizzaScreen().DetailsPizzaPage(pizza = viewModel.getPizza())
         }
         composable(route= PizzaScreens.ChefOrders.name){
 
