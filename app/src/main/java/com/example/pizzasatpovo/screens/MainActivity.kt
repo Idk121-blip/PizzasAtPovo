@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeGoogleSignInCleanArchitectureTheme {
                 // A surface container using the 'background' color from the theme
-//
+                //
                 //sign_in_button()
 
                 Surface(){
