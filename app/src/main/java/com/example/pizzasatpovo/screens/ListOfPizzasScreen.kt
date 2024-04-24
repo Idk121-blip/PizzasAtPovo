@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.screens
 
+import android.util.Range
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,8 +60,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
@@ -112,7 +115,8 @@ class ListOfPizzasScreen() {
                     )
                     ListOfPizzas(
                         onDetailsButtonClicked,
-                        pizzas
+                        pizzas,
+                        toppings
                     )
                 }
             }
@@ -157,33 +161,28 @@ class ListOfPizzasScreen() {
     fun ListOfPizzas(
         onDetailsButtonClicked: () -> Unit,
         pizzas: ArrayList<Pizza>,
+        toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         modifier: Modifier = Modifier
     ){
-        var array: ArrayList<Triple<Int, String, String>> = ArrayList();
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-        array.add(Triple(R.drawable.ic_launcher_background, "Patatoso", "Mozzarella"))
-
         Column (
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(5.dp)
         ){
-            array.forEach { pizza ->
+            println("-------------------------")
+            println(pizzas[0])
+            println(toppings[0])
+            println(pizzas.size)
+            println("-------------------------")
+
+            for (i in 0..<pizzas.size)
+            {
                 PizzaCard(
                     onNavbarButtonClicked = onDetailsButtonClicked,
-                    image = pizza.first,
-                    name = pizza.second,
-                    toppings = pizza.third
+                    image = pizzas[i].image,
+                    name = pizzas[i].name,
+                    toppings = toppings[i],
+                    pizza= pizzas[i]
                 )
             }
             Spacer(
@@ -196,11 +195,17 @@ class ListOfPizzasScreen() {
     @Composable
     fun PizzaCard(
         onNavbarButtonClicked: () -> Unit,
-        image: Int,
+        image: String,
         name: String,
-        toppings: String,
+        toppings: ArrayList<Topping>,
+        pizza: Pizza,
         modifier: Modifier = Modifier
     ){
+        var toppingForCard=""
+        for (topping in toppings){
+            toppingForCard= toppingForCard.plus(topping.name).plus(", ")
+        }
+        println(toppingForCard)
         Card (
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
@@ -217,13 +222,7 @@ class ListOfPizzasScreen() {
                     .fillMaxWidth()
                     .padding(20.dp)
             ){
-                Image(
-                    painter = painterResource(id = image),
-                    contentDescription = "$name image",
-                    modifier = modifier
-                        .fillMaxHeight()
-                        .padding(end = 15.dp)
-                )
+                AsyncImage(model = image, contentDescription = "pizza image", modifier= modifier.fillMaxHeight().padding(end= 15.dp))
                 Column {
                     Text(
                         text = "$name",
@@ -231,7 +230,7 @@ class ListOfPizzasScreen() {
                         fontSize = 18.sp
                     )
                     Text(
-                        text = "Pomodoro, mozzarella, salamino piccante, ",
+                        text = toppingForCard,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 16.sp
@@ -254,8 +253,4 @@ class ListOfPizzasScreen() {
             }
         }
     }
-
-
-
-
 }

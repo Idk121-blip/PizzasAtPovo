@@ -83,6 +83,7 @@ fun PizzasAtPovoApp(
                         if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
                             val (returnedPizzas, returnedToppings) = userLogged(applicationContext, sendRetrieveData)
                             pizzas= returnedPizzas
+                            println(returnedToppings)
                             toppings= returnedToppings
                             navController.navigate(PizzaScreens.ListOfPizzas.name)
                         }else{
@@ -170,20 +171,16 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
             var context = LocalContext.current
-
-
-
             ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings, )
         }
         composable(route= PizzaScreens.ChefOrders.name){
 
             val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
             val ordersRef = database.getReference("orders")
-            var orders= mutableStateListOf<RealTimeOrder?>()
+            val orders= mutableStateListOf<RealTimeOrder?>()
             val childEventListener = object : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     val newOrder = snapshot.getValue(RealTimeOrder::class.java)
-
                     newOrder?.let { order ->
                         orders.add(order)
 
@@ -240,6 +237,8 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
                 }
                 if (add){
                     toppings.add(pizzaTopping)
+                    println(pizzaTopping)
+                    println(toppings)
                 }
             }
         }else{
