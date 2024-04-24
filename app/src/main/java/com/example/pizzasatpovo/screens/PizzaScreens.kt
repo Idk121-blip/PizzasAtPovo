@@ -2,17 +2,17 @@ package com.example.pizzasatpovo.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pizzasatpovo.data.Pizza
 
 enum class PizzaScreens {
     FirstPage,
-    LoginPage,
     ListOfPizzas,
+    DetailsPizza,
     Favourites,
     NewPizza,
     RecentOrders,
@@ -36,15 +36,26 @@ fun PizzasAtPovoApp(
             FirstPageScreen().FirstPage(
                 onLoginButtonClicked = {
                     println("Changing screen")
-                    navController.navigate(PizzaScreens.LoginPage.name)
+                    navController.navigate(PizzaScreens.ListOfPizzas.name)
                 }
             )
         }
         composable(
-            route = PizzaScreens.LoginPage.name
+            route = PizzaScreens.ListOfPizzas.name
         ){
-            var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage()
+            ListOfPizzasScreen().ListOfPizzasPage(
+                onDetailsButtonClicked = {
+                    navController.navigate(PizzaScreens.DetailsPizza.name)
+                }
+            )
+        }
+        composable(
+            route = PizzaScreens.DetailsPizza.name
+        ){
+            DetailsPizzaScreen().DetailsPizzaPage(
+                //pizza = Pizza("Patatosa", ),
+                onBackButtonClicked = { navController.popBackStack() }
+            )
         }
     }
 }

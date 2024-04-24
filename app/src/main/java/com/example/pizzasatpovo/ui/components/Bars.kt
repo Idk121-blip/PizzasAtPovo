@@ -1,6 +1,7 @@
 package com.example.pizzasatpovo.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,10 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -61,7 +58,11 @@ class Bars() {
     }
 
     @Composable
-    fun AppBarWithBackBtn(modifier: Modifier = Modifier) {
+    fun AppBarWithBackBtn(
+        pizzasName: String,
+        onBackButtonClicked: () -> Unit = {},
+        modifier: Modifier = Modifier
+    ) {
         Column(
             modifier = modifier
                 .padding(0.dp, 15.dp, 0.dp, 5.dp)
@@ -79,9 +80,10 @@ class Bars() {
                         .height(48.dp)
                         .weight(0.15F)
                         .fillMaxWidth()
+                        .clickable { onBackButtonClicked() }
                 )
                 Text(
-                    text = "Pizza at Povo",
+                    text = pizzasName,
                     fontSize = 20.sp,
                     fontWeight = weightText,
                     textAlign = TextAlign.Center,
@@ -97,7 +99,11 @@ class Bars() {
     }
 
     @Composable
-    fun BottomBar(screen: PizzaScreens, modifier: Modifier = Modifier){
+    fun BottomBar(
+        screen: PizzaScreens,
+        onNavbarButtonClicked: () -> Unit = {},
+        modifier: Modifier = Modifier
+    ){
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -119,6 +125,7 @@ class Bars() {
             ) {
                 Navbar(
                     screen = screen,
+                    onPizzasButtonClicked = onNavbarButtonClicked,
                     modifier = modifier
                         .align(Alignment.BottomCenter)
                         .padding(0.dp, 10.dp)
@@ -130,6 +137,7 @@ class Bars() {
     @Composable
     fun Navbar(
         screen: PizzaScreens,
+        onPizzasButtonClicked: () -> Unit = {},
         modifier : Modifier = Modifier
     ){
         Row(
@@ -148,6 +156,9 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
+                    .clickable {
+                        onPizzasButtonClicked()
+                    }
             )
             Image(
                 painter = painterResource(
@@ -190,20 +201,17 @@ class Bars() {
         }
         Button(
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(Color.Red),
             content = {
                 Image(
                     painter = painterResource(id = R.drawable.plus_icon),
                     contentDescription = "Add pizza",
                     contentScale = ContentScale.Fit,
                     modifier = modifier
-
                 )
             },
             onClick = { /*TODO*/ },
             contentPadding = PaddingValues(),
             modifier = modifier
-                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                 .size(50.dp)
                 .offset(0.dp, (-15).dp)
 
