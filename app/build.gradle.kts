@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pizzasatpovo"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -62,6 +63,7 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.2.1")
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.compose.material)
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.5")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
@@ -76,4 +78,8 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation ("io.coil-kt:coil-compose:2.2.2")
+
+    //For time picker
+    implementation ("com.github.kshitijskumar:Ticker:1.0.0")
+
 }

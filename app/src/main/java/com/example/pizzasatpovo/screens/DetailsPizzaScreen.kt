@@ -46,9 +46,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
-import com.example.pizzasatpovo.data.TimeViewModel
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 
@@ -239,48 +239,13 @@ class DetailsPizzaScreen {
                                 .size(30.dp)
                         )
                     }
-                    val hour by TimeViewModel().hour.collectAsState(initial = "00")
-                    val minutes by TimeViewModel().minutes.collectAsState(initial = "00")
                     Row (
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = modifier
+                            .padding(0.dp, 15.dp)
+
                     ){
-                        AnimatedContent(
-                            targetState = hour,
-                            transitionSpec = {
-                                addAnimation().using(
-                                    SizeTransform(clip = false)
-                                )
-                            },
-                            label = "",
-                            modifier = modifier
-                                .padding(10.dp, 10.dp)
-                        ) {
-                            Text(
-                                text = "$it",
-                                textAlign = TextAlign.Center,
-                                modifier = modifier
-
-                            )
-                        }
-                        Text(text = " : ")
-                        AnimatedContent(
-                            targetState = minutes,
-                            transitionSpec = {
-                                addAnimation().using(
-                                    SizeTransform(clip = false)
-                                )
-                            },
-                            label = "",
-                            modifier = modifier
-                                .padding(10.dp, 10.dp)
-                        ){
-                            Text(
-                                text = "$it",
-                                textAlign = TextAlign.Center,
-                                modifier = modifier
-
-                            )
-                        }
+                        Text(text = "ora e minuti di prelevo")
                     }
                     val cost = 4.40F * nPizzas
                     Text(
