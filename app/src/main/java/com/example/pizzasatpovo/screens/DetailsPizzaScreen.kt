@@ -49,13 +49,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 
 class DetailsPizzaScreen {
     @Composable
     fun DetailsPizzaPage(
-        //pizza: Pizza,
+        pizza: RetrievedPizza,
         onBackButtonClicked: () -> Unit = {},
         onDetailsButtonClicked: () -> Unit = {},
         modifier: Modifier = Modifier
