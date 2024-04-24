@@ -174,18 +174,12 @@ class ListOfPizzasScreen() {
                 .verticalScroll(rememberScrollState())
                 .padding(5.dp)
         ){
-            println("-------------------------")
-            println(pizzas[0])
-            println(toppings[0])
-            println(pizzas.size)
-            println("-------------------------")
 
             for (i in 0..<pizzas.size)
             {
                 PizzaCard(
                     onNavbarButtonClicked = {
-                        viewModel.setPizza(RetrievedPizza("Margherita", image = "", toppings = arrayListOf()))
-                        println("wft")
+                        viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
                         onDetailsButtonClicked()
                     },
                     image = pizzas[i].image,

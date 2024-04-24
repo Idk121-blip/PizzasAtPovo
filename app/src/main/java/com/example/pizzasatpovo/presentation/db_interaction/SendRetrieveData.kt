@@ -41,20 +41,27 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                         uid=uid,
                         date=pickupTime,
                         pizzaNumber= pizzaNumber)
-        val user= googleAuthUiClient.retrieveUserData() ?: return ResponseData(message = "Utente non trovato")
+        var user= googleAuthUiClient.retrieveUserData() ?: return ResponseData(message = "Utente non trovato")
         if (user.credit <order.price){
             return ResponseData(false, message = "Credito non sufficiente")
         }
 
         val userRef = db.collection("users").document(uid)
+
+
+
+
+
         db.collection("orders")
             .add(order)
             .addOnSuccessListener { documentReference->
                 if (user.orders == null){
                     user.orders= arrayListOf(documentReference)
+
                 }else{
                     user.orders!!.add(0, documentReference)
                 }
+                user.credit-=order.price
                 userRef.set(user)
             }
         return ResponseData(true, "Ordine completato con successo", order)
@@ -141,7 +148,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         for (pizzaDocument in user.favourites!!){
             val pizzaDB= pizzaDocument.get().await().toObject(Pizza::class.java) ?: continue
-            println(pizzaDB)
+
             favourites.add(if (pizzaDB.toppings!=null){
                 val toppings: ArrayList<Topping> = arrayListOf()
                 for (topping in pizzaDB.toppings){

@@ -88,7 +88,6 @@ fun PizzasAtPovoApp(
                         if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
                             val (returnedPizzas, returnedToppings) = userLogged(applicationContext, sendRetrieveData)
                             pizzas= returnedPizzas
-                            println(returnedToppings)
                             toppings= returnedToppings
                             navController.navigate(PizzaScreens.ListOfPizzas.name)
                         }else{
@@ -177,7 +176,6 @@ fun PizzasAtPovoApp(
         ){
             var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings, viewModel = viewModel, onDetailsButtonClicked = {
-                println("DIOCANE")
                 navController.navigate(PizzaScreens.DetailsPizza.name)})
         }
         composable(route= PizzaScreens.DetailsPizza.name){
@@ -247,8 +245,6 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
                 }
                 if (add){
                     toppings.add(pizzaTopping)
-                    println(pizzaTopping)
-                    println(toppings)
                 }
             }
         }else{

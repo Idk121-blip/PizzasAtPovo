@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.RetrievedPizza
@@ -63,7 +64,11 @@ class DetailsPizzaScreen {
     ){
 
 
-
+        var listOfToppings = ""
+        for (topping in pizza.toppings!!){
+            listOfToppings= listOfToppings.plus(topping.name).plus(", ")
+        }
+        listOfToppings= listOfToppings.removeSuffix(", ")
         Box(modifier = modifier
             .fillMaxSize()
         ){
@@ -85,7 +90,7 @@ class DetailsPizzaScreen {
         ) {
             Column {
                 Bars().AppBarWithBackBtn(
-                    pizzasName = Pizza().name,
+                    pizzasName = pizza.name,
                     onBackButtonClicked = onBackButtonClicked
                 )
                 Column (
@@ -101,7 +106,8 @@ class DetailsPizzaScreen {
                                 .padding(top = 10.dp)
                         )
                         Text(
-                            text = "Pomodoro, mozzarella, salamino, prosciutto, funghi, ricotta, pancetta, melanzane, zucchine, tonno",
+
+                            text = listOfToppings,
                             overflow = TextOverflow.Clip,
                             modifier = modifier
                                 .padding(start = 20.dp, top = 10.dp)
@@ -163,10 +169,7 @@ class DetailsPizzaScreen {
                     .fillMaxWidth()
                     .align(Alignment.CenterEnd)
             ){
-                Image(
-                    painter = painterResource(id = R.drawable.margherita),
-                    contentDescription = "Pizza image",
-                    modifier = modifier
+                AsyncImage(model = pizza.image, contentDescription = "pizza image", modifier= modifier
                         .size(300.dp)
                         .align(Alignment.CenterHorizontally)
                 )

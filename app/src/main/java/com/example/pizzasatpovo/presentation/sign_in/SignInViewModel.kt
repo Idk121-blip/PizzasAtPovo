@@ -12,7 +12,6 @@ class SignInViewModel: ViewModel() {
     val state = _state.asStateFlow()
 
     private val _selectedPizza= MutableStateFlow(RetrievedPizza())
-    val selectedPizza = _selectedPizza.asStateFlow()
 
     fun onSignInResult(result: SignInResult) {
         _state.update { it.copy(
@@ -23,11 +22,10 @@ class SignInViewModel: ViewModel() {
 
     fun setPizza(pizza: RetrievedPizza) {
         _selectedPizza.value= pizza
-        println(pizza)
     }
 
     fun getPizza(): RetrievedPizza{
-        return selectedPizza.value.copy()
+        return _selectedPizza.value.copy()
     }
 
 
