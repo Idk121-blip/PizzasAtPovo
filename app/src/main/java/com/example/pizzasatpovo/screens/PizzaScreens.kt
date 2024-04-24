@@ -1,24 +1,40 @@
 package com.example.pizzasatpovo.screens
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pizzasatpovo.data.ChefViewModel
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.data.Topping
@@ -38,15 +54,19 @@ enum class PizzaScreens {
     ListOfPizzas,
     NewPizza,
     RecentOrders,
-    Account
+    Account,
+    ChefOrders
 }
 
 @Composable
+@SuppressLint("UnrememberedMutableState")
 fun PizzasAtPovoApp(
     googleAuthUiClient: GoogleAuthUiClient,
     sendRetrieveData: SendRetrieveData,
     lifecycleScope: LifecycleCoroutineScope,
+
     applicationContext: Context,
+
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ){
@@ -57,6 +77,7 @@ fun PizzasAtPovoApp(
     ){
         var pizzas: ArrayList<Pizza> = arrayListOf()
         var toppings: ArrayList<ArrayList<Topping>> = arrayListOf()
+
         composable(
             route = PizzaScreens.LoginPage.name
         ){
@@ -73,37 +94,7 @@ fun PizzasAtPovoApp(
                             toppings= returnedToppings
                             navController.navigate(PizzaScreens.ListOfPizzas.name)
                         }else{
-                            val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-
-                            val ordersRef = database.getReference("orders")
-                            ordersRef.addChildEventListener(object : ChildEventListener {
-                                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                                    // Handle new order added
-                                    val newOrder = snapshot.getValue(RealTimeOrder::class.java)
-                                    println(newOrder)
-                                    // Process the new order
-                                }
-
-                                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                                    // Handle order changed
-                                    val newOrder = snapshot.getValue(RealTimeOrder::class.java)
-
-                                    // Update the order in your app
-                                }
-
-                                override fun onChildRemoved(snapshot: DataSnapshot) {
-                                    // Handle order removed
-                                    // Remove the order from your app
-                                }
-
-                                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                                    // Handle order moved
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                    // Handle error
-                                }
-                            })
+                            navController.navigate(PizzaScreens.ChefOrders.name)
                         }
                     }
                 }
@@ -189,6 +180,56 @@ fun PizzasAtPovoApp(
             var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings)
         }
+        composable(route= PizzaScreens.ChefOrders.name){
+
+            val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+            val ordersRef = database.getReference("orders")
+            var orders= mutableStateListOf<RealTimeOrder?>()
+            val childEventListener = object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    val newOrder = snapshot.getValue(RealTimeOrder::class.java)
+
+                    println("mannagia a me 4")
+                    newOrder?.let { order ->
+                        orders.add(order)
+                        println("mannaggia a me di nuovo")
+                    }
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    // Handle order changed
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    // Handle order removed
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    // Handle order moved
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            }
+
+            ordersRef.addChildEventListener(childEventListener)
+            LazyColumn {
+                items(orders){
+                    Box(modifier = modifier.height(50.dp)){
+                        Text(text = it!!.uname)
+                    }
+                }
+            }
+
+
+
+
+
+
+
+
+        }
     }
 }
 
@@ -231,3 +272,6 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
     }
     return Pair(pizzas, toppings)
 }
+
+
+

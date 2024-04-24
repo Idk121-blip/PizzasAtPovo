@@ -69,7 +69,7 @@ dependencies {
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.6")
     debugImplementation ("androidx.compose.ui:ui-tooling:1.6.6")
     debugImplementation ("androidx.compose.ui:ui-test-manifest:1.6.6")
-
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
     implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation ("com.google.android.gms:play-services-auth:20.4.1")
 

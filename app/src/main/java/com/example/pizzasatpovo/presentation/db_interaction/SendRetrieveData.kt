@@ -172,7 +172,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         val order= RealTimeOrder(topping = toppingList,
             pizzaNumber = pizzaNumber, time = date,
-            image = pizza.image, uName = googleAuthUiClient.retrieveUserData()!!.name!!)
+            image = pizza.image, uname = googleAuthUiClient.retrieveUserData()!!.name!!)
 
         val orderRef= database.child("orders").push()
         orderRef.setValue(order)

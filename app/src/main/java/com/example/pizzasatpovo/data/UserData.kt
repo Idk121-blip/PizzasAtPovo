@@ -21,7 +21,7 @@ data class Order(val topping: ArrayList<DocumentReference>,
                  val date: Timestamp,
                  val pizzaNumber: Int)
 
-data class RealTimeOrder(val uName:String= "",
+data class RealTimeOrder(val uname:String= "",
                          val image:String = "",
                          val topping: ArrayList<String> = arrayListOf(),
                          val pizzaNumber: Int =  0,

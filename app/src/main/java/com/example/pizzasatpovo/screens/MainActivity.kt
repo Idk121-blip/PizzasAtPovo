@@ -10,18 +10,22 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pizzasatpovo.data.ChefViewModel
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
@@ -52,9 +56,6 @@ class MainActivity : ComponentActivity() {
     private val  sendRetrieveData by lazy{
         SendRetrieveData(googleAuthUiClient)
     }
-    override fun onStart() {
-        super.onStart()
-    }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
 //
                 //sign_in_button()
+
                 Surface(){
                     PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
                 }
