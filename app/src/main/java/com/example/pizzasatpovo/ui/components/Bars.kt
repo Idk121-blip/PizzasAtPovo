@@ -223,12 +223,11 @@ class Bars() {
                     modifier = modifier
                 )
             },
-            onClick = { /*TODO*/ },
+            onClick = { onAddPizzaButtonClicked() },
             contentPadding = PaddingValues(),
             modifier = modifier
                 .size(50.dp)
                 .offset(0.dp, (-15).dp)
-                .clickable { onAddPizzaButtonClicked() }
 
         )
 

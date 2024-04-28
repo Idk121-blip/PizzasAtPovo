@@ -168,11 +168,17 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
             var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = pizzasToppings, viewModel = viewModel, onDetailsButtonClicked = {
+            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = pizzasToppings, viewModel = viewModel,
+                onHomeButtonClicked = {
                 navController.navigate(PizzaScreens.DetailsPizza.name)},
                 onProfileButtonClicked = {
                     navController.navigate(PizzaScreens.Account.name)
-                })
+
+                },
+                onAddPizzaButtonClicked = {
+                navController.navigate(PizzaScreens.NewPizza.name) }
+            )
+
         }
         composable(route= PizzaScreens.Account.name){
             AccountPageScreen().AccountPage(googleAuthUiClient = googleAuthUiClient, lifecycleScope = lifecycleScope,modifier,
@@ -189,7 +195,17 @@ fun PizzasAtPovoApp(
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
-            DetailsPizzaScreen().DetailsPizzaPage(pizza = viewModel.getPizza())
+            DetailsPizzaScreen().DetailsPizzaPage(
+                pizza = viewModel.getPizza(),
+                onBackButtonClicked = { navController.popBackStack() }
+            )
+        }
+
+        composable(route= PizzaScreens.NewPizza.name){
+            println("Add")
+            AddPizzaScreen().AddPizzaPage(
+                onBackButtonClicked = { navController.popBackStack() }
+            )
         }
 
         composable(route= PizzaScreens.ChefOrders.name){
@@ -303,8 +319,6 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
             Toast.LENGTH_LONG
         ).show()
     }
-
-
 
     return Triple(pizzas, pizzasToppings, toppings)
 }
