@@ -102,6 +102,7 @@ class Bars() {
     fun BottomBar(
         screen: PizzaScreens,
         onNavbarButtonClicked: () -> Unit = {},
+        onAddPizzaButtonClicked: () -> Unit = {},
         modifier: Modifier = Modifier
     ){
         Box(
@@ -126,6 +127,7 @@ class Bars() {
                 Navbar(
                     screen = screen,
                     onPizzasButtonClicked = onNavbarButtonClicked,
+                    onAddPizzaButtonClicked = onAddPizzaButtonClicked,
                     modifier = modifier
                         .align(Alignment.BottomCenter)
                         .padding(0.dp, 10.dp)
@@ -138,6 +140,7 @@ class Bars() {
     fun Navbar(
         screen: PizzaScreens,
         onPizzasButtonClicked: () -> Unit = {},
+        onAddPizzaButtonClicked: () -> Unit = {},
         modifier : Modifier = Modifier
     ){
         Row(
@@ -209,7 +212,7 @@ class Bars() {
                     modifier = modifier
                 )
             },
-            onClick = { /*TODO*/ },
+            onClick = { onAddPizzaButtonClicked() },
             contentPadding = PaddingValues(),
             modifier = modifier
                 .size(50.dp)

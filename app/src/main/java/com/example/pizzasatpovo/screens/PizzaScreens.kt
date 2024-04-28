@@ -175,11 +175,28 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
             var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = toppings, viewModel = viewModel, onDetailsButtonClicked = {
-                navController.navigate(PizzaScreens.DetailsPizza.name)})
+            ListOfPizzasScreen().ListOfPizzasPage(
+                pizzas= pizzas,
+                toppings = toppings,
+                viewModel = viewModel,
+                onDetailsButtonClicked = {
+                    navController.navigate(PizzaScreens.DetailsPizza.name) },
+                onAddPizzaButtonClicked = {
+                    navController.navigate(PizzaScreens.NewPizza.name) }
+            )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
-            DetailsPizzaScreen().DetailsPizzaPage(pizza = viewModel.getPizza())
+            DetailsPizzaScreen().DetailsPizzaPage(
+                pizza = viewModel.getPizza(),
+                onBackButtonClicked = { navController.popBackStack() }
+            )
+        }
+
+        composable(route= PizzaScreens.NewPizza.name){
+            println("Add")
+            AddPizzaScreen().AddPizzaPage(
+                onBackButtonClicked = { navController.popBackStack() }
+            )
         }
 
         composable(route= PizzaScreens.ChefOrders.name){
