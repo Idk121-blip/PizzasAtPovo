@@ -68,6 +68,7 @@ import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class ListOfPizzasScreen() {
     private val sizeTitle: TextUnit = 50.sp
@@ -82,30 +83,17 @@ class ListOfPizzasScreen() {
     fun ListOfPizzasPage(
         onDetailsButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
+        onOrdersButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
-        modifier: Modifier = Modifier,
-
-        ){
+        modifier: Modifier = Modifier
+    ){
 
         Box(modifier = modifier
             .fillMaxSize()
         ){
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = "Background image",
-                contentScale = ContentScale.FillBounds,
-                alpha = 0.5F,
-                modifier = modifier
-                    .fillMaxSize()
-            )
-        }
-
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-        ) {
+            BackgroundImage()
             Column {
                 Bars().AppBar()
                 Column(
@@ -125,15 +113,14 @@ class ListOfPizzasScreen() {
                     )
                 }
             }
+            Bars().BottomBar(
+                screen = PizzaScreens.ListOfPizzas,
+                onNavbarButtonClicked = onDetailsButtonClicked,
+                onAddPizzaButtonClicked = onAddPizzaButtonClicked,
+                onOrdersButtonClicked = onOrdersButtonClicked,
+            )
         }
-        Bars().BottomBar(
-            screen = PizzaScreens.ListOfPizzas,
-            onNavbarButtonClicked = onDetailsButtonClicked,
-            onAddPizzaButtonClicked = onAddPizzaButtonClicked
-        )
     }
-    
-
 
 
     @Composable
@@ -182,13 +169,23 @@ class ListOfPizzasScreen() {
                 PizzaCard(
                     //TODO! check names
                     onNavbarButtonClicked = {
-                        viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
+                        viewModel.setPizza(
+                            RetrievedPizza(
+                                name= pizzas[i].name,
+                                image = pizzas[i].image,
+                                toppings = toppings[i]
+                            )
+                        )
                         onDetailsButtonClicked()
                     },
                     image = pizzas[i].image,
                     name = pizzas[i].name,
                     toppings = toppings[i],
-                    pizza= RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
+                    pizza= RetrievedPizza(
+                        name = "Margherita",
+                        image = "",
+                        toppings = arrayListOf()
+                    ),
                     viewModel
                 )
             }
@@ -215,7 +212,6 @@ class ListOfPizzasScreen() {
         }
 
         toppingForCard= toppingForCard.removeSuffix(", ")
-
 
         Card (
             shape = RoundedCornerShape(15.dp),

@@ -103,6 +103,7 @@ class Bars() {
         screen: PizzaScreens,
         onNavbarButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
+        onOrdersButtonClicked: () -> Unit = {},
         modifier: Modifier = Modifier
     ){
         Box(
@@ -128,6 +129,7 @@ class Bars() {
                     screen = screen,
                     onPizzasButtonClicked = onNavbarButtonClicked,
                     onAddPizzaButtonClicked = onAddPizzaButtonClicked,
+                    onOrdersButtonClicked = onOrdersButtonClicked,
                     modifier = modifier
                         .align(Alignment.BottomCenter)
                         .padding(0.dp, 10.dp)
@@ -141,6 +143,7 @@ class Bars() {
         screen: PizzaScreens,
         onPizzasButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
+        onOrdersButtonClicked: () -> Unit = {},
         modifier : Modifier = Modifier
     ){
         Row(
@@ -188,6 +191,9 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
+                    .clickable {
+                        onOrdersButtonClicked()
+                    }
             )
             Image(
                 painter = painterResource(

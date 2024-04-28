@@ -182,7 +182,9 @@ fun PizzasAtPovoApp(
                 onDetailsButtonClicked = {
                     navController.navigate(PizzaScreens.DetailsPizza.name) },
                 onAddPizzaButtonClicked = {
-                    navController.navigate(PizzaScreens.NewPizza.name) }
+                    navController.navigate(PizzaScreens.NewPizza.name) },
+                onOrdersButtonClicked = {
+                    navController.navigate(PizzaScreens.RecentOrders.name) }
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
@@ -193,9 +195,14 @@ fun PizzasAtPovoApp(
         }
 
         composable(route= PizzaScreens.NewPizza.name){
-            println("Add")
             AddPizzaScreen().AddPizzaPage(
                 onBackButtonClicked = { navController.popBackStack() }
+            )
+        }
+
+        composable(route= PizzaScreens.RecentOrders.name){
+            OrdersScreen().OrdersPage(
+                viewModel = viewModel
             )
         }
 
