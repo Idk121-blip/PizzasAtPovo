@@ -66,6 +66,22 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             }
         return ResponseData(true, "Ordine completato con successo", order)
     }
+
+    suspend fun retrieveOrders():ResponseData<ArrayList<Order>>? = auth.currentUser?.run {
+        val userData= googleAuthUiClient.retrieveUserData() ?: return ResponseData()
+        val db = Firebase.firestore
+
+        val orders:ArrayList<Order> = arrayListOf()
+
+        if (userData.orders!=null){
+            for (order in userData.orders!!) {
+                orders.add(order.get().await().toObject(Order::class.java)?: continue)
+            }
+        }
+
+        return ResponseData(true, "Retrieved successfully", orders)
+    }
+
     suspend fun getPizza(name:String): ResponseData<Pizza>? =auth.currentUser?.run {
         val db = Firebase.firestore
         val pizza= (db.collection("pizzas").document(name).get().await().toObject(Pizza::class.java))
