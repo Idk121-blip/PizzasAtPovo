@@ -1,6 +1,5 @@
 package com.example.pizzasatpovo.screens
 
-import android.util.Range
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,29 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +39,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -81,6 +64,7 @@ class ListOfPizzasScreen() {
 
     fun ListOfPizzasPage(
         onDetailsButtonClicked: () -> Unit = {},
+        onProfileButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
@@ -127,7 +111,9 @@ class ListOfPizzasScreen() {
         }
         Bars().BottomBar(
             screen = PizzaScreens.ListOfPizzas,
-            onNavbarButtonClicked = onDetailsButtonClicked
+            onHomeButtonClicked = onDetailsButtonClicked,
+            onProfileButtonClicked = onProfileButtonClicked,
+
         )
     }
     

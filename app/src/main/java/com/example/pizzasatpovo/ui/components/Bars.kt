@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,13 +18,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,14 +37,14 @@ class Bars() {
     private val weightText: FontWeight = FontWeight.Bold
     private val dimIcons: Dp = 25.dp
     @Composable
-    fun AppBar(modifier: Modifier = Modifier){
+    fun AppBar(text:String= "Pizza at Povo", modifier: Modifier = Modifier){
         Column (
             modifier = modifier
                 .padding(0.dp, 15.dp, 0.dp, 5.dp)
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Pizza at Povo",
+                text = text,
                 fontSize = 20.sp,
                 fontWeight = weightText,
                 textAlign = TextAlign.Center,
@@ -101,7 +98,11 @@ class Bars() {
     @Composable
     fun BottomBar(
         screen: PizzaScreens,
-        onNavbarButtonClicked: () -> Unit = {},
+        onHomeButtonClicked: () -> Unit = {},
+        onProfileButtonClicked: () -> Unit={},
+        onFavouritesButtonClicked:()->Unit = {},
+        onAddPizzaButtonClicked:()->Unit={},
+        onOrdersButtonClicked:()->Unit={},
         modifier: Modifier = Modifier
     ){
         Box(
@@ -125,7 +126,11 @@ class Bars() {
             ) {
                 Navbar(
                     screen = screen,
-                    onPizzasButtonClicked = onNavbarButtonClicked,
+                    onHomeButtonClicked = onHomeButtonClicked,
+                    onProfileButtonClicked= onProfileButtonClicked,
+                    onFavouritesButtonClicked=onFavouritesButtonClicked,
+                    onAddPizzaButtonClicked=onAddPizzaButtonClicked,
+                    onOrdersButtonClicked=onOrdersButtonClicked,
                     modifier = modifier
                         .align(Alignment.BottomCenter)
                         .padding(0.dp, 10.dp)
@@ -137,7 +142,11 @@ class Bars() {
     @Composable
     fun Navbar(
         screen: PizzaScreens,
-        onPizzasButtonClicked: () -> Unit = {},
+        onHomeButtonClicked: () -> Unit = {},
+        onProfileButtonClicked: () -> Unit= {},
+        onFavouritesButtonClicked:()->Unit = {},
+        onAddPizzaButtonClicked:()->Unit={},
+        onOrdersButtonClicked:()->Unit={},
         modifier : Modifier = Modifier
     ){
         Row(
@@ -157,7 +166,7 @@ class Bars() {
                     .size(dimIcons)
                     .weight(0.1F)
                     .clickable {
-                        onPizzasButtonClicked()
+                        onHomeButtonClicked()
                     }
             )
             Image(
@@ -170,6 +179,7 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
+                    .clickable { onFavouritesButtonClicked() }
             )
             Spacer(
                 modifier = modifier
@@ -185,6 +195,7 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
+                    .clickable { onOrdersButtonClicked() }
             )
             Image(
                 painter = painterResource(
@@ -196,6 +207,9 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
+                    .clickable {
+                        onProfileButtonClicked()
+                    }
             )
 
         }
@@ -214,6 +228,7 @@ class Bars() {
             modifier = modifier
                 .size(50.dp)
                 .offset(0.dp, (-15).dp)
+                .clickable { onAddPizzaButtonClicked() }
 
         )
 
