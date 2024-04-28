@@ -74,8 +74,6 @@ class GoogleAuthUiClient(
                             println(e)
                         }.await()
                     userData=user
-                    println(userData)
-                    println(user)
                     user
                 },
                 errorMessage = null
