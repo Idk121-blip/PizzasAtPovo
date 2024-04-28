@@ -181,8 +181,8 @@ fun PizzasAtPovoApp(
         composable(route= PizzaScreens.DetailsPizza.name){
             DetailsPizzaScreen().DetailsPizzaPage(pizza = viewModel.getPizza())
         }
-        composable(route= PizzaScreens.ChefOrders.name){
 
+        composable(route= PizzaScreens.ChefOrders.name){
             val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
             val ordersRef = database.getReference("orders")
             val orders= mutableStateListOf<RealTimeOrder?>()

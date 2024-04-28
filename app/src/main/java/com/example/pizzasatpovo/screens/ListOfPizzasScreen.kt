@@ -178,6 +178,7 @@ class ListOfPizzasScreen() {
             for (i in 0..<pizzas.size)
             {
                 PizzaCard(
+                    //TODO! check names
                     onNavbarButtonClicked = {
                         viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
                         onDetailsButtonClicked()
