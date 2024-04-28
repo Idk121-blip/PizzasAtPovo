@@ -81,6 +81,7 @@ class ListOfPizzasScreen() {
 
     fun ListOfPizzasPage(
         onDetailsButtonClicked: () -> Unit = {},
+        onAddPizzaButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
@@ -127,7 +128,8 @@ class ListOfPizzasScreen() {
         }
         Bars().BottomBar(
             screen = PizzaScreens.ListOfPizzas,
-            onNavbarButtonClicked = onDetailsButtonClicked
+            onNavbarButtonClicked = onDetailsButtonClicked,
+            onAddPizzaButtonClicked = onAddPizzaButtonClicked
         )
     }
     

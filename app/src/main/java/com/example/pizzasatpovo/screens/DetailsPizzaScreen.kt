@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,11 +60,8 @@ class DetailsPizzaScreen {
     fun DetailsPizzaPage(
         pizza: RetrievedPizza,
         onBackButtonClicked: () -> Unit = {},
-        onDetailsButtonClicked: () -> Unit = {},
         modifier: Modifier = Modifier
     ){
-
-
         var listOfToppings = ""
         for (topping in pizza.toppings!!){
             listOfToppings= listOfToppings.plus(topping.name).plus(", ")
@@ -81,7 +79,6 @@ class DetailsPizzaScreen {
                     modifier = modifier
                         .fillMaxSize()
                 )
-
             }
         }
         Box(
@@ -170,8 +167,8 @@ class DetailsPizzaScreen {
                     .align(Alignment.CenterEnd)
             ){
                 AsyncImage(model = pizza.image, contentDescription = "pizza image", modifier= modifier
-                        .size(300.dp)
-                        .align(Alignment.CenterHorizontally)
+                    .size(250.dp)
+                    .align(Alignment.CenterHorizontally)
                 )
             }
         }
@@ -180,89 +177,108 @@ class DetailsPizzaScreen {
     @Preview(showBackground = true)
     @Composable
     fun orderDetails(
+        title: String = "",
         modifier: Modifier = Modifier
     ){
         var nPizzas by remember { mutableIntStateOf(1) }
 
         Column {
-            Row(
-                modifier = modifier
-            ) {
-                Column(
-                    modifier = modifier
-                        .padding(end = 10.dp)
-                ) {
-                    Text(
-                        text = "Quantità: ",
-                        modifier = modifier
-                            .padding(bottom = 20.dp)
-                    )
-                    Text(
-                        text = "Orario: ",
-                        modifier = modifier
-                            .padding(bottom = 20.dp)
-                    )
-                    Text(
-                        text = "Totale: ",
-                        modifier = modifier
-                            .padding(bottom = 20.dp)
-                    )
 
-                }
-                Column {
-                    Row {
-                        Button(
-                            onClick = { /*TODO*/ },
-                            shape = RoundedCornerShape(5.dp),
-                            content = {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Add pizza",
-                                    modifier = modifier
-                                )
-                            },
-                            contentPadding = PaddingValues(),
-                            modifier = modifier
-                                .size(30.dp)
-                        )
-                        Text(
-                            text = nPizzas.toString(),
-                            fontWeight = FontWeight.Bold,
-                            modifier = modifier
-                                .padding(10.dp, 0.dp)
-                        )
-                        Button(
-                            onClick = { /*TODO*/ },
-                            shape = RoundedCornerShape(5.dp),
-                            content = {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add pizza",
-                                    modifier = modifier
-                                )
-                            },
-                            contentPadding = PaddingValues(),
-                            modifier = modifier
-                                .size(30.dp)
-                        )
-                    }
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = modifier
-                            .padding(0.dp, 15.dp)
-
-                    ){
-                        Text(text = "ora e minuti di prelevo")
-                    }
-                    val cost = 4.40F * nPizzas
+                if(title != ""){
                     Text(
-                        text = "$ $cost",
+                        text = title,
                         fontWeight = FontWeight.Bold,
                         modifier = modifier
-                            .padding(10.dp, 5.dp)
+                            .padding(bottom = 20.dp)
+                            //.fillMaxWidth()
+                            .align(Alignment.CenterHorizontally)
                     )
-
+                }else{
+                    Spacer(modifier = modifier.height(20.dp))
                 }
+                Row(
+                    modifier = modifier
+                ) {
+                    Column(
+                        modifier = modifier
+                            .padding(end = 10.dp)
+                    ) {
+                        Text(
+                            text = "Quantità: ",
+                            modifier = modifier
+                                .padding(start = 20.dp)
+                                .height(40.dp)
+                        )
+                        Text(
+                            text = "Orario: ",
+                            modifier = modifier
+                                .padding(start = 20.dp)
+                                .height(40.dp)
+                        )
+                        Text(
+                            text = "Totale: ",
+                            modifier = modifier
+                                .padding(start = 20.dp)
+                                .height(40.dp)
+                        )
+
+                    }
+                    Column {
+                        Row {
+                            Button(
+                                onClick = { /*TODO*/ },
+                                shape = RoundedCornerShape(5.dp),
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Add pizza",
+                                        modifier = modifier
+                                    )
+                                },
+                                contentPadding = PaddingValues(),
+                                modifier = modifier
+                                    .size(30.dp)
+                            )
+                            Text(
+                                text = nPizzas.toString(),
+                                fontWeight = FontWeight.Bold,
+                                modifier = modifier
+                                    .padding(10.dp, 0.dp)
+                                    .align(Alignment.CenterVertically)
+                            )
+                            Button(
+                                onClick = { /*TODO*/ },
+                                shape = RoundedCornerShape(5.dp),
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add pizza",
+                                        modifier = modifier
+                                    )
+                                },
+                                contentPadding = PaddingValues(),
+                                modifier = modifier
+                                    .size(30.dp)
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = modifier
+                                .padding(0.dp, 15.dp)
+
+                        ) {
+                            Text(text = "ora e minuti di prelevo")
+                        }
+                        val cost = 4.40F * nPizzas
+                        Text(
+                            text = "$ $cost",
+                            fontWeight = FontWeight.Bold,
+                            modifier = modifier
+                                .padding(10.dp, 5.dp)
+                        )
+
+                    }
+
             }
 
             Button(
