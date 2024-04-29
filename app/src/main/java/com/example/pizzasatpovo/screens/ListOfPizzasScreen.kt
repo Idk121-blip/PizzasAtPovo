@@ -63,10 +63,10 @@ class ListOfPizzasScreen() {
     @Composable
 
     fun ListOfPizzasPage(
-        onHomeButtonClicked: () -> Unit = {},
+        onDetailButtonClicked: () -> Unit = {},
+        onOrdersButtonClicked: () -> Unit = {},
         onProfileButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
-        onOrdersButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
@@ -103,7 +103,7 @@ class ListOfPizzasScreen() {
                             .padding(10.dp)
                     )
                     ListOfPizzas(
-                        onHomeButtonClicked,
+                        onDetailButtonClicked,
                         pizzas,
                         toppings,
                         viewModel
@@ -113,7 +113,6 @@ class ListOfPizzasScreen() {
         }
         Bars().BottomBar(
             screen = PizzaScreens.ListOfPizzas,
-            onHomeButtonClicked = onHomeButtonClicked,
             onProfileButtonClicked = onProfileButtonClicked,
             onAddPizzaButtonClicked = onAddPizzaButtonClicked,
             onOrdersButtonClicked = onOrdersButtonClicked,

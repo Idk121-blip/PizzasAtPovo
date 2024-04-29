@@ -191,7 +191,7 @@ class MainActivity : ComponentActivity() {
                                     //println(reqResponse.retrievedObject)
                                 }
 
-                                sendRetrieveData.sendRTOrderd(pizza!!, date = "22-04-2024 14:30", 2);
+                                //sendRetrieveData.sendRTOrderd(pizza!!, date = "22-04-2024 14:30", 2);
 
                                 //send
 

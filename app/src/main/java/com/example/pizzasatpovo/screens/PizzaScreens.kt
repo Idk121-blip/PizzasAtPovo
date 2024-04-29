@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -168,14 +169,12 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
             var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(
-                pizzas= pizzas,
-                toppings = pizzasToppings,
-                viewModel = viewModel,
-                onHomeButtonClicked = {
-                    navController.navigate(PizzaScreens.DetailsPizza.name)},
+            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = pizzasToppings, viewModel = viewModel,
+                onDetailButtonClicked = {
+                navController.navigate(PizzaScreens.DetailsPizza.name)},
                 onProfileButtonClicked = {
                     navController.navigate(PizzaScreens.Account.name)
+
                 },
                 onAddPizzaButtonClicked = {
                     navController.navigate(PizzaScreens.NewPizza.name) },
@@ -193,15 +192,27 @@ fun PizzasAtPovoApp(
                     }
                 },
                 onHomeButtonClicked = {
-                    println("aaaaaaaaaaaaaaaaaaaaaaaaa")
                     navController.navigate(PizzaScreens.ListOfPizzas.name)
                 },
+                onAddPizzaButtonClicked = {
+                    navController.navigate(PizzaScreens.NewPizza.name)
+                },
+                onOrdersButtonClicked = {
+                    navController.navigate((PizzaScreens.RecentOrders.name))
+                }
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
             DetailsPizzaScreen().DetailsPizzaPage(
                 pizza = viewModel.getPizza(),
-                onBackButtonClicked = { navController.popBackStack() }
+                onBackButtonClicked = { navController.popBackStack() },
+                onOrderButtonClicked = {
+                    lifecycleScope.launch {
+                        sendRetrieveData.sendRTOrderd(viewModel.getPizza(), "12.30", 1)
+                        sendRetrieveData.sendOrderRetrievedPizza(viewModel.getPizza(), Timestamp.now(), 1)
+                    }
+                }
+
             )
         }
 

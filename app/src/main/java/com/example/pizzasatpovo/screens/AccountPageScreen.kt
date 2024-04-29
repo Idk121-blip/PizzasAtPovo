@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -238,6 +239,11 @@ class AccountPageScreen {
                                         .weight(1f)
                                         .fillMaxWidth()
                                 )
+
+
+
+
+
                                 Text(text = "Italiano",
                                     modifier
                                         .align(Alignment.CenterVertically)
