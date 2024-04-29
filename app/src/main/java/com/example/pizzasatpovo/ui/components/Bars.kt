@@ -165,9 +165,7 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable {
-                        onHomeButtonClicked()
-                    }
+                    .clickable { onHomeButtonClicked() }
             )
             Image(
                 painter = painterResource(
