@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,8 +46,8 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 class OrdersScreen {
     @Composable
     fun OrdersPage(
+        onHomeButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
-        onOrdersButtonClicked: () -> Unit = {},
         viewModel: SignInViewModel,
         modifier: Modifier = Modifier
     ){
@@ -55,7 +56,7 @@ class OrdersScreen {
         ) {
             BackgroundImage()
             Column () {
-                Bars().AppBar()
+                Bars().AppBar(text = "Ordini")
                 ListOfOrders(
                     viewModel = viewModel,
                     modifier = modifier
@@ -64,8 +65,8 @@ class OrdersScreen {
             }
             Bars().BottomBar(
                 screen = PizzaScreens.RecentOrders,
+                onHomeButtonClicked = onHomeButtonClicked,
                 onAddPizzaButtonClicked = onAddPizzaButtonClicked,
-                onOrdersButtonClicked = onOrdersButtonClicked,
             )
         }
     }
@@ -77,29 +78,29 @@ class OrdersScreen {
         viewModel: SignInViewModel = SignInViewModel(),
         modifier: Modifier = Modifier
     ){
+        var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
         var verticalArrangement: Arrangement.Vertical = Arrangement.Center
         var horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
         println("Size array list: " + pizzas.size)
-        if(pizzas.size != 0){
+        if(pizzas.size == 0){
             verticalArrangement = Arrangement.Top
-            horizontalAlignment = Alignment.Start
         }
         Column (
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
             modifier = modifier
                 .verticalScroll(rememberScrollState())
-                .padding(5.dp)
+                .padding(30.dp, 10.dp)
                 .fillMaxSize()
         ){
-            pizzas.add(
-                RetrievedPizza(
-                    name = "Margherita",
-                    image = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png",
-
-                )
-            )
-            if(pizzas.size == 0){
+//            pizzas.add(
+//                RetrievedPizza(
+//                    name = "Margherita",
+//                    image = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png",
+//
+//                )
+//            )
+            if(pizzas.size != 0){
                 Text(
                     text = "Non hai ancora effettuato",
                     fontSize = 20.sp,
@@ -117,22 +118,54 @@ class OrdersScreen {
                         .size(150.dp)
                 )
                 return
-            }
-            var i = 0;
-            while (i < pizzas.size  /*TODO! and check date */)
-            {
-                SingleOrderCard(
-                    //TODO! check names
-                    image = pizzas[i].image,
-                    name = pizzas[i].name,
-                    pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
-                    viewModel = viewModel
+            } else {
+                var pizza = 0;
+                Text(
+                    text = "Recenti",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                while (pizza<=3  /*TODO! and check date */) {
+                    SingleOrderCard(
+                        //TODO! check names
+                        image = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png",
+                        name = "Margherita",
+//                        image = pizzas[i].image,
+//                        name = pizzas[i].name,
+//                        pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
+//                        viewModel = viewModel
+                    )
+                    pizza++;
+                }
+                Text(
+                    text = "Meno recenti",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(top=10.dp)
+                )
+                while (pizza<=5  /*TODO! and check date */) {
+                    SingleOrderCard(
+                        //TODO! check names
+                        image = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png",
+                        name = "Margherita",
+//                        image = pizzas[i].image,
+//                        name = pizzas[i].name,
+//                        pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
+//                        viewModel = viewModel
+                    )
+                    pizza++;
+                }
+
+                Spacer(
+                    modifier = modifier
+                        .height(60.dp)
                 )
             }
-            Spacer(
-                modifier = modifier
-                    .height(60.dp)
-            )
         }
     }
 
@@ -140,8 +173,6 @@ class OrdersScreen {
     fun SingleOrderCard(
         image: String,
         name: String,
-        pizza: RetrievedPizza,
-        viewModel: SignInViewModel,
         modifier: Modifier = Modifier
     ){
         Card (
@@ -150,11 +181,12 @@ class OrdersScreen {
                 containerColor = Color.White,
             ),
             modifier = modifier
-                .width(350.dp)
+                .fillMaxWidth()
                 .height(140.dp)
                 .padding(0.dp, 10.dp)
         ){
             Row (
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(20.dp)
@@ -170,14 +202,23 @@ class OrdersScreen {
                     Text(
                         text = "$name",
                         fontWeight = FontWeight.Bold,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                         fontSize = 18.sp
                     )
                     Text(
                         text = "01/02/2023",
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
                     )
                 }
-                Text(text = "$ 4.40")
+                Text(
+                    text = "$ 4.40",
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Bold,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(end = 20.dp)
+                )
             }
         }
     }

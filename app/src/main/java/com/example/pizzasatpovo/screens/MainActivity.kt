@@ -206,7 +206,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-                                //googleAuthUiClient.signOut()
+                                googleAuthUiClient.signOut()
                                 navController.popBackStack()
                             }
                         }

@@ -3,6 +3,8 @@ package com.example.pizzasatpovo.data
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 
+
+
 data class UserData(val name: String?= "",
                     val role: String= "User",
                     var credit: Double = 0.0,
@@ -28,3 +30,15 @@ data class RealTimeOrder(val uname:String= "",
                          val time: String= "")
 
 data class PizzaPrice(val price: Double= 4.4)
+
+
+data class LoadingState(
+    val isFinished: Boolean = false,
+    val loadingInError: String? = null
+)
+
+
+data class LoadingResult(
+    val data: UserData?,
+    val errorMessage: String?
+)

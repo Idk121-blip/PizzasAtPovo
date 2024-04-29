@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,14 +23,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.RealTimeOrder
-import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
@@ -60,9 +56,7 @@ fun PizzasAtPovoApp(
     googleAuthUiClient: GoogleAuthUiClient,
     sendRetrieveData: SendRetrieveData,
     lifecycleScope: LifecycleCoroutineScope,
-
     applicationContext: Context,
-
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ){
@@ -74,20 +68,19 @@ fun PizzasAtPovoApp(
         modifier = modifier
     ){
         var pizzas: ArrayList<Pizza> = arrayListOf()
-        var toppings: ArrayList<ArrayList<Topping>> = arrayListOf()
-
+        var pizzasToppings: ArrayList<ArrayList<Topping>> = arrayListOf()
+        var toppings: ArrayList<Topping> = arrayListOf()
         composable(
             route = PizzaScreens.FirstPage.name
         ){
-
-
             LaunchedEffect(key1 = Unit) {
                 lifecycleScope.launch {
                     googleAuthUiClient.retrieveUserData()
                     if (googleAuthUiClient.getSignedInUser() != null) {
                         if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
-                            val (returnedPizzas, returnedToppings) = userLogged(applicationContext, sendRetrieveData)
+                            val (returnedPizzas, returnedPizzasToppings,returnedToppings ) = userLogged(applicationContext, sendRetrieveData)
                             pizzas= returnedPizzas
+                            pizzasToppings= returnedPizzasToppings
                             toppings= returnedToppings
                             navController.navigate(PizzaScreens.ListOfPizzas.name)
                         }else{
@@ -129,7 +122,7 @@ fun PizzasAtPovoApp(
                                     }
                                 }
                                 if (add){
-                                    toppings.add(pizzaTopping)
+                                    pizzasToppings.add(pizzaTopping)
                                 }
                             }
                         }else{
@@ -177,14 +170,32 @@ fun PizzasAtPovoApp(
             var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(
                 pizzas= pizzas,
-                toppings = toppings,
+                toppings = pizzasToppings,
                 viewModel = viewModel,
-                onDetailsButtonClicked = {
-                    navController.navigate(PizzaScreens.DetailsPizza.name) },
+                onHomeButtonClicked = {
+                    navController.navigate(PizzaScreens.DetailsPizza.name)},
+                onProfileButtonClicked = {
+                    navController.navigate(PizzaScreens.Account.name)
+                },
                 onAddPizzaButtonClicked = {
                     navController.navigate(PizzaScreens.NewPizza.name) },
                 onOrdersButtonClicked = {
                     navController.navigate(PizzaScreens.RecentOrders.name) }
+            )
+
+        }
+        composable(route= PizzaScreens.Account.name){
+            AccountPageScreen().AccountPage(googleAuthUiClient = googleAuthUiClient, lifecycleScope = lifecycleScope,modifier,
+                onLogOutButtonClicked =  {
+                    lifecycleScope.launch {
+                        googleAuthUiClient.signOut()
+                        navController.navigate(PizzaScreens.FirstPage.name)
+                    }
+                },
+                onHomeButtonClicked = {
+                    println("aaaaaaaaaaaaaaaaaaaaaaaaa")
+                    navController.navigate(PizzaScreens.ListOfPizzas.name)
+                },
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
@@ -195,6 +206,7 @@ fun PizzasAtPovoApp(
         }
 
         composable(route= PizzaScreens.NewPizza.name){
+            println("Add")
             AddPizzaScreen().AddPizzaPage(
                 onBackButtonClicked = { navController.popBackStack() }
             )
@@ -202,6 +214,9 @@ fun PizzasAtPovoApp(
 
         composable(route= PizzaScreens.RecentOrders.name){
             OrdersScreen().OrdersPage(
+                onHomeButtonClicked = { navController.navigate(
+                    PizzaScreens.ListOfPizzas.name
+                )},
                 viewModel = viewModel
             )
         }
@@ -249,10 +264,43 @@ fun PizzasAtPovoApp(
 }
 
 
-suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData): Pair<ArrayList<Pizza>, ArrayList<ArrayList<Topping>>> {
+suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData): Triple<ArrayList<Pizza>, ArrayList<ArrayList<Topping>>, ArrayList<Topping>> {
     var pizzas: ArrayList<Pizza> = arrayListOf()
-    var toppings: ArrayList<ArrayList<Topping>> = arrayListOf()
+    val pizzasToppings: ArrayList<ArrayList<Topping>> = arrayListOf()
+    var toppings: ArrayList<Topping> = arrayListOf()
     val reqRespone= sendRetrieveData.getPizzas()
+    val toppingResponse= sendRetrieveData.getToppings()
+
+    if (toppingResponse != null){
+        if (toppingResponse.isSuccessful){
+            if (toppingResponse.retrievedObject != null){
+                toppings=toppingResponse.retrievedObject
+            }else{
+                Toast.makeText(
+                    applicationContext,
+                    "Error retrieving pizzas",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+        }else{
+            Toast.makeText(
+                applicationContext,
+                "Error retrieving pizzas",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+    }else{
+        Toast.makeText(
+            applicationContext,
+            "Error retrieving toppings",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+
+
     if (reqRespone!=null){
         if (reqRespone.isSuccessful) {
             pizzas = reqRespone.retrievedObject!!
@@ -261,14 +309,13 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
                 var add = false
                 for (toppingRef in pizza.toppings!!){
                     val topping= sendRetrieveData.getToppingByRef(toppingRef)
-
                     if (topping != null) {
                         pizzaTopping.add(topping.retrievedObject!!)
                         add=true
                     }
                 }
                 if (add){
-                    toppings.add(pizzaTopping)
+                    pizzasToppings.add(pizzaTopping)
                 }
             }
         }else{
@@ -285,7 +332,8 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
             Toast.LENGTH_LONG
         ).show()
     }
-    return Pair(pizzas, toppings)
+
+    return Triple(pizzas, pizzasToppings, toppings)
 }
 
 

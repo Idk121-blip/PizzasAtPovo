@@ -1,6 +1,5 @@
 package com.example.pizzasatpovo.screens
 
-import android.util.Range
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,29 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +39,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -68,7 +51,6 @@ import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
-import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class ListOfPizzasScreen() {
     private val sizeTitle: TextUnit = 50.sp
@@ -81,19 +63,34 @@ class ListOfPizzasScreen() {
     @Composable
 
     fun ListOfPizzasPage(
-        onDetailsButtonClicked: () -> Unit = {},
+        onHomeButtonClicked: () -> Unit = {},
+        onProfileButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
         onOrdersButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
-        modifier: Modifier = Modifier
-    ){
+        modifier: Modifier = Modifier,
+
+        ){
 
         Box(modifier = modifier
             .fillMaxSize()
         ){
-            BackgroundImage()
+            Image(
+                painter = painterResource(id = R.drawable.background),
+                contentDescription = "Background image",
+                contentScale = ContentScale.FillBounds,
+                alpha = 0.5F,
+                modifier = modifier
+                    .fillMaxSize()
+            )
+        }
+
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
             Column {
                 Bars().AppBar()
                 Column(
@@ -106,21 +103,24 @@ class ListOfPizzasScreen() {
                             .padding(10.dp)
                     )
                     ListOfPizzas(
-                        onDetailsButtonClicked,
+                        onHomeButtonClicked,
                         pizzas,
                         toppings,
                         viewModel
                     )
                 }
             }
-            Bars().BottomBar(
-                screen = PizzaScreens.ListOfPizzas,
-                onNavbarButtonClicked = onDetailsButtonClicked,
-                onAddPizzaButtonClicked = onAddPizzaButtonClicked,
-                onOrdersButtonClicked = onOrdersButtonClicked,
-            )
         }
+        Bars().BottomBar(
+            screen = PizzaScreens.ListOfPizzas,
+            onHomeButtonClicked = onHomeButtonClicked,
+            onProfileButtonClicked = onProfileButtonClicked,
+            onAddPizzaButtonClicked = onAddPizzaButtonClicked,
+            onOrdersButtonClicked = onOrdersButtonClicked,
+        )
     }
+    
+
 
 
     @Composable
@@ -152,7 +152,7 @@ class ListOfPizzasScreen() {
 
     @Composable
     fun ListOfPizzas(
-        onDetailsButtonClicked: () -> Unit,
+        onDetailsButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza>,
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
@@ -161,7 +161,7 @@ class ListOfPizzasScreen() {
         Column (
             modifier = modifier
                 .verticalScroll(rememberScrollState())
-                .padding(5.dp)
+                .padding(30.dp, 10.dp)
         ){
 
             for (i in 0..<pizzas.size)
@@ -169,23 +169,13 @@ class ListOfPizzasScreen() {
                 PizzaCard(
                     //TODO! check names
                     onNavbarButtonClicked = {
-                        viewModel.setPizza(
-                            RetrievedPizza(
-                                name= pizzas[i].name,
-                                image = pizzas[i].image,
-                                toppings = toppings[i]
-                            )
-                        )
+                        viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
                         onDetailsButtonClicked()
                     },
                     image = pizzas[i].image,
                     name = pizzas[i].name,
                     toppings = toppings[i],
-                    pizza= RetrievedPizza(
-                        name = "Margherita",
-                        image = "",
-                        toppings = arrayListOf()
-                    ),
+                    pizza= RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
                     viewModel
                 )
             }
@@ -212,6 +202,7 @@ class ListOfPizzasScreen() {
         }
 
         toppingForCard= toppingForCard.removeSuffix(", ")
+
 
         Card (
             shape = RoundedCornerShape(15.dp),
@@ -242,8 +233,8 @@ class ListOfPizzasScreen() {
                     )
                     Text(
                         text = toppingForCard,
-                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                         fontSize = 16.sp
                     )
                     Row (
