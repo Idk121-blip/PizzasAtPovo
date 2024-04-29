@@ -8,6 +8,7 @@ import com.example.pizzasatpovo.data.ResponseData
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserData
+import com.example.pizzasatpovo.data.UserOrders
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
@@ -47,11 +48,6 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         }
 
         val userRef = db.collection("users").document(uid)
-
-
-
-
-
         db.collection("orders")
             .add(order)
             .addOnSuccessListener { documentReference->
@@ -65,6 +61,19 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                 userRef.set(user)
             }
         return ResponseData(true, "Ordine completato con successo", order)
+    }
+
+    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<Order>? = auth.currentUser?.run{
+        if (retrievedPizza.toppings== null){
+            return ResponseData(false, "Number of toppings not valid (null)")
+        }
+        val pizza = Pizza(name =  retrievedPizza.name, image= retrievedPizza.image, toppings = arrayListOf())
+        val db = Firebase.firestore
+        for (topping in retrievedPizza.toppings){
+            pizza.toppings!!.add(db.collection("toppings").document(topping.name))
+        }
+
+        return sendOrder(pizza, pickupTime, pizzaNumber)
     }
 
     suspend fun retrieveOrders():ResponseData<ArrayList<Order>>? = auth.currentUser?.run {
@@ -81,6 +90,24 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         return ResponseData(true, "Retrieved successfully", orders)
     }
+
+    suspend fun retrieveUserOrders():ResponseData<ArrayList<UserOrders>>? = auth.currentUser?.run {
+        val userData= googleAuthUiClient.retrieveUserData() ?: return ResponseData()
+        val orders:ArrayList<UserOrders> = arrayListOf()
+
+        if (userData.orders!=null){
+            for (documentReference in userData.orders!!) {
+                val order= documentReference.get().await().toObject(Order::class.java)?: continue
+                val toppings: ArrayList<Topping> = arrayListOf()
+                for (toppingReference in order.topping){
+                    toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
+                }
+                orders.add(UserOrders(image =  order.image, time = order.date.toString(), pizzaNumber = order.pizzaNumber, topping = toppings, uname = uid))
+            }
+        }
+        return ResponseData(true, "Retrieved successfully", orders)
+    }
+
 
     suspend fun getPizza(name:String): ResponseData<Pizza>? =auth.currentUser?.run {
         val db = Firebase.firestore
@@ -118,6 +145,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Fetched successfully", pizzasArray)
     }
 
+
     suspend fun getToppingByRef(toppingReference: DocumentReference): ResponseData<Topping>? =auth.currentUser?.run{
         val topping= (toppingReference.get().await()).toObject(Topping::class.java)
         return ResponseData(true, "Fetched successfully", topping)
@@ -131,7 +159,6 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         }else{
             googleAuthUiClient.retrieveUserData()
         }
-
         if (user==null){
             return ResponseData()
         }
@@ -181,12 +208,12 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza retrieved successfully", favourites)
     }
 
-    suspend fun sendRTOrderd(pizza: Pizza, date: String, pizzaNumber: Int ): Boolean? = auth.currentUser?.run {
+    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int ): Boolean? = auth.currentUser?.run {
 
         val toppingList: ArrayList<String> = arrayListOf()
-        for (toppingRef in pizza.toppings!!){
+        for (topping in pizza.toppings!!){
             //TODO! add checks
-            toppingList.add(getToppingByRef(toppingRef)!!.retrievedObject!!.name)
+            toppingList.add((topping).name)
         }
 
         val database= Firebase

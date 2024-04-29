@@ -60,6 +60,7 @@ class DetailsPizzaScreen {
     fun DetailsPizzaPage(
         pizza: RetrievedPizza,
         onBackButtonClicked: () -> Unit = {},
+        onOrderButtonClicked: () -> Unit={},
         modifier: Modifier = Modifier
     ){
         var listOfToppings = ""
@@ -148,7 +149,9 @@ class DetailsPizzaScreen {
                     .padding(20.dp, top = 175.dp)
             ){
                 Box(modifier = modifier){
-                    orderDetails()
+                    orderDetails(
+                        onOrderButtonClicked= onOrderButtonClicked
+                    )
                 }
 
             }
@@ -178,6 +181,7 @@ class DetailsPizzaScreen {
     @Composable
     fun orderDetails(
         title: String = "",
+        onOrderButtonClicked: () -> Unit={},
         modifier: Modifier = Modifier
     ){
         var nPizzas by remember { mutableIntStateOf(1) }
@@ -285,7 +289,9 @@ class DetailsPizzaScreen {
                 content = {
                     Text(text = "ORDINA")
                 },
-                onClick = { /*TODO*/ },
+                onClick = {
+                          onOrderButtonClicked()
+                },
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(start = 10.dp, end = 30.dp)
