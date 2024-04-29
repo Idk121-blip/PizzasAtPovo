@@ -136,24 +136,10 @@ class DetailsPizzaScreen {
                 .fillMaxSize()
 
         ){
-            Box(
-                modifier = modifier
-                    .clip(RoundedCornerShape(50.dp, 50.dp, 0.dp, 0.dp))
-                    .background(Color.White)
-                    .height(
-                        LocalConfiguration.current.screenHeightDp.dp
-                            .div(20)
-                            .times(11)
-                    )
-                    .fillMaxWidth()
-                    .padding(20.dp, top = 175.dp)
-            ){
-                Box(modifier = modifier){
-                    orderDetails(
-                        onOrderButtonClicked= onOrderButtonClicked
-                    )
-                }
-
+            Box(modifier = modifier){
+                orderDetails(
+                    onOrderButtonClicked= onOrderButtonClicked
+                )
             }
 
         }
@@ -186,7 +172,18 @@ class DetailsPizzaScreen {
     ){
         var nPizzas by remember { mutableIntStateOf(1) }
 
-        Column {
+        Column (
+            modifier = modifier
+                .clip(RoundedCornerShape(50.dp, 50.dp, 0.dp, 0.dp))
+                .background(Color.White)
+                .height(
+                    LocalConfiguration.current.screenHeightDp.dp
+                        .div(20)
+                        .times(11)
+                )
+                .fillMaxWidth()
+                .padding(20.dp, top = 175.dp)
+        ){
 
                 if(title != ""){
                     Text(

@@ -57,6 +57,7 @@ import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class AddPizzaScreen {
     @Composable
@@ -67,99 +68,76 @@ class AddPizzaScreen {
         Box(modifier = modifier
             .fillMaxSize()
         ){
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.background),
-                    contentDescription = "Background image",
-                    contentScale = ContentScale.FillBounds,
-                    alpha = 0.5F,
+
+            BackgroundImage()
+            Column {
+                Bars().AppBarWithBackBtn(
+                    pizzasName = "Crea la tua pizza",
+                    onBackButtonClicked = onBackButtonClicked
+                )
+                Column(
+                    modifier = modifier
+                        .padding(50.dp, 10.dp)
+                ) {
+
+                    Text(
+                        text = "Base:",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row {
+                        IngredientCard()
+                        IngredientCard()
+                    }
+                    Text(
+                        text = "Altri ingredienti:",
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier
+                            .padding(top = 10.dp)
+                    )
+                    Row (
+                        modifier = modifier
+                            .horizontalScroll(rememberScrollState())
+                    ){
+                        IngredientCard()
+                        IngredientCard()
+                        IngredientCard()
+                        IngredientCard()
+                        IngredientCard()
+                        IngredientCard()
+                        IngredientCard()
+                        IngredientCard()
+                    }
+                }
+                //White container
+                Column (
+                    verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
                         .fillMaxSize()
-                )
-                Column {
-                    Bars().AppBarWithBackBtn(pizzasName = "Crea la tua pizza", onBackButtonClicked = onBackButtonClicked)
-                    Column(
-                        modifier = modifier
-                            .padding(50.dp, 10.dp)
-                    ) {
-
-                        Text(
-                            text = "Base:",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Row {
-                            IngredientCard()
-                            IngredientCard()
-                        }
-                        Text(
-                            text = "Altri ingredienti:",
-                            fontWeight = FontWeight.Bold,
-                            modifier = modifier
-                                .padding(top = 10.dp)
-                        )
-                        Row (
-                            modifier = modifier
-                                .horizontalScroll(rememberScrollState())
-                        ){
-                            IngredientCard()
-                            IngredientCard()
-                            IngredientCard()
-                            IngredientCard()
-                            IngredientCard()
-                            IngredientCard()
-                            IngredientCard()
-                            IngredientCard()
-                        }
-                    }
-                    //White container
-                    Column (
-                        verticalArrangement = Arrangement.Bottom,
-                        modifier = modifier
-                            .fillMaxSize()
-
-                    ){
-                        Box(
-                            modifier = modifier
-                                .clip(RoundedCornerShape(50.dp, 50.dp, 0.dp, 0.dp))
-                                .background(Color.White)
-                                .height(
-                                    LocalConfiguration.current.screenHeightDp.dp
-                                        .div(20)
-                                        .times(11)
-                                )
-                                .fillMaxWidth()
-                                .padding(20.dp, top = 175.dp)
-                        ){
-                            DetailsPizzaScreen().orderDetails(title = "La tua creazione")
-                        }
-
-                    }
-
-                }
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterEnd)
                 ){
-                    //REPLACE IMAGE OF MARGHERITA WITH THE FINAL ONE
-                    AsyncImage(model = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png", contentDescription = "pizza image", modifier= modifier
-                        .size(250.dp)
-                        .align(Alignment.CenterHorizontally)
-                    )
+                    DetailsPizzaScreen().orderDetails(title = "La tua creazione")
                 }
             }
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterEnd)
+            ){
+                //TODO! REPLACE IMAGE OF MARGHERITA WITH THE FINAL ONE
+                AsyncImage(model = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png", contentDescription = "pizza image", modifier= modifier
+                    .size(250.dp)
+                    .align(Alignment.CenterHorizontally)
+                )
+            }
         }
-
     }
+
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    fun IngredientCard(
-       modifier: Modifier = Modifier,
-       //ingredient: Topping
+       modifier: Modifier = Modifier
    ){
        var selected by remember { mutableStateOf(false) }
-
        TooltipBox(
            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
            tooltip = {
@@ -176,7 +154,6 @@ class AddPizzaScreen {
                modifier = modifier
                    .padding(5.dp)
                    .size(60.dp)
-                   .pointerHoverIcon(PointerIcon.Hand)
            ) {
                Box(
                    modifier = modifier
@@ -185,22 +162,20 @@ class AddPizzaScreen {
                ) {
                    Image(
                        imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.AddCircle,
-                       contentDescription = "Prova",
+                       contentDescription = "Selected",
                        modifier = modifier
                            .size(20.dp)
                            .align(Alignment.TopEnd)
                    )
                    Image(
                        painter = painterResource(id = R.drawable.google_icon),
-                       contentDescription = "Prova",
+                       contentDescription = "Ingredient image",
                        modifier = modifier
                            .padding(top = 10.dp)
                            .size(50.dp)
                            .align(Alignment.BottomCenter)
                            .padding(5.dp)
-
                    )
-
                }
            }
        }

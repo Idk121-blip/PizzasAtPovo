@@ -86,11 +86,7 @@ fun ComposeGoogleSignInCleanArchitectureTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
-        LightColors
-    } else {
-        LightColors
-    }
+    val colors = LightColors
 
     MaterialTheme(
         colorScheme = colors,

@@ -115,7 +115,7 @@ class ListOfPizzasScreen() {
             screen = PizzaScreens.ListOfPizzas,
             onProfileButtonClicked = onProfileButtonClicked,
             onAddPizzaButtonClicked = onAddPizzaButtonClicked,
-            onOrdersButtonClicked = onOrdersButtonClicked
+            onOrdersButtonClicked = onOrdersButtonClicked,
         )
     }
     
@@ -151,7 +151,7 @@ class ListOfPizzasScreen() {
 
     @Composable
     fun ListOfPizzas(
-        onDetailsButtonClicked: () -> Unit,
+        onDetailsButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza>,
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: SignInViewModel,
@@ -160,7 +160,7 @@ class ListOfPizzasScreen() {
         Column (
             modifier = modifier
                 .verticalScroll(rememberScrollState())
-                .padding(5.dp)
+                .padding(30.dp, 10.dp)
         ){
 
             for (i in 0..<pizzas.size)
@@ -232,8 +232,8 @@ class ListOfPizzasScreen() {
                     )
                     Text(
                         text = toppingForCard,
-                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                         fontSize = 16.sp
                     )
                     Row (
