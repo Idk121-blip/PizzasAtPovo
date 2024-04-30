@@ -189,7 +189,7 @@ class OrdersScreen {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(20.dp, 10.dp)
             ){
                 AsyncImage(
                     model = image,

@@ -18,7 +18,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -118,9 +121,6 @@ class ListOfPizzasScreen() {
             onOrdersButtonClicked = onOrdersButtonClicked,
         )
     }
-    
-
-
 
     @Composable
     fun SearchBar(modifier: Modifier = Modifier){
@@ -203,7 +203,8 @@ class ListOfPizzasScreen() {
         toppingForCard= toppingForCard.removeSuffix(", ")
 
 
-        Card (
+
+        Card(
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White,
@@ -212,45 +213,64 @@ class ListOfPizzasScreen() {
                 .width(350.dp)
                 .height(140.dp)
                 .padding(0.dp, 10.dp)
-                .clickable {
-                    onNavbarButtonClicked()
-                }
-        ){
-            Row (
+
+        ) {
+            var favourite by remember {mutableStateOf(false)}
+            Box (
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(10.dp, 15.dp)
             ){
-                AsyncImage(model = image, contentDescription = "pizza image", modifier= modifier
-                    .fillMaxHeight()
-                    .padding(end = 15.dp))
-                Column {
-                    Text(
-                        text = name,
-                        fontWeight = weightText,
-                        fontSize = 18.sp
+
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onNavbarButtonClicked()
+                        }
+                ) {
+                    AsyncImage(
+                        model = image, contentDescription = "pizza image", modifier = modifier
+                            .fillMaxHeight()
+                            .padding(end = 15.dp)
                     )
-                    Text(
-                        text = toppingForCard,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        fontSize = 16.sp
-                    )
-                    Row (
-                        modifier = modifier
-                            .fillMaxSize()
-                    ){
-                        Allergen(
-                            modifier = modifier.align(Alignment.Bottom)
+                    Column {
+                        Text(
+                            text = "$name",
+                            fontWeight = weightText,
+                            fontSize = 18.sp
                         )
-                        Allergen(
-                            modifier = modifier.align(Alignment.Bottom)
+                        Text(
+                            text = toppingForCard,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            fontSize = 16.sp
                         )
-                        Allergen(
-                            modifier = modifier.align(Alignment.Bottom)
-                        )
+                        Row(
+                            modifier = modifier
+                                .fillMaxSize()
+                        ) {
+                            Allergen(
+                                modifier = modifier.align(Alignment.Bottom)
+                            )
+                            Allergen(
+                                modifier = modifier.align(Alignment.Bottom)
+                            )
+                            Allergen(
+                                modifier = modifier.align(Alignment.Bottom)
+                            )
+                        }
                     }
                 }
+                Image(
+                    imageVector =  if(favourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "",
+                    modifier = modifier
+                        .align(Alignment.TopEnd)
+                        .clickable{
+                            favourite = !favourite
+                        }
+                )
             }
         }
     }
