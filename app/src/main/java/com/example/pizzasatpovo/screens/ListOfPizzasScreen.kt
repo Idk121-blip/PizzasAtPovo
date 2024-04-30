@@ -122,9 +122,6 @@ class ListOfPizzasScreen() {
             onOrdersButtonClicked = onOrdersButtonClicked,
         )
     }
-    
-
-
 
     @Composable
     fun SearchBar(modifier: Modifier = Modifier){
