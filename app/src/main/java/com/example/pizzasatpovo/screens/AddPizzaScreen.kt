@@ -57,12 +57,14 @@ import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
+import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class AddPizzaScreen {
     @Composable
     fun AddPizzaPage(
         onBackButtonClicked: () -> Unit = {},
+        toppings: ArrayList<Topping> = arrayListOf(),
         modifier: Modifier = Modifier
     ){
         Box(modifier = modifier
@@ -85,8 +87,12 @@ class AddPizzaScreen {
                         fontWeight = FontWeight.Bold
                     )
                     Row {
-                        IngredientCard()
-                        IngredientCard()
+
+                        for (topping in toppings){
+                            if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
+                                IngredientCard(topping = topping)
+                            }
+                        }
                     }
                     Text(
                         text = "Altri ingredienti:",
@@ -98,14 +104,11 @@ class AddPizzaScreen {
                         modifier = modifier
                             .horizontalScroll(rememberScrollState())
                     ){
-                        IngredientCard()
-                        IngredientCard()
-                        IngredientCard()
-                        IngredientCard()
-                        IngredientCard()
-                        IngredientCard()
-                        IngredientCard()
-                        IngredientCard()
+                        for (topping in toppings){
+                            if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
+                                IngredientCard(topping = topping)
+                            }
+                        }
                     }
                 }
                 //White container
@@ -135,6 +138,7 @@ class AddPizzaScreen {
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    fun IngredientCard(
+       topping: Topping,
        modifier: Modifier = Modifier
    ){
        var selected by remember { mutableStateOf(false) }
@@ -142,7 +146,7 @@ class AddPizzaScreen {
            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
            tooltip = {
                PlainTooltip {
-                   Text("Ingredienti")
+                   Text(topping.name)
                }
            },
            state = rememberTooltipState()
@@ -167,15 +171,14 @@ class AddPizzaScreen {
                            .size(20.dp)
                            .align(Alignment.TopEnd)
                    )
-                   Image(
-                       painter = painterResource(id = R.drawable.google_icon),
-                       contentDescription = "Ingredient image",
-                       modifier = modifier
-                           .padding(top = 10.dp)
-                           .size(50.dp)
-                           .align(Alignment.BottomCenter)
-                           .padding(5.dp)
-                   )
+                   AsyncImage(model = topping.image, contentDescription = topping.name, modifier = modifier
+                       .padding(top = 10.dp)
+                       .size(50.dp)
+                       .align(Alignment.BottomCenter)
+                       .padding(5.dp))
+
+
+
                }
            }
        }

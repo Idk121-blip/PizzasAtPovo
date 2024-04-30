@@ -32,9 +32,7 @@ class LoadingViewModel: ViewModel() {
 
     }
 
-
-
-
+    //TODO: ADD A RESET SETTING WHEN LOGGED OUT
 
     fun resetState() {
         _state.update { LoadingState() }
