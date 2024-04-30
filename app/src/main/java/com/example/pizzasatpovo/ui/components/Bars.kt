@@ -2,6 +2,7 @@ package com.example.pizzasatpovo.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -149,6 +151,8 @@ class Bars() {
         onOrdersButtonClicked:()->Unit={},
         modifier : Modifier = Modifier
     ){
+        val interactionSource = remember { MutableInteractionSource() }
+
         Row(
             //verticalAlignment = Alignment.Bottom,
             modifier = modifier
@@ -162,10 +166,14 @@ class Bars() {
                     }else{ R.drawable.pizzas}
                 ),
                 contentDescription = "List of pizzas",
+
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable { onHomeButtonClicked() }
+                    .clickable (
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { onHomeButtonClicked() }
             )
             Image(
                 painter = painterResource(
@@ -205,7 +213,10 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable {
+                    .clickable (
+                        interactionSource = interactionSource,
+                        indication = null
+                    )  {
                         onProfileButtonClicked()
                     }
             )

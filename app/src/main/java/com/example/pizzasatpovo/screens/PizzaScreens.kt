@@ -27,6 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
@@ -63,30 +64,32 @@ fun PizzasAtPovoApp(
 ){
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val pizzaViewModel = viewModel<PizzaViewModel>()
+    val pizzas  by pizzaViewModel.pizza.collectAsStateWithLifecycle()
+    val pizzasToppings by pizzaViewModel.pizzaToppingsList.collectAsStateWithLifecycle()
+    val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     NavHost(
         navController = navController,
         startDestination = PizzaScreens.FirstPage.name,
         modifier = modifier
     ){
-        var pizzas: ArrayList<Pizza> = arrayListOf()
-        var pizzasToppings: ArrayList<ArrayList<Topping>> = arrayListOf()
-        var toppings: ArrayList<Topping> = arrayListOf()
+
         composable(
             route = PizzaScreens.FirstPage.name
         ){
             LaunchedEffect(key1 = Unit) {
                 lifecycleScope.launch {
                     googleAuthUiClient.retrieveUserData()
-                    if (googleAuthUiClient.getSignedInUser() != null) {
-                        if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
-                            val (returnedPizzas, returnedPizzasToppings,returnedToppings ) = userLogged(applicationContext, sendRetrieveData)
-                            pizzas= returnedPizzas
-                            pizzasToppings= returnedPizzasToppings
-                            toppings= returnedToppings
-                            navController.navigate(PizzaScreens.ListOfPizzas.name)
-                        }else{
-                            navController.navigate(PizzaScreens.ChefOrders.name)
-                        }
+                    if (googleAuthUiClient.getSignedInUser() == null) {
+                        //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
+                    }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
+                        val (returnedPizzas, returnedPizzasToppings,returnedToppings ) = userLogged(applicationContext, sendRetrieveData)
+                        pizzaViewModel.addPizzas(returnedPizzas)
+                        pizzaViewModel.setPizzasToppings(returnedPizzasToppings)
+                        pizzaViewModel.setToppings(returnedToppings)
+                        navController.navigate(PizzaScreens.ListOfPizzas.name)
+                    }else{
+                        navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }
             }
@@ -108,31 +111,19 @@ fun PizzasAtPovoApp(
                 if (state.isSignInSuccessful) {
                     val listResponseData= sendRetrieveData.getPizzas()
 
-                    if (listResponseData!=null){
-                        if (listResponseData.isSuccessful) {
-                            pizzas = listResponseData.retrievedObject!!
-                            for (pizza in pizzas){
-                                val pizzaTopping: ArrayList<Topping> = arrayListOf()
-                                var add = false
-                                for (toppingRef in pizza.toppings!!){
-                                    val topping= sendRetrieveData.getToppingByRef(toppingRef)
-
-                                    if (topping != null) {
-                                        pizzaTopping.add(topping.retrievedObject!!)
-                                        add=true
-                                    }
-                                }
-                                if (add){
-                                    pizzasToppings.add(pizzaTopping)
-                                }
-                            }
-                        }else{
-                            Toast.makeText(
-                                applicationContext,
-                                "Error retrieving pizzas",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                    if (listResponseData==null){
+                        Toast.makeText(
+                            applicationContext,
+                            "Error retrieving pizzas",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        //TODO: DO SOMETHING IF NO PIZZAS ARE RETRIEVED?
+                    }else if (listResponseData.isSuccessful){
+                        val (returnedPizzas, returnedPizzasToppings,returnedToppings ) = userLogged(applicationContext, sendRetrieveData)
+                        pizzaViewModel.addPizzas(returnedPizzas)
+                        pizzaViewModel.setPizzasToppings(returnedPizzasToppings)
+                        pizzaViewModel.setToppings(returnedToppings)
+                        navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         Toast.makeText(
                             applicationContext,
@@ -168,7 +159,7 @@ fun PizzasAtPovoApp(
         composable(
             route = PizzaScreens.ListOfPizzas.name
         ){
-            var context = LocalContext.current
+//            var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = pizzasToppings, viewModel = viewModel,
                 onDetailButtonClicked = {
                 navController.navigate(PizzaScreens.DetailsPizza.name)},
@@ -198,7 +189,7 @@ fun PizzasAtPovoApp(
                     navController.navigate(PizzaScreens.NewPizza.name)
                 },
                 onOrdersButtonClicked = {
-                    navController.navigate((PizzaScreens.RecentOrders.name))
+                    navController.navigate(PizzaScreens.RecentOrders.name)
                 }
             )
         }
@@ -219,7 +210,8 @@ fun PizzasAtPovoApp(
         composable(route= PizzaScreens.NewPizza.name){
             println("Add")
             AddPizzaScreen().AddPizzaPage(
-                onBackButtonClicked = { navController.popBackStack() }
+                onBackButtonClicked = { navController.popBackStack() },
+                toppings= toppings
             )
         }
 
@@ -244,19 +236,15 @@ fun PizzasAtPovoApp(
 
                     }
                 }
-
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                     // Handle order changed
                 }
-
                 override fun onChildRemoved(snapshot: DataSnapshot) {
                     // Handle order removed
                 }
-
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
                     // Handle order moved
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     // Handle error
                 }
@@ -276,6 +264,7 @@ fun PizzasAtPovoApp(
 
 
 suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData): Triple<ArrayList<Pizza>, ArrayList<ArrayList<Topping>>, ArrayList<Topping>> {
+    //TODO: try to do these as val
     var pizzas: ArrayList<Pizza> = arrayListOf()
     val pizzasToppings: ArrayList<ArrayList<Topping>> = arrayListOf()
     var toppings: ArrayList<Topping> = arrayListOf()
@@ -312,29 +301,27 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
 
 
 
-    if (reqRespone!=null){
-        if (reqRespone.isSuccessful) {
-            pizzas = reqRespone.retrievedObject!!
-            for (pizza in pizzas){
-                val pizzaTopping: ArrayList<Topping> = arrayListOf()
-                var add = false
-                for (toppingRef in pizza.toppings!!){
-                    val topping= sendRetrieveData.getToppingByRef(toppingRef)
-                    if (topping != null) {
-                        pizzaTopping.add(topping.retrievedObject!!)
-                        add=true
-                    }
-                }
-                if (add){
-                    pizzasToppings.add(pizzaTopping)
+    if (reqRespone==null){
+        Toast.makeText(
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
+        ).show()
+    }else if (reqRespone.isSuccessful) {
+        pizzas = reqRespone.retrievedObject!!
+        for (pizza in pizzas){
+            val pizzaTopping: ArrayList<Topping> = arrayListOf()
+            var add = false
+            for (toppingRef in pizza.toppings!!){
+                val topping= sendRetrieveData.getToppingByRef(toppingRef)
+                if (topping != null) {
+                    pizzaTopping.add(topping.retrievedObject!!)
+                    add=true
                 }
             }
-        }else{
-            Toast.makeText(
-                applicationContext,
-                "Error retrieving pizzas",
-                Toast.LENGTH_LONG
-            ).show()
+            if (add){
+                pizzasToppings.add(pizzaTopping)
+            }
         }
     }else{
         Toast.makeText(

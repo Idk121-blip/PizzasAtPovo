@@ -226,7 +226,7 @@ class ListOfPizzasScreen() {
                     .padding(end = 15.dp))
                 Column {
                     Text(
-                        text = "$name",
+                        text = name,
                         fontWeight = weightText,
                         fontSize = 18.sp
                     )

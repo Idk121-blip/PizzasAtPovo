@@ -14,7 +14,7 @@ data class UserData(val name: String?= "",
 data class Pizza(val name: String= "", val toppings: ArrayList<DocumentReference>? = null, val image: String= "")
 data class RetrievedPizza(val name: String= "", val toppings: ArrayList<Topping>? = null, val image: String= "")
 
-data class Topping(val name:String= "", val allergen: String="", val vegetarian: Boolean= true, val image: String= "")
+data class Topping(val name:String= "", val allergen: String="", val vegetarian: Boolean= true, val image: String= "", val availability:Boolean = true)
 
 data class Order(val topping: ArrayList<DocumentReference> = arrayListOf(),
                  val price: Double=0.0,
