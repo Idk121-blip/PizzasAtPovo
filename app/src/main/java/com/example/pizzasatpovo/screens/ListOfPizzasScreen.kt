@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,26 +42,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
-import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 
 class ListOfPizzasScreen() {
-    private val sizeTitle: TextUnit = 50.sp
-    private val sizeSubtitle: TextUnit = 35.sp
-    private val sizeText: TextUnit = 40.sp
+//    private val sizeTitle: TextUnit = 50.sp
+//    private val sizeSubtitle: TextUnit = 35.sp
+//    private val sizeText: TextUnit = 40.sp
     private val weightText: FontWeight = FontWeight.Bold
-    private val uniColor: Color =  Color(0xffce0e2d)
-    private val dimIcons: Dp = 30.dp
+//    private val uniColor: Color =  Color(0xffce0e2d)
+//    private val dimIcons: Dp = 30.dp
 
     @Composable
 
@@ -70,9 +68,12 @@ class ListOfPizzasScreen() {
         onOrdersButtonClicked: () -> Unit = {},
         onProfileButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
+        onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
+        onRemoveFromFavouritesClicked:(String)->Unit={},
         pizzas: ArrayList<Pizza> = arrayListOf(),
+        favourites: ArrayList<String> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
-        viewModel: SignInViewModel,
+        viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
 
         ){
@@ -109,7 +110,9 @@ class ListOfPizzasScreen() {
                         onDetailButtonClicked,
                         pizzas,
                         toppings,
-                        viewModel
+                        viewModel,
+                        onAddToFavouritesClicked = onAddToFavouritesClicked,
+                        onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
                     )
                 }
             }
@@ -154,9 +157,17 @@ class ListOfPizzasScreen() {
         onDetailsButtonClicked: () -> Unit = {},
         pizzas: ArrayList<Pizza>,
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
-        viewModel: SignInViewModel,
+        viewModel: PizzaViewModel,
+        onAddToFavouritesClicked:(String)->Unit = {},
+        onRemoveFromFavouritesClicked:(String)->Unit = {},
         modifier: Modifier = Modifier
     ){
+        val favourites by viewModel.favourites.collectAsState()
+        val favouritesName: ArrayList<String> = arrayListOf()
+        for (favourite in favourites){
+            favouritesName.add(favourite.name)
+        }
+
         Column (
             modifier = modifier
                 .verticalScroll(rememberScrollState())
@@ -174,8 +185,18 @@ class ListOfPizzasScreen() {
                     image = pizzas[i].image,
                     name = pizzas[i].name,
                     toppings = toppings[i],
-                    pizza= RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
-                    viewModel
+                    isFavourite =  favouritesName.contains(pizzas[i].name),
+                    onAddToFavouritesClicked =
+                    {
+                        onAddToFavouritesClicked(it)
+                        val retPizza= RetrievedPizza(name= pizzas[i].name, toppings= toppings[i], pizzas[i].image)
+                        viewModel.addToFavourites(retPizza)
+                    },
+                    onRemoveFromFavouritesClicked = {
+                        onRemoveFromFavouritesClicked(it)
+                        val retPizza= RetrievedPizza(name= pizzas[i].name, toppings= toppings[i], pizzas[i].image)
+                        viewModel.removeFromFavourites(retPizza)
+                    }
                 )
             }
             Spacer(
@@ -188,18 +209,18 @@ class ListOfPizzasScreen() {
     @Composable
     fun PizzaCard(
         onNavbarButtonClicked: () -> Unit,
+        onAddToFavouritesClicked:(String)->Unit = {},
+        onRemoveFromFavouritesClicked:(String)->Unit = {},
         image: String,
         name: String,
         toppings: ArrayList<Topping>,
-        pizza: RetrievedPizza,
-        viewModel: SignInViewModel,
+        isFavourite: Boolean= false,
         modifier: Modifier = Modifier
     ){
         var toppingForCard=""
         for (topping in toppings){
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
         }
-
         toppingForCard= toppingForCard.removeSuffix(", ")
 
 
@@ -215,7 +236,7 @@ class ListOfPizzasScreen() {
                 .padding(0.dp, 10.dp)
 
         ) {
-            var favourite by remember {mutableStateOf(false)}
+            var favourite by remember {mutableStateOf(isFavourite)}
             Box (
                 modifier = modifier
                     .fillMaxWidth()
@@ -236,7 +257,7 @@ class ListOfPizzasScreen() {
                     )
                     Column {
                         Text(
-                            text = "$name",
+                            text = name,
                             fontWeight = weightText,
                             fontSize = 18.sp
                         )
@@ -264,10 +285,16 @@ class ListOfPizzasScreen() {
                 }
                 Image(
                     imageVector =  if(favourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "",
+                    contentDescription = "Favourite icon",
                     modifier = modifier
                         .align(Alignment.TopEnd)
-                        .clickable{
+                        .clickable {
+                            if (!favourite) {
+                                onAddToFavouritesClicked(name)
+                            } else {
+                                onRemoveFromFavouritesClicked(name)
+                            }
+
                             favourite = !favourite
                         }
                 )

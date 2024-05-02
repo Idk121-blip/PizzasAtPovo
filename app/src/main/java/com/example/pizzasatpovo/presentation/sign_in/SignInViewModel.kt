@@ -13,7 +13,7 @@ class SignInViewModel: ViewModel() {
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
 
-    private val _selectedPizza= MutableStateFlow(RetrievedPizza())
+
 
 
     //private val time = MutableStateFlow()
@@ -24,13 +24,7 @@ class SignInViewModel: ViewModel() {
         ) }
     }
 
-    fun setPizza(pizza: RetrievedPizza) {
-        _selectedPizza.value= pizza
-    }
 
-    fun getPizza(): RetrievedPizza{
-        return _selectedPizza.value.copy()
-    }
 
 
 
