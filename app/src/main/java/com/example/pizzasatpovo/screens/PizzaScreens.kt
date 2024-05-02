@@ -182,6 +182,9 @@ fun PizzasAtPovoApp(
                     }
 
                 },
+                onFavouritesButtonClicked = {
+                    navController.navigate(PizzaScreens.Favourites.name)
+                }
             )
 
         }
@@ -234,6 +237,17 @@ fun PizzasAtPovoApp(
                 viewModel = viewModel
             )
         }
+
+        composable(route= PizzaScreens.Favourites.name){
+            FavouritesScreen().FavouritesPage(
+                onHomeButtonClicked = { navController.navigate(
+                    PizzaScreens.ListOfPizzas.name
+                )},
+                viewModel = pizzaViewModel
+            )
+        }
+
+
 
         composable(route= PizzaScreens.ChefOrders.name){
             val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")

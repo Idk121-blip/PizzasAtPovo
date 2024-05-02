@@ -67,6 +67,7 @@ class ListOfPizzasScreen() {
         onOrdersButtonClicked: () -> Unit = {},
         onProfileButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
+        onFavouritesButtonClicked: () -> Unit = {},
         onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
         onRemoveFromFavouritesClicked:(String)->Unit={},
         pizzas: ArrayList<Pizza> = arrayListOf(),
@@ -121,6 +122,7 @@ class ListOfPizzasScreen() {
             onProfileButtonClicked = onProfileButtonClicked,
             onAddPizzaButtonClicked = onAddPizzaButtonClicked,
             onOrdersButtonClicked = onOrdersButtonClicked,
+            onFavouritesButtonClicked = onFavouritesButtonClicked
         )
     }
 

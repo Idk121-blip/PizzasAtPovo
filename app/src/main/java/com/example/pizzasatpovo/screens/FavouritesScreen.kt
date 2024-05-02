@@ -2,6 +2,7 @@ package com.example.pizzasatpovo.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ColorMatrixColorFilter
+import androidx.compose.ui.graphics.vector.DefaultTintColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
@@ -57,10 +64,10 @@ import com.example.pizzasatpovo.ui.components.Bars
 class FavouritesScreen {
     @Composable
     fun FavouritesPage(
-        onDetailButtonClicked: () -> Unit = {},
         onOrdersButtonClicked: () -> Unit = {},
         onProfileButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
+        onHomeButtonClicked: () -> Unit = {},
         onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
         onRemoveFromFavouritesClicked:(String)->Unit={},
         pizzas: ArrayList<Pizza> = arrayListOf(),
@@ -94,10 +101,9 @@ class FavouritesScreen {
                         .fillMaxSize()
                 ) {
                     ListOfPizzas(
-                        onDetailButtonClicked,
-                        pizzas,
-                        toppings,
-                        viewModel,
+                        pizzas = pizzas,
+                        toppings = toppings,
+                        viewModel = viewModel,
                         onAddToFavouritesClicked = onAddToFavouritesClicked,
                         onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
                     )
@@ -105,10 +111,11 @@ class FavouritesScreen {
             }
         }
         Bars().BottomBar(
-            screen = PizzaScreens.ListOfPizzas,
+            screen = PizzaScreens.Favourites,
             onProfileButtonClicked = onProfileButtonClicked,
             onAddPizzaButtonClicked = onAddPizzaButtonClicked,
             onOrdersButtonClicked = onOrdersButtonClicked,
+            onHomeButtonClicked = onHomeButtonClicked
         )
     }
 
@@ -136,9 +143,12 @@ class FavouritesScreen {
                     //TODO! check names
                     pizza = favourites[i],
                     onNavbarButtonClicked = {
-                        viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
+                        viewModel.setPizza(
+                            RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i])
+                        )
                         onDetailsButtonClicked()
                     },
+                    viewModel = viewModel,
                     onAddToFavouritesClicked =
                     {
                         onAddToFavouritesClicked(it)
@@ -162,6 +172,7 @@ class FavouritesScreen {
     @Composable
     fun PizzaCard(
         pizza: RetrievedPizza,
+        viewModel: PizzaViewModel,
         onNavbarButtonClicked: () -> Unit,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
@@ -185,12 +196,23 @@ class FavouritesScreen {
 
         ) {
             var favourite by remember { mutableStateOf(true) }
+            val allToppings by viewModel.toppings.collectAsStateWithLifecycle()
+            val pizzaToppings = pizza.toppings
+
+            var available = true
+            var i = 0
+            while(available && i < pizzaToppings.size){
+                if(!pizzaToppings[i].availability){
+                    available = false
+                }
+                i++;
+            }
+            println("Available: $available")
             Box (
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(10.dp, 15.dp)
             ){
-
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
@@ -201,6 +223,13 @@ class FavouritesScreen {
                     AsyncImage(
                         model = pizza.image,
                         contentDescription = "pizza image",
+                        colorFilter = if(available) {
+                            ColorFilter
+                                .colorMatrix(ColorMatrix().apply { setToSaturation(1f) })
+                        }else {
+                            ColorFilter
+                                .colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                        },
                         modifier = modifier
                             .fillMaxHeight()
                             .padding(end = 15.dp)
@@ -218,18 +247,28 @@ class FavouritesScreen {
                             fontSize = 16.sp
                         )
                         Row(
-                            modifier = modifier
-                                .fillMaxSize()
+                            verticalAlignment = Alignment.Bottom,
                         ) {
-                            Allergen(
-                                modifier = modifier.align(Alignment.Bottom)
-                            )
-                            Allergen(
-                                modifier = modifier.align(Alignment.Bottom)
-                            )
-                            Allergen(
-                                modifier = modifier.align(Alignment.Bottom)
-                            )
+                            pizzaToppings.forEach {topping ->
+                                Allergen(
+                                    available = available,
+                                    modifier = modifier.align(Alignment.Bottom)
+                                )
+                            }
+                            if(!available){
+                                Text(
+                                    text = "TERMINATO",
+                                    color = Color.DarkGray,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.End,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Clip,
+                                    modifier = modifier
+                                        .align(Alignment.Bottom)
+                                        .fillMaxWidth()
+                                )
+                            }
                         }
                     }
                 }
