@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -157,12 +158,12 @@ class FavouritesScreen {
                     onAddToFavouritesClicked =
                     {
                         onAddToFavouritesClicked(it)
-                        val retPizza= RetrievedPizza(name= pizzas[i].name, toppings= toppings[i], pizzas[i].image)
+                        val retPizza= RetrievedPizza(name= favourites[i].name, toppings= favourites[i].toppings, favourites[i].image)
                         viewModel.addToFavourites(retPizza)
                     },
                     onRemoveFromFavouritesClicked = {
                         onRemoveFromFavouritesClicked(it)
-                        val retPizza= RetrievedPizza(name= pizzas[i].name, toppings= toppings[i], pizzas[i].image)
+                        val retPizza= RetrievedPizza(name= favourites[i].name, toppings= favourites[i].toppings, favourites[i].image)
                         viewModel.removeFromFavourites(retPizza)
                     }
                 )
@@ -202,7 +203,7 @@ class FavouritesScreen {
         ) {
             var favourite by remember { mutableStateOf(true) }
             val pizzaToppings = pizza.toppings
-
+            val interactionSource = remember { MutableInteractionSource() }
             var available = true
             var i = 0
             while(available && i < pizzaToppings.size){
@@ -220,7 +221,10 @@ class FavouritesScreen {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
-                        .clickable {
+                        .clickable (
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
                             if(available){
                                 onNavbarButtonClicked()
                             } else {
@@ -291,7 +295,10 @@ class FavouritesScreen {
                     contentDescription = "Favourite icon",
                     modifier = modifier
                         .align(Alignment.TopEnd)
-                        .clickable {
+                        .clickable (
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
                             if (!favourite) {
                                 onAddToFavouritesClicked(pizza.name)
                             } else {

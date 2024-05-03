@@ -62,6 +62,7 @@ class Bars() {
         onBackButtonClicked: () -> Unit = {},
         modifier: Modifier = Modifier
     ) {
+        val interactionSource = remember { MutableInteractionSource() }
         Column(
             modifier = modifier
                 .padding(0.dp, 15.dp, 0.dp, 5.dp)
@@ -79,7 +80,11 @@ class Bars() {
                         .height(48.dp)
                         .weight(0.15F)
                         .fillMaxWidth()
-                        .clickable { onBackButtonClicked() }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        )
+                        { onBackButtonClicked() }
                 )
                 Text(
                     text = pizzasName,
@@ -204,7 +209,11 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable { onOrdersButtonClicked() }
+                    .clickable (
+                        interactionSource = interactionSource,
+                        indication = null
+                    )
+                    { onOrdersButtonClicked() }
             )
             Image(
                 painter = painterResource(

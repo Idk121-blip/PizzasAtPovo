@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.presentation.db_interaction
 
+import com.example.pizzasatpovo.data.DBOrder
 import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaPrice
@@ -21,7 +22,7 @@ import kotlinx.coroutines.tasks.await
 
 class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
     private val auth = Firebase.auth
-    suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<Order>? = auth.currentUser?.run {
+    suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -36,20 +37,20 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             return ResponseData(false, message = "Errore nella richiesta del prezzo al Database")
         }
 
-        val order= Order(topping=pizza.toppings!!,
+        val DBOrder= DBOrder(topping=pizza.toppings!!,
                         price= price.price*pizzaNumber,
                         image= pizza.image,
                         uid=uid,
                         date=pickupTime,
                         pizzaNumber= pizzaNumber)
         var user= googleAuthUiClient.retrieveUserData() ?: return ResponseData(message = "Utente non trovato")
-        if (user.credit <order.price){
+        if (user.credit <DBOrder.price){
             return ResponseData(false, message = "Credito non sufficiente")
         }
 
         val userRef = db.collection("users").document(uid)
         db.collection("orders")
-            .add(order)
+            .add(DBOrder)
             .addOnSuccessListener { documentReference->
                 if (user.orders == null){
                     user.orders= arrayListOf(documentReference)
@@ -57,13 +58,13 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                 }else{
                     user.orders!!.add(0, documentReference)
                 }
-                user.credit-=order.price
+                user.credit-=DBOrder.price
                 userRef.set(user)
             }
-        return ResponseData(true, "Ordine completato con successo", order)
+        return ResponseData(true, "Ordine completato con successo", DBOrder)
     }
 
-    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<Order>? = auth.currentUser?.run{
+    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run{
         if (retrievedPizza.toppings== null){
             return ResponseData(false, "Number of toppings not valid (null)")
         }
@@ -78,17 +79,24 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
     suspend fun retrieveOrders():ResponseData<ArrayList<Order>>? = auth.currentUser?.run {
         val userData= googleAuthUiClient.retrieveUserData() ?: return ResponseData()
-        val db = Firebase.firestore
-
-        val orders:ArrayList<Order> = arrayListOf()
-
+        val ordersToReturn: ArrayList<Order> = arrayListOf()
         if (userData.orders!=null){
             for (order in userData.orders!!) {
-                orders.add(order.get().await().toObject(Order::class.java)?: continue)
+                val dbOrders = (order.get().await().toObject(DBOrder::class.java)?: continue)
+                val toppings:ArrayList<Topping> = arrayListOf()
+                for (documentRef in dbOrders.topping){
+                    toppings.add(documentRef.get().await().toObject(Topping::class.java)?:continue)
+                }
+                ordersToReturn.add(Order(
+                    topping = toppings,
+                    pizzaNumber = dbOrders.pizzaNumber,
+                    image = dbOrders.image,
+                    date =dbOrders.date,
+                    uid = dbOrders.uid,
+                    price = dbOrders.price))
             }
         }
-
-        return ResponseData(true, "Retrieved successfully", orders)
+        return ResponseData(true, "Retrieved successfully", ordersToReturn)
     }
 
     suspend fun retrieveUserOrders():ResponseData<ArrayList<UserOrders>>? = auth.currentUser?.run {
@@ -97,12 +105,12 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         if (userData.orders!=null){
             for (documentReference in userData.orders!!) {
-                val order= documentReference.get().await().toObject(Order::class.java)?: continue
+                val DBOrder= documentReference.get().await().toObject(DBOrder::class.java)?: continue
                 val toppings: ArrayList<Topping> = arrayListOf()
-                for (toppingReference in order.topping){
+                for (toppingReference in DBOrder.topping){
                     toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
                 }
-                orders.add(UserOrders(image =  order.image, time = order.date.toString(), pizzaNumber = order.pizzaNumber, topping = toppings, uname = uid))
+                orders.add(UserOrders(image =  DBOrder.image, time = DBOrder.date.toString(), pizzaNumber = DBOrder.pizzaNumber, topping = toppings, uname = uid))
             }
         }
         return ResponseData(true, "Retrieved successfully", orders)

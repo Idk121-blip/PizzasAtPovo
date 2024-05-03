@@ -68,6 +68,9 @@ class MainActivity : ComponentActivity() {
                 Surface(){
                     PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
                 }
+
+                //TODO: IMPLEMENTARE RICERCA, PIZZA
+                //
             }
         }
     }
