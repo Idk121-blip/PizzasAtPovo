@@ -3,6 +3,7 @@ package com.example.pizzasatpovo.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
@@ -71,7 +72,6 @@ class ListOfPizzasScreen() {
         onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
         onRemoveFromFavouritesClicked:(String)->Unit={},
         pizzas: ArrayList<Pizza> = arrayListOf(),
-        favourites: ArrayList<String> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
@@ -162,7 +162,7 @@ class ListOfPizzasScreen() {
         onRemoveFromFavouritesClicked:(String)->Unit = {},
         modifier: Modifier = Modifier
     ){
-        val favourites by viewModel.favourites.collectAsState()
+        val favourites by viewModel.favourites.collectAsStateWithLifecycle()
         val favouritesName: ArrayList<String> = arrayListOf()
         for (favourite in favourites){
             favouritesName.add(favourite.name)
@@ -222,6 +222,9 @@ class ListOfPizzasScreen() {
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
         }
         toppingForCard= toppingForCard.removeSuffix(", ")
+        val interactionSource = remember { MutableInteractionSource() }
+
+
 
 
 
@@ -288,7 +291,10 @@ class ListOfPizzasScreen() {
                     contentDescription = "Favourite icon",
                     modifier = modifier
                         .align(Alignment.TopEnd)
-                        .clickable {
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
                             if (!favourite) {
                                 onAddToFavouritesClicked(name)
                             } else {
@@ -297,6 +303,8 @@ class ListOfPizzasScreen() {
 
                             favourite = !favourite
                         }
+
+
                 )
             }
         }

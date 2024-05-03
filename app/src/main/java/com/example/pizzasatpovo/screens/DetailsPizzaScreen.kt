@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,10 +48,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
@@ -138,7 +141,8 @@ class DetailsPizzaScreen {
         ){
             Box(modifier = modifier){
                 orderDetails(
-                    onOrderButtonClicked= onOrderButtonClicked
+                    onOrderButtonClicked= onOrderButtonClicked,
+                    pizza = pizza
                 )
             }
 
@@ -163,15 +167,34 @@ class DetailsPizzaScreen {
         }
     }
 
-    @Preview(showBackground = true)
     @Composable
     fun orderDetails(
         title: String = "",
         onOrderButtonClicked: () -> Unit={},
+        pizza:RetrievedPizza,
         modifier: Modifier = Modifier
     ){
-        var nPizzas by remember { mutableIntStateOf(1) }
+        val nPizzas by remember { mutableIntStateOf(1) }
 
+        val customOrderSentDialog =  remember { mutableStateOf(false) }
+
+        if(customOrderSentDialog.value) {
+            CustomDialogDatabaseResponse(setShowDialog = {
+                customOrderSentDialog.value = it
+            })
+        }
+
+
+
+        val showDialog =  remember { mutableStateOf(false) }
+
+        if(showDialog.value) {
+            CustomDialog(setShowDialog = {
+                showDialog.value = it
+            }, sendOrder = {
+                customOrderSentDialog.value = true
+            }, nPizzas, pizza.name )
+        }
         Column (
             modifier = modifier
                 .clip(RoundedCornerShape(50.dp, 50.dp, 0.dp, 0.dp))
@@ -284,13 +307,16 @@ class DetailsPizzaScreen {
 
             Button(
                 content = {
-                    Text(text = "ORDINA")
+                    Text(text = "ORDINA") //TODO: CHANGE THE DIMENSION
                 },
                 onClick = {
-                          onOrderButtonClicked()
+                    showDialog.value = true
+                          //onOrderButtonClicked()
                 },
+                shape = RoundedCornerShape(10.dp),
                 modifier = modifier
                     .fillMaxWidth()
+
                     .padding(start = 10.dp, end = 30.dp)
             )
         }
