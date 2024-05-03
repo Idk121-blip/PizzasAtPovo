@@ -68,6 +68,8 @@ fun PizzasAtPovoApp(
     val pizzas  by pizzaViewModel.pizza.collectAsStateWithLifecycle()
     val pizzasToppings by pizzaViewModel.pizzaToppingsList.collectAsStateWithLifecycle()
     val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
+    val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
+    val favourites by pizzaViewModel.favourites.collectAsStateWithLifecycle()
     NavHost(
         navController = navController,
         startDestination = PizzaScreens.FirstPage.name,
@@ -83,10 +85,7 @@ fun PizzasAtPovoApp(
                     if (googleAuthUiClient.getSignedInUser() == null) {
                         //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
-                        val (returnedPizzas, returnedPizzasToppings,returnedToppings ) = userLogged(applicationContext, sendRetrieveData)
-                        pizzaViewModel.addPizzas(returnedPizzas)
-                        pizzaViewModel.setPizzasToppings(returnedPizzasToppings)
-                        pizzaViewModel.setToppings(returnedToppings)
+                        userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         navController.navigate(PizzaScreens.ChefOrders.name)
@@ -119,10 +118,8 @@ fun PizzasAtPovoApp(
                         ).show()
                         //TODO: DO SOMETHING IF NO PIZZAS ARE RETRIEVED?
                     }else if (listResponseData.isSuccessful){
-                        val (returnedPizzas, returnedPizzasToppings,returnedToppings ) = userLogged(applicationContext, sendRetrieveData)
-                        pizzaViewModel.addPizzas(returnedPizzas)
-                        pizzaViewModel.setPizzasToppings(returnedPizzasToppings)
-                        pizzaViewModel.setToppings(returnedToppings)
+                        userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
+
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         Toast.makeText(
@@ -159,8 +156,11 @@ fun PizzasAtPovoApp(
         composable(
             route = PizzaScreens.ListOfPizzas.name
         ){
+
 //            var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas, toppings = pizzasToppings, viewModel = viewModel,
+            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas,
+                toppings = pizzasToppings,
+                viewModel = pizzaViewModel,
                 onDetailButtonClicked = {
                 navController.navigate(PizzaScreens.DetailsPizza.name)},
                 onProfileButtonClicked = {
@@ -170,7 +170,21 @@ fun PizzasAtPovoApp(
                 onAddPizzaButtonClicked = {
                     navController.navigate(PizzaScreens.NewPizza.name) },
                 onOrdersButtonClicked = {
-                    navController.navigate(PizzaScreens.RecentOrders.name) }
+                    navController.navigate(PizzaScreens.RecentOrders.name) },
+                onAddToFavouritesClicked = {pizzaToAdd->
+                    lifecycleScope.launch {
+                        sendRetrieveData.addFavourite(pizzaToAdd)
+                    }
+                },
+                onRemoveFromFavouritesClicked ={pizzaToRemove->
+                    lifecycleScope.launch {
+                        sendRetrieveData.removeFavourite(pizzaToRemove)
+                    }
+
+                },
+                onFavouritesButtonClicked = {
+                    navController.navigate(PizzaScreens.Favourites.name)
+                }
             )
 
         }
@@ -195,12 +209,12 @@ fun PizzasAtPovoApp(
         }
         composable(route= PizzaScreens.DetailsPizza.name){
             DetailsPizzaScreen().DetailsPizzaPage(
-                pizza = viewModel.getPizza(),
+                pizza = selectedPizza,
                 onBackButtonClicked = { navController.popBackStack() },
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
-                        sendRetrieveData.sendRTOrderd(viewModel.getPizza(), "12.30", 1)
-                        sendRetrieveData.sendOrderRetrievedPizza(viewModel.getPizza(), Timestamp.now(), 1)
+                        sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", 1)
+                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), 1)
                     }
                 }
 
@@ -223,6 +237,20 @@ fun PizzasAtPovoApp(
                 viewModel = viewModel
             )
         }
+
+        composable(route= PizzaScreens.Favourites.name){
+            FavouritesScreen().FavouritesPage(
+                onHomeButtonClicked = { navController.navigate(
+                    PizzaScreens.ListOfPizzas.name
+                )},
+                onDetailButtonClicked = {
+                    navController.navigate(PizzaScreens.DetailsPizza.name)},
+                viewModel = pizzaViewModel,
+
+            )
+        }
+
+
 
         composable(route= PizzaScreens.ChefOrders.name){
             val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
@@ -263,7 +291,7 @@ fun PizzasAtPovoApp(
 }
 
 
-suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData): Triple<ArrayList<Pizza>, ArrayList<ArrayList<Topping>>, ArrayList<Topping>> {
+suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData, pizzaViewModel: PizzaViewModel) {
     //TODO: try to do these as val
     var pizzas: ArrayList<Pizza> = arrayListOf()
     val pizzasToppings: ArrayList<ArrayList<Topping>> = arrayListOf()
@@ -331,7 +359,24 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
         ).show()
     }
 
-    return Triple(pizzas, pizzasToppings, toppings)
+    val favouritesRespone = sendRetrieveData.retrieveFavourites()
+
+    val favourites = if (favouritesRespone!=null){
+        favouritesRespone.retrievedObject?: arrayListOf()
+    }else{
+        arrayListOf()
+    }
+
+
+    pizzaViewModel.setPizzasToppings(pizzasToppings)
+    pizzaViewModel.setToppings(toppings)
+    pizzaViewModel.addPizzas(pizzas)
+    pizzaViewModel.setFavourites(favourites)
+
+
+
+
+
 }
 
 

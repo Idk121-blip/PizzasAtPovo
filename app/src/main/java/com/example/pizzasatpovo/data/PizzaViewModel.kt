@@ -3,6 +3,7 @@ package com.example.pizzasatpovo.data
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 
 class PizzaViewModel: ViewModel() {
@@ -12,17 +13,58 @@ class PizzaViewModel: ViewModel() {
     val pizzaToppingsList = _pizzaToppingsList.asStateFlow()
     private val _toppings= MutableStateFlow<ArrayList<Topping>>(ArrayList())
     val toppings = _toppings.asStateFlow()
+    private val _selectedPizza= MutableStateFlow(RetrievedPizza())
+    val selectedPizza= _selectedPizza.asStateFlow()
+    private val _favourites= MutableStateFlow<ArrayList<RetrievedPizza>>(arrayListOf())
+    val favourites= _favourites.asStateFlow()
 
     fun addPizzas(pizzaArrayList: ArrayList<Pizza>) {
-        _pizzas.value = pizzaArrayList
+        _pizzas.update {
+            pizzaArrayList
+        }
     }
 
     fun setPizzasToppings(toppings: ArrayList<ArrayList<Topping>>) {
-        _pizzaToppingsList.value = toppings
+        _pizzaToppingsList.update {
+            toppings
+        }
     }
 
     fun setToppings(toppings: ArrayList<Topping>){
-        _toppings.value = toppings
+        _toppings.update {
+            toppings
+        }
     }
+
+    fun setPizza(pizza: RetrievedPizza) {
+        _selectedPizza.update {
+            pizza
+        }
+    }
+
+    fun setFavourites(favourites: ArrayList<RetrievedPizza>){
+        _favourites.update {
+            favourites
+        }
+    }
+
+    fun addToFavourites(pizza: RetrievedPizza){
+        _favourites.update {
+            val temp = it
+            temp.add(pizza)
+            temp
+
+        }
+    }
+
+    fun removeFromFavourites(pizza: RetrievedPizza){
+        _favourites.update {
+            val temp = it
+            temp.remove(pizza)
+            temp
+        }
+    }
+
+
 
 }

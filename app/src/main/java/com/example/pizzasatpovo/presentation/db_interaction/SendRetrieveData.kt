@@ -182,6 +182,38 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza added successfully")
     }
 
+    suspend fun removeFavourite(pizzaName: String, googleAuthUiClient: GoogleAuthUiClient? = null): ResponseData<Boolean>? = auth.currentUser?.run{
+        val db= Firebase.firestore
+        val userRef= db.collection("users").document(uid)
+        val user= if (googleAuthUiClient == null){
+            userRef.get().await().toObject(UserData::class.java)
+        }else{
+            googleAuthUiClient.retrieveUserData()
+        }
+        if (user==null){
+            return ResponseData()
+        }
+        val pizzaRef= db.collection("pizzas").document(pizzaName)
+        val pizzaExist = pizzaRef.get().await().exists()
+        if (!pizzaExist){
+            return ResponseData(false, "Pizza doesn't exists")
+        }
+
+        var favourites = user.favourites
+
+        if (favourites.isNullOrEmpty()){
+            return ResponseData(false, "No favourites saved")
+        }else{
+            favourites.remove(pizzaRef)
+        }
+
+        user.favourites=favourites
+        userRef.set(user).await()
+
+        return ResponseData(true, "Pizza removed successfully")
+    }
+
+
     suspend fun retrieveFavourites(): ResponseData<ArrayList<RetrievedPizza>>? = auth.currentUser?.run {
         val user = googleAuthUiClient.retrieveUserData() ?: return ResponseData(message= "Error fetching the user")
         val favourites: ArrayList<RetrievedPizza> = arrayListOf()
