@@ -243,7 +243,10 @@ fun PizzasAtPovoApp(
                 onHomeButtonClicked = { navController.navigate(
                     PizzaScreens.ListOfPizzas.name
                 )},
-                viewModel = pizzaViewModel
+                onDetailButtonClicked = {
+                    navController.navigate(PizzaScreens.DetailsPizza.name)},
+                viewModel = pizzaViewModel,
+
             )
         }
 

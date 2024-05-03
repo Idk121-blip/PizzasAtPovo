@@ -1,5 +1,7 @@
 package com.example.pizzasatpovo.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,6 +45,7 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorMatrixColorFilter
 import androidx.compose.ui.graphics.vector.DefaultTintColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -66,6 +69,7 @@ class FavouritesScreen {
     fun FavouritesPage(
         onOrdersButtonClicked: () -> Unit = {},
         onProfileButtonClicked: () -> Unit = {},
+        onDetailButtonClicked: () -> Unit = {},
         onAddPizzaButtonClicked: () -> Unit = {},
         onHomeButtonClicked: () -> Unit = {},
         onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
@@ -104,6 +108,7 @@ class FavouritesScreen {
                         pizzas = pizzas,
                         toppings = toppings,
                         viewModel = viewModel,
+                        onDetailsButtonClicked = onDetailButtonClicked,
                         onAddToFavouritesClicked = onAddToFavouritesClicked,
                         onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
                     )
@@ -144,7 +149,7 @@ class FavouritesScreen {
                     pizza = favourites[i],
                     onNavbarButtonClicked = {
                         viewModel.setPizza(
-                            RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i])
+                            RetrievedPizza(name= favourites[i].name, image = favourites[i].image, toppings = favourites[i].toppings)
                         )
                         onDetailsButtonClicked()
                     },
@@ -183,7 +188,7 @@ class FavouritesScreen {
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
         }
         toppingForCard= toppingForCard.removeSuffix(", ")
-
+        val context = LocalContext.current
         Card(
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
@@ -196,7 +201,6 @@ class FavouritesScreen {
 
         ) {
             var favourite by remember { mutableStateOf(true) }
-            val allToppings by viewModel.toppings.collectAsStateWithLifecycle()
             val pizzaToppings = pizza.toppings
 
             var available = true
@@ -217,7 +221,16 @@ class FavouritesScreen {
                     modifier = modifier
                         .fillMaxWidth()
                         .clickable {
-                            onNavbarButtonClicked()
+                            if(available){
+                                onNavbarButtonClicked()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Pizza non disponibile",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
                         }
                 ) {
                     AsyncImage(
@@ -267,6 +280,7 @@ class FavouritesScreen {
                                     modifier = modifier
                                         .align(Alignment.Bottom)
                                         .fillMaxWidth()
+                                        .padding(end = 10.dp)
                                 )
                             }
                         }
