@@ -117,7 +117,7 @@ class AddPizzaScreen {
                     modifier = modifier
                         .fillMaxSize()
                 ){
-                    DetailsPizzaScreen().orderDetails(title = "La tua creazione")
+                    //DetailsPizzaScreen().orderDetails(title = "La tua creazione", pizza =)
                 }
             }
             Column(

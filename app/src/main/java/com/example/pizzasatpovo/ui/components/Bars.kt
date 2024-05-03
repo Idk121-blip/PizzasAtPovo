@@ -185,7 +185,10 @@ class Bars() {
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable { onFavouritesButtonClicked() }
+                    .clickable (
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { onFavouritesButtonClicked() }
             )
             Spacer(
                 modifier = modifier
