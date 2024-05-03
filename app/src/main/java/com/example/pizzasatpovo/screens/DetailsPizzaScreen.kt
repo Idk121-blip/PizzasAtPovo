@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.screens
 
+import PickerExample
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
@@ -231,19 +232,19 @@ class DetailsPizzaScreen {
                             text = "Quantità: ",
                             modifier = modifier
                                 .padding(start = 20.dp)
-                                .height(40.dp)
+                                .height(45.dp)
                         )
                         Text(
                             text = "Orario: ",
                             modifier = modifier
                                 .padding(start = 20.dp)
-                                .height(40.dp)
+                                .height(45.dp)
                         )
                         Text(
                             text = "Totale: ",
                             modifier = modifier
                                 .padding(start = 20.dp)
-                                .height(40.dp)
+                                .height(45.dp)
                         )
 
                     }
@@ -291,14 +292,14 @@ class DetailsPizzaScreen {
                                 .padding(0.dp, 15.dp)
 
                         ) {
-                            Text(text = "ora e minuti di prelevo")
+                            PickerExample()
                         }
                         val cost = 4.40F * nPizzas
                         Text(
                             text = "$ $cost",
                             fontWeight = FontWeight.Bold,
                             modifier = modifier
-                                .padding(10.dp, 5.dp)
+                                .padding(10.dp, 0.dp)
                         )
 
                     }
