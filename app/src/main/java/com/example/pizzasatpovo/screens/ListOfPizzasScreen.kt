@@ -54,64 +54,40 @@ import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class ListOfPizzasScreen() {
 
     @Composable
     fun ListOfPizzasPage(
         navViewModel: NavigationViewModel,
-        onDetailButtonClicked: () -> Unit = {},
-        onOrdersButtonClicked: () -> Unit = {},
-        onProfileButtonClicked: () -> Unit = {},
-        onAddPizzaButtonClicked: () -> Unit = {},
-        onFavouritesButtonClicked: () -> Unit = {},
-        onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
-        onRemoveFromFavouritesClicked:(String)->Unit={},
+        viewModel: PizzaViewModel,
         pizzas: ArrayList<Pizza> = arrayListOf(),
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
-        viewModel: PizzaViewModel,
-        modifier: Modifier = Modifier,
-
-        ){
-
-        Box(modifier = modifier
-            .fillMaxSize()
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = "Background image",
-                contentScale = ContentScale.FillBounds,
-                alpha = 0.5F,
-                modifier = modifier
-                    .fillMaxSize()
-            )
-        }
-
-        Box(
+        onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
+        onRemoveFromFavouritesClicked:(String)->Unit={},
+        modifier: Modifier = Modifier
+    ){
+        BackgroundImage()
+        //Page content
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .fillMaxSize()
-        ) {
-            Column {
-                Bars().AppBar()
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier
-                        .fillMaxSize()
-                ) {
-                    SearchBar(
-                        modifier = modifier
-                            .padding(10.dp)
-                    )
-                    ListOfPizzas(
-                        navViewModel = navViewModel,
-                        pizzas = pizzas,
-                        toppings = toppings,
-                        viewModel = viewModel,
-                        onAddToFavouritesClicked = onAddToFavouritesClicked,
-                        onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
-                    )
-                }
-            }
+        ){
+            Bars().AppBar()
+            SearchBar(
+                modifier = modifier
+                    .padding(10.dp)
+            )
+            ListOfPizzas(
+                navViewModel = navViewModel,
+                pizzas = pizzas,
+                toppings = toppings,
+                viewModel = viewModel,
+                onAddToFavouritesClicked = onAddToFavouritesClicked,
+                onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
+            )
         }
         Bars().BottomBar(
             screen = PizzaScreens.ListOfPizzas,
@@ -171,10 +147,8 @@ class ListOfPizzasScreen() {
             {
                 PizzaCard(
                     //TODO! check names
-                    onNavbarButtonClicked = {
-                        viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
-                        navViewModel.GoToDetails()
-                    },
+                    viewModel = viewModel,
+                    navViewModel = navViewModel,
                     image = pizzas[i].image,
                     name = pizzas[i].name,
                     toppings = toppings[i],
@@ -201,7 +175,8 @@ class ListOfPizzasScreen() {
 
     @Composable
     fun PizzaCard(
-        onNavbarButtonClicked: () -> Unit,
+        viewModel: PizzaViewModel,
+        navViewModel: NavigationViewModel,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
         image: String,
@@ -224,6 +199,7 @@ class ListOfPizzasScreen() {
                 allergens.add(topping.allergens)
             }
         }
+        var favourite by remember {mutableStateOf(isFavourite)}
 
         Card(
             shape = RoundedCornerShape(15.dp),
@@ -234,9 +210,7 @@ class ListOfPizzasScreen() {
                 .width(350.dp)
                 .height(140.dp)
                 .padding(0.dp, 10.dp)
-
         ) {
-            var favourite by remember {mutableStateOf(isFavourite)}
             Box (
                 modifier = modifier
                     .fillMaxWidth()
@@ -245,11 +219,12 @@ class ListOfPizzasScreen() {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
-                        .clickable (
+                        .clickable(
                             interactionSource = interactionSource,
                             indication = null
                         ) {
-                            onNavbarButtonClicked()
+                            viewModel.setPizza(RetrievedPizza(name= name, image = image, toppings = toppings))
+                            navViewModel.GoToDetails()
                         }
                 ) {
                     AsyncImage(

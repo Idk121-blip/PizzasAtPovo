@@ -167,16 +167,6 @@ fun PizzasAtPovoApp(
                 pizzas= pizzas,
                 toppings = pizzasToppings,
                 viewModel = pizzaViewModel,
-                onDetailButtonClicked = {
-                navController.navigate(PizzaScreens.DetailsPizza.name)},
-                onProfileButtonClicked = {
-                    navController.navigate(PizzaScreens.Account.name)
-
-                },
-                onAddPizzaButtonClicked = {
-                    navController.navigate(PizzaScreens.NewPizza.name) },
-                onOrdersButtonClicked = {
-                    navController.navigate(PizzaScreens.RecentOrders.name) },
                 onAddToFavouritesClicked = {pizzaToAdd->
                     lifecycleScope.launch {
                         sendRetrieveData.addFavourite(pizzaToAdd)
@@ -188,9 +178,6 @@ fun PizzasAtPovoApp(
                     }
 
                 },
-                onFavouritesButtonClicked = {
-                    navController.navigate(PizzaScreens.Favourites.name)
-                }
             )
 
         }
