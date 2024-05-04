@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
+import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
@@ -55,15 +56,10 @@ import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
 
 class ListOfPizzasScreen() {
-//    private val sizeTitle: TextUnit = 50.sp
-//    private val sizeSubtitle: TextUnit = 35.sp
-//    private val sizeText: TextUnit = 40.sp
-    private val weightText: FontWeight = FontWeight.Bold
-//    private val uniColor: Color =  Color(0xffce0e2d)
-//    private val dimIcons: Dp = 30.dp
 
     @Composable
     fun ListOfPizzasPage(
+        navViewModel: NavigationViewModel,
         onDetailButtonClicked: () -> Unit = {},
         onOrdersButtonClicked: () -> Unit = {},
         onProfileButtonClicked: () -> Unit = {},
@@ -107,10 +103,10 @@ class ListOfPizzasScreen() {
                             .padding(10.dp)
                     )
                     ListOfPizzas(
-                        onDetailButtonClicked,
-                        pizzas,
-                        toppings,
-                        viewModel,
+                        navViewModel = navViewModel,
+                        pizzas = pizzas,
+                        toppings = toppings,
+                        viewModel = viewModel,
                         onAddToFavouritesClicked = onAddToFavouritesClicked,
                         onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
                     )
@@ -119,10 +115,7 @@ class ListOfPizzasScreen() {
         }
         Bars().BottomBar(
             screen = PizzaScreens.ListOfPizzas,
-            onProfileButtonClicked = onProfileButtonClicked,
-            onAddPizzaButtonClicked = onAddPizzaButtonClicked,
-            onOrdersButtonClicked = onOrdersButtonClicked,
-            onFavouritesButtonClicked = onFavouritesButtonClicked
+            navViewModel = navViewModel
         )
     }
 
@@ -149,13 +142,12 @@ class ListOfPizzasScreen() {
             modifier = modifier
                 .clip(CircleShape)
                 .background(Color.White)
-                //.height(40.dp)
         )
     }
 
     @Composable
     fun ListOfPizzas(
-        onDetailsButtonClicked: () -> Unit = {},
+        navViewModel: NavigationViewModel,
         pizzas: ArrayList<Pizza>,
         toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: PizzaViewModel,
@@ -181,7 +173,7 @@ class ListOfPizzasScreen() {
                     //TODO! check names
                     onNavbarButtonClicked = {
                         viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
-                        onDetailsButtonClicked()
+                        navViewModel.GoToDetails()
                     },
                     image = pizzas[i].image,
                     name = pizzas[i].name,
@@ -233,9 +225,6 @@ class ListOfPizzasScreen() {
             }
         }
 
-
-
-
         Card(
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
@@ -253,7 +242,6 @@ class ListOfPizzasScreen() {
                     .fillMaxWidth()
                     .padding(10.dp, 15.dp)
             ){
-
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
@@ -272,7 +260,7 @@ class ListOfPizzasScreen() {
                     Column {
                         Text(
                             text = name,
-                            fontWeight = weightText,
+                            fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
                         Text(
@@ -290,7 +278,6 @@ class ListOfPizzasScreen() {
                                     modifier = modifier.align(Alignment.Bottom)
                                 )
                             }
-
                         }
                     }
                 }
@@ -308,11 +295,8 @@ class ListOfPizzasScreen() {
                             } else {
                                 onRemoveFromFavouritesClicked(name)
                             }
-
                             favourite = !favourite
                         }
-
-
                 )
             }
         }

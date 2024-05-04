@@ -20,6 +20,9 @@ class PizzaViewModel: ViewModel() {
     private val _numberOfPizzaToOrder= MutableStateFlow<Int>(1)
     val numberOfPizzaToOrder= _numberOfPizzaToOrder.asStateFlow()
 
+
+
+
     fun addPizzas(pizzaArrayList: ArrayList<Pizza>) {
         _pizzas.update {
             pizzaArrayList

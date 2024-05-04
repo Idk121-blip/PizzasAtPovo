@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
                 //sign_in_button()
 
                 Surface(){
+
                     PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
                 }
 

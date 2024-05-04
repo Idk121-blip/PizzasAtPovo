@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
+import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.screens.PizzaScreens
 
 class Bars() {
@@ -105,11 +106,7 @@ class Bars() {
     @Composable
     fun BottomBar(
         screen: PizzaScreens,
-        onHomeButtonClicked: () -> Unit = {},
-        onProfileButtonClicked: () -> Unit={},
-        onFavouritesButtonClicked:()->Unit = {},
-        onAddPizzaButtonClicked:()->Unit={},
-        onOrdersButtonClicked:()->Unit={},
+        navViewModel: NavigationViewModel,
         modifier: Modifier = Modifier
     ){
         Box(
@@ -133,11 +130,7 @@ class Bars() {
             ) {
                 Navbar(
                     screen = screen,
-                    onHomeButtonClicked = onHomeButtonClicked,
-                    onProfileButtonClicked= onProfileButtonClicked,
-                    onFavouritesButtonClicked=onFavouritesButtonClicked,
-                    onAddPizzaButtonClicked=onAddPizzaButtonClicked,
-                    onOrdersButtonClicked=onOrdersButtonClicked,
+                    navController = navViewModel,
                     modifier = modifier
                         .align(Alignment.BottomCenter)
                         .padding(0.dp, 10.dp)
@@ -149,17 +142,12 @@ class Bars() {
     @Composable
     fun Navbar(
         screen: PizzaScreens,
-        onHomeButtonClicked: () -> Unit = {},
-        onProfileButtonClicked: () -> Unit= {},
-        onFavouritesButtonClicked:()->Unit = {},
-        onAddPizzaButtonClicked:()->Unit={},
-        onOrdersButtonClicked:()->Unit={},
+        navController: NavigationViewModel,
         modifier : Modifier = Modifier
     ){
         val interactionSource = remember { MutableInteractionSource() }
 
         Row(
-            //verticalAlignment = Alignment.Bottom,
             modifier = modifier
                 .fillMaxWidth()
                 .padding(1.dp, 0.dp)
@@ -178,7 +166,9 @@ class Bars() {
                     .clickable (
                         interactionSource = interactionSource,
                         indication = null
-                    ) { onHomeButtonClicked() }
+                    ) {
+                        navController.GoToListOfPizzas()
+                    }
             )
             Image(
                 painter = painterResource(
@@ -193,7 +183,9 @@ class Bars() {
                     .clickable (
                         interactionSource = interactionSource,
                         indication = null
-                    ) { onFavouritesButtonClicked() }
+                    ) {
+                        navController.GoToFavourites()
+                    }
             )
             Spacer(
                 modifier = modifier
@@ -213,7 +205,9 @@ class Bars() {
                         interactionSource = interactionSource,
                         indication = null
                     )
-                    { onOrdersButtonClicked() }
+                    {
+                        navController.GoToOrders()
+                    }
             )
             Image(
                 painter = painterResource(
@@ -229,7 +223,7 @@ class Bars() {
                         interactionSource = interactionSource,
                         indication = null
                     )  {
-                        onProfileButtonClicked()
+                        navController.GoToAccount()
                     }
             )
 
@@ -244,13 +238,13 @@ class Bars() {
                     modifier = modifier
                 )
             },
-            onClick = { onAddPizzaButtonClicked() },
+            onClick = {
+                navController.GoToAddPizza()
+            },
             contentPadding = PaddingValues(),
             modifier = modifier
                 .size(50.dp)
                 .offset(0.dp, (-15).dp)
-
         )
-
     }
 }
