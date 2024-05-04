@@ -42,6 +42,7 @@ fun Allergen(
     ){
         val context = LocalContext.current
         val name= allergen.plus("_allergen").lowercase()
+        println(name)
         val drawableId = remember(name) {
             context.resources.getIdentifier(
                 name,

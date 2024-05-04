@@ -35,10 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.ui.components.Bars
-import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.TooltipBox
 import com.example.pizzasatpovo.data.NavigationViewModel
-import androidx.compose.material3.rememberTooltipState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pizzasatpovo.data.PersonalizedOrderViewMode
@@ -71,33 +68,6 @@ class AddPizzaScreen {
                     personalizedOrderViewMode= personalizedOrderViewMode,
                     onOrderButtonClicked= onOrderButtonClicked )
                 //White container
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 Column (
                     verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
