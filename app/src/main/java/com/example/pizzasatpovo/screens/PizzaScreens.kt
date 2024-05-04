@@ -242,12 +242,7 @@ fun PizzasAtPovoApp(
 
         composable(route= PizzaScreens.Favourites.name){
             FavouritesScreen().FavouritesPage(
-                navController = controller,
-                onHomeButtonClicked = { navController.navigate(
-                    PizzaScreens.ListOfPizzas.name
-                )},
-                onDetailButtonClicked = {
-                    navController.navigate(PizzaScreens.DetailsPizza.name)},
+                navViewModel = controller,
                 viewModel = pizzaViewModel,
                 onAddToFavouritesClicked = {pizzaToAdd->
                     lifecycleScope.launch {
@@ -258,7 +253,6 @@ fun PizzasAtPovoApp(
                     lifecycleScope.launch {
                         sendRetrieveData.removeFavourite(pizzaToRemove)
                     }
-
                 },
             )
         }

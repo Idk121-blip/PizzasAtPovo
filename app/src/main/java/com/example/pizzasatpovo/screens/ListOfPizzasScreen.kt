@@ -187,16 +187,16 @@ class ListOfPizzasScreen() {
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
         }
         toppingForCard= toppingForCard.removeSuffix(", ")
-        val interactionSource = remember { MutableInteractionSource() }
 
         val allergens:ArrayList<String> = arrayListOf()
-
         for (topping in toppings){
             if (!allergens.contains(topping.allergens)){
                 allergens.add(topping.allergens)
             }
         }
         var favourite by remember {mutableStateOf(isFavourite)}
+
+        val interactionSource = remember { MutableInteractionSource() }
 
         Card(
             shape = RoundedCornerShape(15.dp),
@@ -225,7 +225,9 @@ class ListOfPizzasScreen() {
                         }
                 ) {
                     AsyncImage(
-                        model = image, contentDescription = "pizza image", modifier = modifier
+                        model = image,
+                        contentDescription = "pizza image",
+                        modifier = modifier
                             .fillMaxHeight()
                             .padding(end = 15.dp)
                     )
@@ -242,10 +244,9 @@ class ListOfPizzasScreen() {
                             fontSize = 16.sp
                         )
                         Row(
-                            modifier = modifier
-                                .fillMaxSize()
+                            verticalAlignment = Alignment.Bottom,
                         ) {
-                            for (allergen in allergens){
+                            allergens.forEach {_ ->
                                 Allergen(
                                     modifier = modifier.align(Alignment.Bottom)
                                 )

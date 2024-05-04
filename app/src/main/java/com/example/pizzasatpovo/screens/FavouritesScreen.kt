@@ -33,9 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,44 +41,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
-import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.ui.components.Allergen
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 
 class FavouritesScreen {
     @Composable
     fun FavouritesPage(
-        navController: NavigationViewModel,
-        onOrdersButtonClicked: () -> Unit = {},
-        onProfileButtonClicked: () -> Unit = {},
-        onDetailButtonClicked: () -> Unit = {},
-        onAddPizzaButtonClicked: () -> Unit = {},
-        onHomeButtonClicked: () -> Unit = {},
+        navViewModel: NavigationViewModel,
         onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
         onRemoveFromFavouritesClicked:(String)->Unit={},
-        pizzas: ArrayList<Pizza> = arrayListOf(),
-        toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier
     ){
-        val favourites by viewModel.favourites.collectAsStateWithLifecycle()
-        Box(modifier = modifier
-            .fillMaxSize()
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = "Background image",
-                contentScale = ContentScale.FillBounds,
-                alpha = 0.5F,
-                modifier = modifier
-                    .fillMaxSize()
-            )
-        }
+        BackgroundImage()
 
         Box(
             modifier = modifier
@@ -88,104 +65,82 @@ class FavouritesScreen {
         ) {
             Column {
                 Bars().AppBar()
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier
-                        .fillMaxSize()
-                ) {
-                    ListOfPizzas(
-                        pizzas = pizzas,
-                        toppings = toppings,
-                        viewModel = viewModel,
-                        onDetailsButtonClicked = onDetailButtonClicked,
-                        onAddToFavouritesClicked = onAddToFavouritesClicked,
-                        onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
-                    )
-                }
+                ListOfPizzas(
+                    viewModel = viewModel,
+                    navViewModel = navViewModel,
+                    onAddToFavouritesClicked = onAddToFavouritesClicked,
+                    onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
+                )
             }
         }
         Bars().BottomBar(
             screen = PizzaScreens.Favourites,
-            navViewModel = navController,
+            navViewModel = navViewModel,
         )
     }
 
     @Composable
     fun ListOfPizzas(
-        onDetailsButtonClicked: () -> Unit = {},
-        pizzas: ArrayList<Pizza>,
-        toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: PizzaViewModel,
+        navViewModel: NavigationViewModel,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
         modifier: Modifier = Modifier
     ){
         val favourites by viewModel.favourites.collectAsStateWithLifecycle()
-
-
-
-
-        Column (
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .verticalScroll(rememberScrollState())
-                .padding(30.dp, 10.dp)
-        ){
-
-            for (i in 0..<favourites.size)
-            {
-                var x by remember {
-                    mutableStateOf(true)
-                }
-                if (x) {
-                    PizzaCard(
-                        //TODO! check names
-                        pizza = favourites[i],
-                        onNavbarButtonClicked = {
-                            viewModel.setPizza(
-                                RetrievedPizza(
-                                    name = favourites[i].name,
-                                    image = favourites[i].image,
-                                    toppings = favourites[i].toppings
-                                )
-                            )
-
-                            onDetailsButtonClicked()
-                        },
-                        viewModel = viewModel,
-                        onAddToFavouritesClicked =
-                        {
-                            onAddToFavouritesClicked(it)
-                            val retPizza = RetrievedPizza(
-                                name = favourites[i].name,
-                                toppings = favourites[i].toppings,
-                                favourites[i].image
-                            )
-                            viewModel.addToFavourites(retPizza)
-                        },
-                        onRemoveFromFavouritesClicked = {
-                            onRemoveFromFavouritesClicked(it)
-                            val retPizza = RetrievedPizza(
-                                name = favourites[i].name,
-                                toppings = favourites[i].toppings,
-                                favourites[i].image
-                            )
-                            viewModel.removeFromFavourites(retPizza)
-                            x = !x
-                        }
-                    )
-                }
-            }
-            Spacer(
+                .fillMaxSize()
+        ) {
+            Column(
                 modifier = modifier
-                    .height(60.dp)
-            )
+                    .verticalScroll(rememberScrollState())
+                    .padding(30.dp, 10.dp)
+            ) {
+
+                for (i in 0..<favourites.size) {
+                    var x by remember {
+                        mutableStateOf(true)
+                    }
+                    if (x) {
+                        val retPizza = RetrievedPizza(
+                            name = favourites[i].name,
+                            toppings = favourites[i].toppings,
+                            favourites[i].image
+                        )
+                        PizzaCard(
+                            navViewModel = navViewModel,
+                            pizza = favourites[i],
+                            onNavbarButtonClicked = {
+                                viewModel.setPizza(retPizza)
+                                navViewModel.goToDetails()
+                            },
+                            onAddToFavouritesClicked =
+                            {
+                                onAddToFavouritesClicked(it)
+                                viewModel.addToFavourites(retPizza)
+                            },
+                            onRemoveFromFavouritesClicked = {
+                                onRemoveFromFavouritesClicked(it)
+                                viewModel.removeFromFavourites(retPizza)
+                                x = !x
+                            }
+                        )
+                    }
+                }
+                Spacer(
+                    modifier = modifier
+                        .height(60.dp)
+                )
+            }
         }
     }
 
     @Composable
     fun PizzaCard(
+        navViewModel: NavigationViewModel,
         pizza: RetrievedPizza,
-        viewModel: PizzaViewModel,
         onNavbarButtonClicked: () -> Unit,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
@@ -196,6 +151,28 @@ class FavouritesScreen {
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
         }
         toppingForCard= toppingForCard.removeSuffix(", ")
+
+        var favourite by remember { mutableStateOf(true) }
+
+        val pizzaToppings = pizza.toppings
+
+        var available = true
+        var i = 0
+        while(available && i < pizzaToppings.size){
+            if(!pizzaToppings[i].availability){
+                available = false
+            }
+            i++;
+        }
+
+        val allergens:ArrayList<String> = arrayListOf()
+        for (topping in pizzaToppings){
+            if (!allergens.contains(topping.allergens)){
+                allergens.add(topping.allergens)
+            }
+        }
+
+        val interactionSource = remember { MutableInteractionSource() }
         val context = LocalContext.current
         Card(
             shape = RoundedCornerShape(15.dp),
@@ -206,32 +183,7 @@ class FavouritesScreen {
                 .width(350.dp)
                 .height(140.dp)
                 .padding(0.dp, 10.dp)
-
         ) {
-            var favourite by remember { mutableStateOf(true) }
-            val pizzaToppings = pizza.toppings
-            val interactionSource = remember { MutableInteractionSource() }
-            var available = true
-            var i = 0
-            while(available && i < pizzaToppings.size){
-                if(!pizzaToppings[i].availability){
-                    available = false
-                }
-                i++;
-            }
-
-
-            val allergens:ArrayList<String> = arrayListOf()
-
-            for (topping in pizzaToppings){
-                if (!allergens.contains(topping.allergens)){
-                    allergens.add(topping.allergens)
-                }
-            }
-//            println("Available: $available")
-
-
-
             Box (
                 modifier = modifier
                     .fillMaxWidth()
@@ -245,7 +197,7 @@ class FavouritesScreen {
                             indication = null
                         ) {
                             if (available) {
-                                onNavbarButtonClicked()
+                                navViewModel.goToDetails()
                             } else {
                                 Toast
                                     .makeText(
@@ -287,7 +239,7 @@ class FavouritesScreen {
                         Row(
                             verticalAlignment = Alignment.Bottom,
                         ) {
-                            allergens.forEach {allergen ->
+                            allergens.forEach {_ ->
                                 Allergen(
                                     modifier = modifier.align(Alignment.Bottom)
                                 )
