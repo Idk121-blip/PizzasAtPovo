@@ -1,9 +1,7 @@
 package com.example.pizzasatpovo.screens
 
 import PickerExample
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,17 +25,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,18 +40,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
-import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 
 class DetailsPizzaScreen {
@@ -93,10 +82,11 @@ class DetailsPizzaScreen {
                 .fillMaxSize()
         ) {
             Column {
-                Bars().AppBarWithBackBtn(
-                    pizzasName = pizza.name,
-                    onBackButtonClicked = onBackButtonClicked
-                )
+//                Bars().AppBarWithBackBtn(
+//                    pizzasName = pizza.name,
+//                    onBackButtonClicked = onBackButtonClicked,
+//                    navViewModel = na
+//                )
                 Column (
                     modifier = modifier
                         .padding(50.dp, 10.dp)
@@ -127,9 +117,10 @@ class DetailsPizzaScreen {
                         modifier = modifier
                             .padding(start = 70.dp)
                     ){
-                        Allergen()
-                        Allergen()
-                        Allergen()
+                        //TODO
+//                        Allergen()
+//                        Allergen()
+//                        Allergen()
                     }
                 
             }
@@ -145,7 +136,7 @@ class DetailsPizzaScreen {
             Box(modifier = modifier){
                 orderDetails(
                     onOrderButtonClicked= onOrderButtonClicked,
-                    pizza_name = pizza.name,
+                    pizzaName = pizza.name,
                     viewModel = viewModel
                 )
             }
@@ -173,9 +164,8 @@ class DetailsPizzaScreen {
 
     @Composable
     fun orderDetails(
-        title: String = "",//Sembra inutile
         onOrderButtonClicked: () -> Unit={},
-        pizza_name:String,
+        pizzaName:String,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier
     ){
@@ -201,7 +191,7 @@ class DetailsPizzaScreen {
             }, sendOrder = {
                 onOrderButtonClicked()
                 customOrderSentDialog.value = true
-            }, pizze, pizza_name )
+            }, pizze, pizzaName )
         }
         Column (
             modifier = modifier
