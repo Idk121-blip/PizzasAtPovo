@@ -57,6 +57,7 @@ import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
+import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 
@@ -65,6 +66,7 @@ class AddPizzaScreen {
     fun AddPizzaPage(
         onBackButtonClicked: () -> Unit = {},
         toppings: ArrayList<Topping> = arrayListOf(),
+        viewModel: PizzaViewModel,
         modifier: Modifier = Modifier
     ){
         Box(modifier = modifier
@@ -117,7 +119,7 @@ class AddPizzaScreen {
                     modifier = modifier
                         .fillMaxSize()
                 ){
-                    //DetailsPizzaScreen().orderDetails(title = "La tua creazione", pizza =)
+                    DetailsPizzaScreen().orderDetails(title = "La tua creazione", pizza_name = "La tua pizza", viewModel = viewModel)
                 }
             }
             Column(

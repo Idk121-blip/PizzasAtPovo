@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -64,6 +65,7 @@ class DetailsPizzaScreen {
         pizza: RetrievedPizza,
         onBackButtonClicked: () -> Unit = {},
         onOrderButtonClicked: () -> Unit={},
+        viewModel: PizzaViewModel,
         modifier: Modifier = Modifier
     ){
         var listOfToppings = ""
@@ -142,7 +144,8 @@ class DetailsPizzaScreen {
             Box(modifier = modifier){
                 orderDetails(
                     onOrderButtonClicked= onOrderButtonClicked,
-                    pizza = pizza
+                    pizza_name = pizza.name,
+                    viewModel = viewModel
                 )
             }
 
@@ -169,12 +172,15 @@ class DetailsPizzaScreen {
 
     @Composable
     fun orderDetails(
-        title: String = "",
+        title: String = "",//Sembra inutile
         onOrderButtonClicked: () -> Unit={},
-        pizza:RetrievedPizza,
+        pizza_name:String,
+        viewModel: PizzaViewModel,
         modifier: Modifier = Modifier
     ){
-        val nPizzas by remember { mutableIntStateOf(1) }
+
+        val pizze by viewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
+        //val nPizzas by remember { mutableIntStateOf(pizze) }
 
         val customOrderSentDialog =  remember { mutableStateOf(false) }
 
@@ -192,8 +198,9 @@ class DetailsPizzaScreen {
             CustomDialog(setShowDialog = {
                 showDialog.value = it
             }, sendOrder = {
+                onOrderButtonClicked()
                 customOrderSentDialog.value = true
-            }, nPizzas, pizza.name )
+            }, pizze, pizza_name )
         }
         Column (
             modifier = modifier
@@ -208,18 +215,18 @@ class DetailsPizzaScreen {
                 .padding(20.dp, top = 175.dp)
         ){
 
-                if(title != ""){
-                    Text(
-                        text = title,
-                        fontWeight = FontWeight.Bold,
-                        modifier = modifier
-                            .padding(bottom = 20.dp)
-                            //.fillMaxWidth()
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }else{
+//                if(title != ""){
+//                    Text(
+//                        text = title,
+//                        fontWeight = FontWeight.Bold,
+//                        modifier = modifier
+//                            .padding(bottom = 20.dp)
+//                            //.fillMaxWidth()
+//                            .align(Alignment.CenterHorizontally)
+//                    )
+//                }else{
                     Spacer(modifier = modifier.height(20.dp))
-                }
+//                }
                 Row(
                     modifier = modifier
                 ) {
@@ -250,11 +257,11 @@ class DetailsPizzaScreen {
                     Column {
                         Row {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { viewModel.decreaseNumberOfPizza() },
                                 shape = RoundedCornerShape(5.dp),
                                 content = {
                                     Icon(
-                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        imageVector = Icons.Default.ArrowDropDown,
                                         contentDescription = "Add pizza",
                                         modifier = modifier
                                     )
@@ -264,14 +271,14 @@ class DetailsPizzaScreen {
                                     .size(30.dp)
                             )
                             Text(
-                                text = nPizzas.toString(),
+                                text = pizze.toString(),
                                 fontWeight = FontWeight.Bold,
                                 modifier = modifier
                                     .padding(10.dp, 0.dp)
                                     .align(Alignment.CenterVertically)
                             )
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { viewModel.increaseNumberOfPizza() },
                                 shape = RoundedCornerShape(5.dp),
                                 content = {
                                     Icon(
@@ -293,9 +300,9 @@ class DetailsPizzaScreen {
                         ) {
                             Text(text = "ora e minuti di prelevo")
                         }
-                        val cost = 4.40F * nPizzas
+                        val cost = 4.40F * pizze
                         Text(
-                            text = "$ $cost",
+                            text = "€ $cost",
                             fontWeight = FontWeight.Bold,
                             modifier = modifier
                                 .padding(10.dp, 5.dp)

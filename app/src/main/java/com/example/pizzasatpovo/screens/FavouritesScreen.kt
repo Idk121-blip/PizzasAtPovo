@@ -137,6 +137,9 @@ class FavouritesScreen {
     ){
         val favourites by viewModel.favourites.collectAsStateWithLifecycle()
 
+
+
+
         Column (
             modifier = modifier
                 .verticalScroll(rememberScrollState())
@@ -145,28 +148,47 @@ class FavouritesScreen {
 
             for (i in 0..<favourites.size)
             {
-                PizzaCard(
-                    //TODO! check names
-                    pizza = favourites[i],
-                    onNavbarButtonClicked = {
-                        viewModel.setPizza(
-                            RetrievedPizza(name= favourites[i].name, image = favourites[i].image, toppings = favourites[i].toppings)
-                        )
-                        onDetailsButtonClicked()
-                    },
-                    viewModel = viewModel,
-                    onAddToFavouritesClicked =
-                    {
-                        onAddToFavouritesClicked(it)
-                        val retPizza= RetrievedPizza(name= favourites[i].name, toppings= favourites[i].toppings, favourites[i].image)
-                        viewModel.addToFavourites(retPizza)
-                    },
-                    onRemoveFromFavouritesClicked = {
-                        onRemoveFromFavouritesClicked(it)
-                        val retPizza= RetrievedPizza(name= favourites[i].name, toppings= favourites[i].toppings, favourites[i].image)
-                        viewModel.removeFromFavourites(retPizza)
-                    }
-                )
+                var x by remember {
+                    mutableStateOf(true)
+                }
+                if (x) {
+                    PizzaCard(
+                        //TODO! check names
+                        pizza = favourites[i],
+                        onNavbarButtonClicked = {
+                            viewModel.setPizza(
+                                RetrievedPizza(
+                                    name = favourites[i].name,
+                                    image = favourites[i].image,
+                                    toppings = favourites[i].toppings
+                                )
+                            )
+
+                            onDetailsButtonClicked()
+                        },
+                        viewModel = viewModel,
+                        onAddToFavouritesClicked =
+                        {
+                            onAddToFavouritesClicked(it)
+                            val retPizza = RetrievedPizza(
+                                name = favourites[i].name,
+                                toppings = favourites[i].toppings,
+                                favourites[i].image
+                            )
+                            viewModel.addToFavourites(retPizza)
+                        },
+                        onRemoveFromFavouritesClicked = {
+                            onRemoveFromFavouritesClicked(it)
+                            val retPizza = RetrievedPizza(
+                                name = favourites[i].name,
+                                toppings = favourites[i].toppings,
+                                favourites[i].image
+                            )
+                            viewModel.removeFromFavourites(retPizza)
+                            x = !x
+                        }
+                    )
+                }
             }
             Spacer(
                 modifier = modifier
@@ -212,7 +234,19 @@ class FavouritesScreen {
                 }
                 i++;
             }
-            println("Available: $available")
+
+
+            val allergens:ArrayList<String> = arrayListOf()
+
+            for (topping in pizzaToppings){
+                if (!allergens.contains(topping.allergens)){
+                    allergens.add(topping.allergens)
+                }
+            }
+//            println("Available: $available")
+
+
+
             Box (
                 modifier = modifier
                     .fillMaxWidth()
@@ -221,18 +255,20 @@ class FavouritesScreen {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
-                        .clickable (
+                        .clickable(
                             interactionSource = interactionSource,
                             indication = null
                         ) {
-                            if(available){
+                            if (available) {
                                 onNavbarButtonClicked()
                             } else {
-                                Toast.makeText(
-                                    context,
-                                    "Pizza non disponibile",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "Pizza non disponibile",
+                                        Toast.LENGTH_LONG
+                                    )
+                                    .show()
                             }
 
                         }
@@ -266,9 +302,8 @@ class FavouritesScreen {
                         Row(
                             verticalAlignment = Alignment.Bottom,
                         ) {
-                            pizzaToppings.forEach {topping ->
+                            allergens.forEach {allergen ->
                                 Allergen(
-                                    available = available,
                                     modifier = modifier.align(Alignment.Bottom)
                                 )
                             }
@@ -295,7 +330,7 @@ class FavouritesScreen {
                     contentDescription = "Favourite icon",
                     modifier = modifier
                         .align(Alignment.TopEnd)
-                        .clickable (
+                        .clickable(
                             interactionSource = interactionSource,
                             indication = null
                         ) {
