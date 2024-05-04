@@ -208,15 +208,18 @@ fun PizzasAtPovoApp(
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
+            val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             DetailsPizzaScreen().DetailsPizzaPage(
                 pizza = selectedPizza,
                 onBackButtonClicked = { navController.popBackStack() },
                 onOrderButtonClicked = {
+
                     lifecycleScope.launch {
-                        sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", 1)
-                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), 1)
+                        sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
+                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
                     }
-                }
+                },
+                viewModel = pizzaViewModel
 
             )
         }
@@ -225,7 +228,8 @@ fun PizzasAtPovoApp(
             println("Add")
             AddPizzaScreen().AddPizzaPage(
                 onBackButtonClicked = { navController.popBackStack() },
-                toppings= toppings
+                toppings= toppings,
+                viewModel= pizzaViewModel
             )
         }
 
@@ -246,7 +250,17 @@ fun PizzasAtPovoApp(
                 onDetailButtonClicked = {
                     navController.navigate(PizzaScreens.DetailsPizza.name)},
                 viewModel = pizzaViewModel,
+                onAddToFavouritesClicked = {pizzaToAdd->
+                    lifecycleScope.launch {
+                        sendRetrieveData.addFavourite(pizzaToAdd)
+                    }
+                },
+                onRemoveFromFavouritesClicked ={pizzaToRemove->
+                    lifecycleScope.launch {
+                        sendRetrieveData.removeFavourite(pizzaToRemove)
+                    }
 
+                },
             )
         }
 

@@ -44,25 +44,26 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
             shape = RoundedCornerShape(16.dp),
             color = Color.LightGray
         ) {
-            Box(
+            Box(modifier = Modifier.height(150.dp)
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
-                Column( modifier = Modifier.padding(20.dp)) {
+                Column( modifier = Modifier.padding(20.dp, 25.dp, 20.dp, 0.dp)) {
             
                     Column (horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = "Ordinare $numberOfPizzas pizza",
 
-                                    fontSize = 24.sp,
+                                    fontSize = 20.sp,
                                     fontFamily = FontFamily.Default,
 
                             )
                             Text(
                                 text = " $pizzaName",
-                                fontSize = 24.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
 
@@ -71,19 +72,19 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         Row(modifier = Modifier) {
                             Text(
                                 text = "per € ",
-                                fontSize = 24.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
 //                            fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = (numberOfPizzas*4.4).toString(),
-                                fontSize = 24.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = "?",
-                                fontSize = 24.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
 //                            fontWeight = FontWeight.Bold
                             )
@@ -93,31 +94,13 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    Row(modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 0.dp)) {
-                        Button(
-                            onClick = {
-                                //TODO
-                                setShowDialog(false)
-                            },
-                            colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .padding(end = 10.dp)
-                                .weight(0.5F)
-                                .fillMaxWidth()
-                                .height(35.dp)
-                        ) {
-                            Text(text = "Annulla")
-                        }
-                        Button(
-                            onClick = {
-                                //TODO
+                    Row(modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 0.dp)) {
 
+                        Button(
+                            colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
+                            onClick = {
                                 setShowDialog(false)
                                 sendOrder()
-
-
-
                             },
                             shape = RoundedCornerShape(10.dp),
                             modifier = Modifier
@@ -127,6 +110,23 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         ) {
                             Text(text = "Ordina")
                         }
+                        Button(
+                            onClick = {
+                                //TODO
+                                setShowDialog(false)
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                                .weight(0.5F)
+                                .fillMaxWidth()
+                                .height(35.dp)
+                        ) {
+                            Text(text = "Annulla")
+                        }
+
+
+
                     }
                 }
             }
@@ -144,10 +144,11 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
         ) {
             Box(
                 //contentAlignment = Alignment.ALIGN_CENTER
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
             ) {
-                Column(Modifier.fillMaxWidth(),) {
-
+                Column(Modifier.fillMaxWidth()) {0
                     Row(
                         modifier = Modifier
                             .align(Alignment.End)
@@ -163,20 +164,19 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                                 .width(30.dp)
                                 .height(30.dp)
                                 .clickable { setShowDialog(false) }
+
                         )
                     }
 
 
-                    Spacer(modifier = Modifier.height(5.dp))
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                        Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(100.dp))
+                        Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(75.dp))
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(text = "Ordine effettuato!")
                     }
 
 
-                    Spacer(modifier = Modifier.height(20.dp))
 
 
 

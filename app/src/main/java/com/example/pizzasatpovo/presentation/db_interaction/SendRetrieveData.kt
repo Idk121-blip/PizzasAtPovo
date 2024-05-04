@@ -207,12 +207,14 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             return ResponseData(false, "Pizza doesn't exists")
         }
 
-        var favourites = user.favourites
+        val favourites = user.favourites
 
         if (favourites.isNullOrEmpty()){
             return ResponseData(false, "No favourites saved")
         }else{
-            favourites.remove(pizzaRef)
+            while (favourites.remove(pizzaRef)){
+                println("removed")
+            }
         }
 
         user.favourites=favourites

@@ -225,6 +225,13 @@ class ListOfPizzasScreen() {
         toppingForCard= toppingForCard.removeSuffix(", ")
         val interactionSource = remember { MutableInteractionSource() }
 
+        val allergens:ArrayList<String> = arrayListOf()
+
+        for (topping in toppings){
+            if (!allergens.contains(topping.allergens)){
+                allergens.add(topping.allergens)
+            }
+        }
 
 
 
@@ -250,7 +257,10 @@ class ListOfPizzasScreen() {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
-                        .clickable {
+                        .clickable (
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
                             onNavbarButtonClicked()
                         }
                 ) {
@@ -275,15 +285,12 @@ class ListOfPizzasScreen() {
                             modifier = modifier
                                 .fillMaxSize()
                         ) {
-                            Allergen(
-                                modifier = modifier.align(Alignment.Bottom)
-                            )
-                            Allergen(
-                                modifier = modifier.align(Alignment.Bottom)
-                            )
-                            Allergen(
-                                modifier = modifier.align(Alignment.Bottom)
-                            )
+                            for (allergen in allergens){
+                                Allergen(
+                                    modifier = modifier.align(Alignment.Bottom)
+                                )
+                            }
+
                         }
                     }
                 }

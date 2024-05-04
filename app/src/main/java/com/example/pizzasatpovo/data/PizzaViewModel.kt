@@ -17,6 +17,8 @@ class PizzaViewModel: ViewModel() {
     val selectedPizza= _selectedPizza.asStateFlow()
     private val _favourites= MutableStateFlow<ArrayList<RetrievedPizza>>(arrayListOf())
     val favourites= _favourites.asStateFlow()
+    private val _numberOfPizzaToOrder= MutableStateFlow<Int>(1)
+    val numberOfPizzaToOrder= _numberOfPizzaToOrder.asStateFlow()
 
     fun addPizzas(pizzaArrayList: ArrayList<Pizza>) {
         _pizzas.update {
@@ -62,6 +64,31 @@ class PizzaViewModel: ViewModel() {
             val temp = it
             temp.remove(pizza)
             temp
+        }
+    }
+
+
+    fun increaseNumberOfPizza(){
+        _numberOfPizzaToOrder.update {
+            val number=
+            if (it>=2){
+                3
+            }else{
+                it+1
+            }
+            number
+        }
+    }
+
+    fun decreaseNumberOfPizza(){
+        _numberOfPizzaToOrder.update {
+            val number=
+                if (it<=1){
+                    1
+                }else{
+                    it-1
+                }
+            number
         }
     }
 
