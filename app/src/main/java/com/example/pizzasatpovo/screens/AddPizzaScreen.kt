@@ -19,7 +19,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +37,7 @@ import coil.compose.AsyncImage
 import com.example.pizzasatpovo.ui.components.Bars
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
+import com.example.pizzasatpovo.data.NavigationViewModel
 import androidx.compose.material3.rememberTooltipState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,12 +50,11 @@ import com.example.pizzasatpovo.ui.components.BackgroundImage
 class AddPizzaScreen {
     @Composable
     fun AddPizzaPage(
-        onBackButtonClicked: () -> Unit = {},
+        navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
         onOrderButtonClicked: (RetrievedPizza) -> Unit = {},
         modifier: Modifier = Modifier
     ){
-
         val personalizedOrderViewMode = viewModel<PersonalizedOrderViewMode>()
         val toppings by viewModel.toppings.collectAsStateWithLifecycle()
         Box(modifier = modifier
@@ -62,43 +65,39 @@ class AddPizzaScreen {
             Column {
                 Bars().AppBarWithBackBtn(
                     pizzasName = "Crea la tua pizza",
-                    onBackButtonClicked = onBackButtonClicked
+                    navViewModel = navViewModel
                 )
-                Column(
-                    modifier = modifier
-                        .padding(50.dp, 10.dp)
-                ) {
-
-                    Text(
-                        text = "Base:",
-                        fontWeight = FontWeight.Bold
-                    )
-                    Row {
-
-                        for (topping in toppings){
-                            if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
-                                IngredientCard(topping = topping, personalizedOrderViewMode)
-                            }
-                        }
-                    }
-                    Text(
-                        text = "Altri ingredienti:",
-                        fontWeight = FontWeight.Bold,
-                        modifier = modifier
-                            .padding(top = 10.dp)
-                    )
-                    Row (
-                        modifier = modifier
-                            .horizontalScroll(rememberScrollState())
-                    ){
-                        for (topping in toppings){
-                            if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
-                                IngredientCard(topping = topping, personalizedOrderViewMode)
-                            }
-                        }
-                    }
-                }
+                IngredientList(toppings = toppings,
+                    personalizedOrderViewMode= personalizedOrderViewMode,
+                    onOrderButtonClicked= onOrderButtonClicked )
                 //White container
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 Column (
                     verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
@@ -109,8 +108,7 @@ class AddPizzaScreen {
                         viewModel = viewModel,
                         onOrderButtonClicked = {
                             onOrderButtonClicked(personalizedOrderViewMode.getRetrievedPizza())
-                        }
-                    )
+                        })
                 }
             }
             Column(
@@ -128,9 +126,52 @@ class AddPizzaScreen {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun IngredientCard(
+    fun IngredientList(
+        toppings: ArrayList<Topping>,
+        personalizedOrderViewMode: PersonalizedOrderViewMode,
+        onOrderButtonClicked: (RetrievedPizza)->Unit= {},
+        modifier: Modifier = Modifier
+    ){
+        Column(
+            modifier = modifier
+                .padding(50.dp, 10.dp)
+        ) {
+            Text(
+                text = "Base:",
+                fontWeight = FontWeight.Bold
+            )
+            Row {
+                for (topping in toppings){
+                    if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
+                        IngredientCard(topping = topping,
+                            personalizedOrderViewMode= personalizedOrderViewMode)
+                    }
+                }
+            }
+            Text(
+                text = "Altri ingredienti:",
+                fontWeight = FontWeight.Bold,
+                modifier = modifier
+                    .padding(top = 10.dp)
+            )
+            Row (
+                modifier = modifier
+                    .horizontalScroll(rememberScrollState())
+            ){
+                for (topping in toppings){
+                    if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
+                        IngredientCard(topping = topping,
+                            personalizedOrderViewMode= personalizedOrderViewMode)
+                    }
+                }
+            }
+        }
+    }
+
+   @OptIn(ExperimentalMaterial3Api::class)
+   @Composable
+   fun IngredientCard(
        topping: Topping,
        personalizedOrderViewMode: PersonalizedOrderViewMode,
        modifier: Modifier = Modifier

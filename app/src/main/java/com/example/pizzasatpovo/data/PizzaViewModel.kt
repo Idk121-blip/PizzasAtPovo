@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.update
 class PizzaViewModel: ViewModel() {
     private val _pizzas = MutableStateFlow<ArrayList<RetrievedPizza>>(arrayListOf())
     val pizza = _pizzas.asStateFlow()
+    private val _pizzaToppingsList=  MutableStateFlow<ArrayList<ArrayList<Topping>>>(ArrayList())
+    val pizzaToppingsList = _pizzaToppingsList.asStateFlow()
     private val _toppings= MutableStateFlow<ArrayList<Topping>>(ArrayList())
     val toppings = _toppings.asStateFlow()
     private val _selectedPizza= MutableStateFlow(RetrievedPizza())
@@ -114,7 +116,5 @@ class PizzaViewModel: ViewModel() {
             number
         }
     }
-
-
 
 }

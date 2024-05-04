@@ -14,9 +14,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,6 +26,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pizzasatpovo.data.MyViewModelFactory
+import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RealTimeOrder
@@ -68,7 +70,9 @@ fun PizzasAtPovoApp(
     val pizzaViewModel = viewModel<PizzaViewModel>()
     val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
-    val favourites by pizzaViewModel.favourites.collectAsStateWithLifecycle()
+    val favourites by pizzaViewModel.favourites.collectAsState()
+
+    val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
         navController = navController,
         startDestination = PizzaScreens.FirstPage.name,
@@ -158,17 +162,8 @@ fun PizzasAtPovoApp(
 
 //            var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(
+                navViewModel = controller,
                 viewModel = pizzaViewModel,
-                onDetailButtonClicked = {
-                navController.navigate(PizzaScreens.DetailsPizza.name)},
-                onProfileButtonClicked = {
-                    navController.navigate(PizzaScreens.Account.name)
-
-                },
-                onAddPizzaButtonClicked = {
-                    navController.navigate(PizzaScreens.NewPizza.name) },
-                onOrdersButtonClicked = {
-                    navController.navigate(PizzaScreens.RecentOrders.name) },
                 onAddToFavouritesClicked = {pizzaToAdd->
                     lifecycleScope.launch {
                         sendRetrieveData.addFavourite(pizzaToAdd)
@@ -178,16 +173,16 @@ fun PizzasAtPovoApp(
                     lifecycleScope.launch {
                         sendRetrieveData.removeFavourite(pizzaToRemove)
                     }
-
                 },
-                onFavouritesButtonClicked = {
-                    navController.navigate(PizzaScreens.Favourites.name)
-                }
             )
 
         }
         composable(route= PizzaScreens.Account.name){
-            AccountPageScreen().AccountPage(googleAuthUiClient = googleAuthUiClient, lifecycleScope = lifecycleScope,modifier,
+            AccountPageScreen().AccountPage(
+                navController = controller,
+                googleAuthUiClient = googleAuthUiClient,
+                lifecycleScope = lifecycleScope,
+                modifier = modifier,
                 onLogOutButtonClicked =  {
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
@@ -211,11 +206,10 @@ fun PizzasAtPovoApp(
                 pizza = selectedPizza,
                 onBackButtonClicked = { navController.popBackStack() },
                 onOrderButtonClicked = {
+
                     lifecycleScope.launch {
-                        println("aaaaaaaaaaaaaaaaa")
                         sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
                         sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
-
                     }
                 },
                 viewModel = pizzaViewModel
@@ -226,7 +220,7 @@ fun PizzasAtPovoApp(
         composable(route= PizzaScreens.NewPizza.name){
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             AddPizzaScreen().AddPizzaPage(
-                onBackButtonClicked = { navController.popBackStack() },
+                navViewModel = controller,
                 viewModel= pizzaViewModel,
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
@@ -241,6 +235,7 @@ fun PizzasAtPovoApp(
 
         composable(route= PizzaScreens.RecentOrders.name){
             OrdersScreen().OrdersPage(
+                navController = controller,
                 onHomeButtonClicked = { navController.navigate(
                     PizzaScreens.ListOfPizzas.name
                 )},
@@ -250,11 +245,7 @@ fun PizzasAtPovoApp(
 
         composable(route= PizzaScreens.Favourites.name){
             FavouritesScreen().FavouritesPage(
-                onHomeButtonClicked = { navController.navigate(
-                    PizzaScreens.ListOfPizzas.name
-                )},
-                onDetailButtonClicked = {
-                    navController.navigate(PizzaScreens.DetailsPizza.name)},
+                navViewModel = controller,
                 viewModel = pizzaViewModel,
                 onAddToFavouritesClicked = {pizzaToAdd->
                     lifecycleScope.launch {
@@ -265,7 +256,6 @@ fun PizzasAtPovoApp(
                     lifecycleScope.launch {
                         sendRetrieveData.removeFavourite(pizzaToRemove)
                     }
-
                 },
             )
         }
