@@ -74,12 +74,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             pizza.toppings!!.add(db.collection("toppings").document(topping.name))
         }
 
-        println(pizza)
-
         val returnedValue= sendOrder(pizza, pickupTime, pizzaNumber)
-        println("-----------------")
-        println(returnedValue)
-        println("-----------------")
 
         return returnedValue
     }
@@ -141,9 +136,12 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         for (pizzaSnapshot in pizzasQuery){
             val pizza=pizzaSnapshot.toObject(Pizza::class.java)
             val toppings:ArrayList<Topping> = arrayListOf()
-            if (pizza.toppings!= null)
-            for (documentRef in pizza.toppings){
-                toppings.add(documentRef.get().await().toObject(Topping::class.java) ?: continue)
+            if (pizza.toppings!= null) {
+                for (documentRef in pizza.toppings) {
+                    toppings.add(
+                        documentRef.get().await().toObject(Topping::class.java) ?: continue
+                    )
+                }
             }
             pizzasArray.add(RetrievedPizza(name = pizza.name, image= pizza.image, toppings = toppings))
         }

@@ -239,11 +239,13 @@ class FavouritesScreen {
                         Row(
                             verticalAlignment = Alignment.Bottom,
                         ) {
-                            allergens.forEach {allergen ->
-                                Allergen(
-                                    modifier = modifier.align(Alignment.Bottom),
-                                    allergen = allergen
-                                )
+                            if (allergens!= arrayListOf("")) {
+                                for (allergen in allergens) {
+                                    Allergen(
+                                        modifier = modifier.align(Alignment.Bottom),
+                                        allergen = allergen
+                                    )
+                                }
                             }
                             if(!available){
                                 Text(

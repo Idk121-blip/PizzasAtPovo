@@ -28,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.MyViewModelFactory
 import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.data.RetrievedPizza
