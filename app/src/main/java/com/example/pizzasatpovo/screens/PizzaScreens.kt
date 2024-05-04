@@ -224,7 +224,7 @@ fun PizzasAtPovoApp(
         composable(route= PizzaScreens.NewPizza.name){
             println("Add")
             AddPizzaScreen().AddPizzaPage(
-                onBackButtonClicked = { navController.popBackStack() },
+                navViewModel = controller,
                 toppings= toppings,
                 viewModel= pizzaViewModel
             )

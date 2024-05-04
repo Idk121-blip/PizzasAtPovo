@@ -12,41 +12,50 @@ class NavigationViewModel(val controller: NavHostController): ViewModel() {
     val navController = _navController.asStateFlow()
 
 
-    fun GoToListOfPizzas(){
+    fun goToListOfPizzas(){
         _navController.update {
             return it.navigate(PizzaScreens.ListOfPizzas.name)
         }
     }
 
-    fun GoToDetails(){
+    fun goToDetails(){
 //        _navController.update {
 //            println("Name: ${PizzaScreens.DetailsPizza.name}")
 //            return it.navigate(PizzaScreens.DetailsPizza.name)
 //        }
-        _navController.value.navigate(PizzaScreens.DetailsPizza.name)
+        _navController.update{
+            return it.navigate(PizzaScreens.DetailsPizza.name)
+        }
     }
 
-    fun GoToFavourites(){
+    fun goToFavourites(){
         _navController.update {
             return it.navigate(PizzaScreens.Favourites.name)
         }
     }
 
-    fun GoToAddPizza(){
+    fun goToAddPizza(){
         _navController.update {
             return it.navigate(PizzaScreens.NewPizza.name)
         }
     }
 
-    fun GoToOrders(){
+    fun goToOrders(){
         _navController.update {
             return it.navigate(PizzaScreens.RecentOrders.name)
         }
     }
 
-    fun GoToAccount(){
+    fun goToAccount(){
         _navController.update {
             return it.navigate(PizzaScreens.Account.name)
+        }
+    }
+
+    fun goBack(){
+        _navController.update {
+            it.popBackStack()
+            it
         }
     }
 }

@@ -60,7 +60,7 @@ class Bars() {
     @Composable
     fun AppBarWithBackBtn(
         pizzasName: String,
-        onBackButtonClicked: () -> Unit = {},
+        navViewModel: NavigationViewModel,
         modifier: Modifier = Modifier
     ) {
         val interactionSource = remember { MutableInteractionSource() }
@@ -85,7 +85,7 @@ class Bars() {
                             interactionSource = interactionSource,
                             indication = null
                         )
-                        { onBackButtonClicked() }
+                        { navViewModel.goBack() }
                 )
                 Text(
                     text = pizzasName,
@@ -167,7 +167,7 @@ class Bars() {
                         interactionSource = interactionSource,
                         indication = null
                     ) {
-                        navController.GoToListOfPizzas()
+                        navController.goToListOfPizzas()
                     }
             )
             Image(
@@ -184,7 +184,7 @@ class Bars() {
                         interactionSource = interactionSource,
                         indication = null
                     ) {
-                        navController.GoToFavourites()
+                        navController.goToFavourites()
                     }
             )
             Spacer(
@@ -206,7 +206,7 @@ class Bars() {
                         indication = null
                     )
                     {
-                        navController.GoToOrders()
+                        navController.goToOrders()
                     }
             )
             Image(
@@ -223,7 +223,7 @@ class Bars() {
                         interactionSource = interactionSource,
                         indication = null
                     )  {
-                        navController.GoToAccount()
+                        navController.goToAccount()
                     }
             )
 
@@ -239,7 +239,7 @@ class Bars() {
                 )
             },
             onClick = {
-                navController.GoToAddPizza()
+                navController.goToAddPizza()
             },
             contentPadding = PaddingValues(),
             modifier = modifier

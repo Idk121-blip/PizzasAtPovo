@@ -93,10 +93,11 @@ class DetailsPizzaScreen {
                 .fillMaxSize()
         ) {
             Column {
-                Bars().AppBarWithBackBtn(
-                    pizzasName = pizza.name,
-                    onBackButtonClicked = onBackButtonClicked
-                )
+//                Bars().AppBarWithBackBtn(
+//                    pizzasName = pizza.name,
+//                    onBackButtonClicked = onBackButtonClicked,
+//                    navViewModel = na
+//                )
                 Column (
                     modifier = modifier
                         .padding(50.dp, 10.dp)
