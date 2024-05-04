@@ -304,7 +304,8 @@ class FavouritesScreen {
                         ) {
                             allergens.forEach {allergen ->
                                 Allergen(
-                                    modifier = modifier.align(Alignment.Bottom)
+                                    modifier = modifier.align(Alignment.Bottom),
+                                    allergen = allergen
                                 )
                             }
                             if(!available){

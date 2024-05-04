@@ -11,8 +11,17 @@ data class UserData(val name: String?= "",
                     var favourites: ArrayList<DocumentReference>?= null,
                     val image: String?= "",
                     var orders: ArrayList<DocumentReference>?= null)
-data class Pizza(val name: String= "", val toppings: ArrayList<DocumentReference>? = null, val image: String= "")
-data class RetrievedPizza(val name: String= "", val toppings: ArrayList<Topping>? = null, val image: String= "")
+data class Pizza(val name: String= "", val toppings: ArrayList<DocumentReference>? = null, val image: String= "") {
+    fun matchSearch(query: String): Boolean {
+        return name.contains(query)
+    }
+}
+
+data class RetrievedPizza(val name: String= "", val toppings: ArrayList<Topping>? = null, val image: String= ""){
+    fun matchSearch(query: String): Boolean {
+        return name.contains(query)
+    }
+}
 
 data class Topping(val name:String= "", val allergens: String="", val vegetarian: Boolean= true, val image: String= "", val availability:Boolean = true)
 

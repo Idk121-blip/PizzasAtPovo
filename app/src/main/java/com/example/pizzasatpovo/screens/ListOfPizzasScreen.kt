@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +30,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,8 +75,6 @@ class ListOfPizzasScreen() {
         onFavouritesButtonClicked: () -> Unit = {},
         onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
         onRemoveFromFavouritesClicked:(String)->Unit={},
-        pizzas: ArrayList<Pizza> = arrayListOf(),
-        toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
 
@@ -103,13 +105,12 @@ class ListOfPizzasScreen() {
                         .fillMaxSize()
                 ) {
                     SearchBar(
+                        viewModel,
                         modifier = modifier
                             .padding(10.dp)
                     )
                     ListOfPizzas(
                         onDetailButtonClicked,
-                        pizzas,
-                        toppings,
                         viewModel,
                         onAddToFavouritesClicked = onAddToFavouritesClicked,
                         onRemoveFromFavouritesClicked = onRemoveFromFavouritesClicked
@@ -127,13 +128,14 @@ class ListOfPizzasScreen() {
     }
 
     @Composable
-    fun SearchBar(modifier: Modifier = Modifier){
-        var text by remember{ mutableStateOf("") }
+    fun SearchBar(viewModel: PizzaViewModel,modifier: Modifier = Modifier){
 
-        OutlinedTextField(
+        val text by viewModel.searchQuery.collectAsStateWithLifecycle()
+
+        TextField(
             value = text,
             onValueChange = {
-                text = it
+                viewModel.onSearchTextChanged(it)
             },
             leadingIcon = { Icon(
                 imageVector = Icons.Filled.Search,
@@ -156,55 +158,67 @@ class ListOfPizzasScreen() {
     @Composable
     fun ListOfPizzas(
         onDetailsButtonClicked: () -> Unit = {},
-        pizzas: ArrayList<Pizza>,
-        toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
+        //pizzas: ArrayList<RetrievedPizza>,
+        //toppings: ArrayList<ArrayList<Topping>> = arrayListOf(arrayListOf()),
         viewModel: PizzaViewModel,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
         modifier: Modifier = Modifier
     ){
+        val pizzas by viewModel.searchPizza.collectAsStateWithLifecycle()
         val favourites by viewModel.favourites.collectAsStateWithLifecycle()
         val favouritesName: ArrayList<String> = arrayListOf()
         for (favourite in favourites){
             favouritesName.add(favourite.name)
         }
 
-        Column (
+        val state= rememberLazyListState()
+
+        LazyColumn (
+            state= state,
             modifier = modifier
-                .verticalScroll(rememberScrollState())
+//                .verticalScroll(())
                 .padding(30.dp, 10.dp)
         ){
-
-            for (i in 0..<pizzas.size)
-            {
+            items(pizzas){ pizza->
                 PizzaCard(
                     //TODO! check names
                     onNavbarButtonClicked = {
-                        viewModel.setPizza(RetrievedPizza(name= pizzas[i].name, image = pizzas[i].image, toppings = toppings[i]))
+                        viewModel.setPizza(pizza)
                         onDetailsButtonClicked()
                     },
-                    image = pizzas[i].image,
-                    name = pizzas[i].name,
-                    toppings = toppings[i],
-                    isFavourite =  favouritesName.contains(pizzas[i].name),
+                    image = pizza.image,
+                    name = pizza.name,
+                    toppings = pizza.toppings!!,
+                    isFavourite =  favouritesName.contains(pizza.name),
                     onAddToFavouritesClicked =
                     {
                         onAddToFavouritesClicked(it)
-                        val retPizza= RetrievedPizza(name= pizzas[i].name, toppings= toppings[i], pizzas[i].image)
+                        val retPizza= RetrievedPizza(name= pizza.name, toppings= pizza.toppings!!, pizza.image)
                         viewModel.addToFavourites(retPizza)
                     },
                     onRemoveFromFavouritesClicked = {
                         onRemoveFromFavouritesClicked(it)
-                        val retPizza= RetrievedPizza(name= pizzas[i].name, toppings= toppings[i], pizzas[i].image)
+                        val retPizza= RetrievedPizza(name= pizza.name, toppings= pizza.toppings!!, pizza.image)
                         viewModel.removeFromFavourites(retPizza)
                     }
                 )
+                if (pizzas.last()==pizza){
+                    Spacer(
+                        modifier = modifier
+                            .height(60.dp)
+                    )
+                }
+
             }
-            Spacer(
-                modifier = modifier
-                    .height(60.dp)
-            )
+
+
         }
+
+        Spacer(
+            modifier = modifier
+                .height(60.dp)
+        )
     }
 
     @Composable
@@ -232,6 +246,9 @@ class ListOfPizzasScreen() {
                 allergens.add(topping.allergens)
             }
         }
+        println(toppings)
+        println(allergens)
+
 
 
 
@@ -257,7 +274,7 @@ class ListOfPizzasScreen() {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
-                        .clickable (
+                        .clickable(
                             interactionSource = interactionSource,
                             indication = null
                         ) {
@@ -285,10 +302,16 @@ class ListOfPizzasScreen() {
                             modifier = modifier
                                 .fillMaxSize()
                         ) {
-                            for (allergen in allergens){
-                                Allergen(
-                                    modifier = modifier.align(Alignment.Bottom)
-                                )
+
+                            if (allergens!= arrayListOf("")){
+                                for (allergen in allergens){
+
+                                    Allergen(
+                                        modifier = modifier.align(Alignment.Bottom),
+                                        allergen = allergen
+                                    )
+
+                                }
                             }
 
                         }

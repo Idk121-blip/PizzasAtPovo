@@ -74,7 +74,14 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             pizza.toppings!!.add(db.collection("toppings").document(topping.name))
         }
 
-        return sendOrder(pizza, pickupTime, pizzaNumber)
+        println(pizza)
+
+        val returnedValue= sendOrder(pizza, pickupTime, pizzaNumber)
+        println("-----------------")
+        println(returnedValue)
+        println("-----------------")
+
+        return returnedValue
     }
 
     suspend fun retrieveOrders():ResponseData<ArrayList<Order>>? = auth.currentUser?.run {
@@ -124,16 +131,21 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza trovata con successo", pizza)
     }
 
-    suspend fun getPizzas(): ResponseData<ArrayList<Pizza>>? =auth.currentUser?.run{
+    suspend fun getPizzas(): ResponseData<ArrayList<RetrievedPizza>>? =auth.currentUser?.run{
         val db = Firebase.firestore
-        val pizzasArray:ArrayList<Pizza> = arrayListOf()
+        val pizzasArray:ArrayList<RetrievedPizza> = arrayListOf()
         val pizzasQuery= db.collection("pizzas")
             .get()
-            .addOnSuccessListener {
+            .await()
 
-        }.await()
         for (pizzaSnapshot in pizzasQuery){
-            pizzasArray.add(pizzaSnapshot.toObject(Pizza::class.java))
+            val pizza=pizzaSnapshot.toObject(Pizza::class.java)
+            val toppings:ArrayList<Topping> = arrayListOf()
+            if (pizza.toppings!= null)
+            for (documentRef in pizza.toppings){
+                toppings.add(documentRef.get().await().toObject(Topping::class.java) ?: continue)
+            }
+            pizzasArray.add(RetrievedPizza(name = pizza.name, image= pizza.image, toppings = toppings))
         }
 
         return ResponseData(true, "Fetchd successfully", pizzasArray)
@@ -251,6 +263,27 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
     }
 
     suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int ): Boolean? = auth.currentUser?.run {
+        val db = Firebase.firestore
+        val snapPrice= db.collection("menuPizzaPrice")
+            .document("StandardMenuPrice")
+            .get()
+            .await()
+        val price= snapPrice.toObject(PizzaPrice::class.java)
+
+        if (pizzaNumber<1){
+            return false
+        }
+        if (price == null){
+            return false
+        }
+
+        val user= googleAuthUiClient.retrieveUserData()!!
+
+        if (user.credit<(price.price * pizzaNumber)){
+            return false
+        }
+
+
 
         val toppingList: ArrayList<String> = arrayListOf()
         for (topping in pizza.toppings!!){
@@ -264,7 +297,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         val order= RealTimeOrder(topping = toppingList,
             pizzaNumber = pizzaNumber, time = date,
-            image = pizza.image, uname = googleAuthUiClient.retrieveUserData()!!.name!!)
+            image = pizza.image, uname = user.name!!)
 
         val orderRef= database.child("orders").push()
         orderRef.setValue(order)

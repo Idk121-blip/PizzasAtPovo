@@ -56,10 +56,8 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         ) {
                             Text(
                                 text = "Ordinare $numberOfPizzas pizza",
-
                                     fontSize = 20.sp,
                                     fontFamily = FontFamily.Default,
-
                             )
                             Text(
                                 text = " $pizzaName",

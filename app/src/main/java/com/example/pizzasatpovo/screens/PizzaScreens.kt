@@ -29,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RealTimeOrder
+import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
@@ -65,8 +66,6 @@ fun PizzasAtPovoApp(
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val pizzaViewModel = viewModel<PizzaViewModel>()
-    val pizzas  by pizzaViewModel.pizza.collectAsStateWithLifecycle()
-    val pizzasToppings by pizzaViewModel.pizzaToppingsList.collectAsStateWithLifecycle()
     val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     val favourites by pizzaViewModel.favourites.collectAsStateWithLifecycle()
@@ -117,16 +116,16 @@ fun PizzasAtPovoApp(
                             Toast.LENGTH_LONG
                         ).show()
                         //TODO: DO SOMETHING IF NO PIZZAS ARE RETRIEVED?
-                    }else if (listResponseData.isSuccessful){
-                        userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
-
-                        navController.navigate(PizzaScreens.ListOfPizzas.name)
-                    }else{
+                        return@LaunchedEffect
+                    }else if (!listResponseData.isSuccessful){
                         Toast.makeText(
                             applicationContext,
                             "Error retrieving pizzas",
                             Toast.LENGTH_LONG
                         ).show()
+                    }else{
+                        userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
+                        navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }
 
                     Toast.makeText(
@@ -158,8 +157,7 @@ fun PizzasAtPovoApp(
         ){
 
 //            var context = LocalContext.current
-            ListOfPizzasScreen().ListOfPizzasPage(pizzas= pizzas,
-                toppings = pizzasToppings,
+            ListOfPizzasScreen().ListOfPizzasPage(
                 viewModel = pizzaViewModel,
                 onDetailButtonClicked = {
                 navController.navigate(PizzaScreens.DetailsPizza.name)},
@@ -213,10 +211,11 @@ fun PizzasAtPovoApp(
                 pizza = selectedPizza,
                 onBackButtonClicked = { navController.popBackStack() },
                 onOrderButtonClicked = {
-
                     lifecycleScope.launch {
-                        sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
+                        println("aaaaaaaaaaaaaaaaa")
                         sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
+                        sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
+
                     }
                 },
                 viewModel = pizzaViewModel
@@ -225,11 +224,18 @@ fun PizzasAtPovoApp(
         }
 
         composable(route= PizzaScreens.NewPizza.name){
-            println("Add")
+            val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             AddPizzaScreen().AddPizzaPage(
                 onBackButtonClicked = { navController.popBackStack() },
-                toppings= toppings,
-                viewModel= pizzaViewModel
+                viewModel= pizzaViewModel,
+                onOrderButtonClicked = {
+                    lifecycleScope.launch {
+                        sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = Timestamp.now())
+                        sendRetrieveData.sendRTOrderd(it, "12.30", numberOfPizza)
+                    }
+
+                }
+
             )
         }
 
@@ -307,38 +313,32 @@ fun PizzasAtPovoApp(
 
 suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData, pizzaViewModel: PizzaViewModel) {
     //TODO: try to do these as val
-    var pizzas: ArrayList<Pizza> = arrayListOf()
-    val pizzasToppings: ArrayList<ArrayList<Topping>> = arrayListOf()
+    var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
     var toppings: ArrayList<Topping> = arrayListOf()
     val reqRespone= sendRetrieveData.getPizzas()
     val toppingResponse= sendRetrieveData.getToppings()
 
-    if (toppingResponse != null){
-        if (toppingResponse.isSuccessful){
-            if (toppingResponse.retrievedObject != null){
-                toppings=toppingResponse.retrievedObject
-            }else{
-                Toast.makeText(
-                    applicationContext,
-                    "Error retrieving pizzas",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-        }else{
-            Toast.makeText(
-                applicationContext,
-                "Error retrieving pizzas",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
-    }else{
+    if (toppingResponse == null){
         Toast.makeText(
             applicationContext,
             "Error retrieving toppings",
             Toast.LENGTH_LONG
         ).show()
+    }else if (!toppingResponse.isSuccessful){
+        Toast.makeText(
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
+        ).show()
+    }else if (toppingResponse.retrievedObject == null){
+        Toast.makeText(
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
+        ).show()
+    }else{
+        toppings=toppingResponse.retrievedObject
+
     }
 
 
@@ -349,28 +349,14 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
             "Error retrieving pizzas",
             Toast.LENGTH_LONG
         ).show()
-    }else if (reqRespone.isSuccessful) {
-        pizzas = reqRespone.retrievedObject!!
-        for (pizza in pizzas){
-            val pizzaTopping: ArrayList<Topping> = arrayListOf()
-            var add = false
-            for (toppingRef in pizza.toppings!!){
-                val topping= sendRetrieveData.getToppingByRef(toppingRef)
-                if (topping != null) {
-                    pizzaTopping.add(topping.retrievedObject!!)
-                    add=true
-                }
-            }
-            if (add){
-                pizzasToppings.add(pizzaTopping)
-            }
-        }
-    }else{
+    }else if (!reqRespone.isSuccessful) {
         Toast.makeText(
             applicationContext,
             "Error retrieving pizzas",
             Toast.LENGTH_LONG
         ).show()
+    }else{
+        pizzas = reqRespone.retrievedObject!!
     }
 
     val favouritesRespone = sendRetrieveData.retrieveFavourites()
@@ -382,15 +368,9 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
     }
 
 
-    pizzaViewModel.setPizzasToppings(pizzasToppings)
     pizzaViewModel.setToppings(toppings)
     pizzaViewModel.addPizzas(pizzas)
     pizzaViewModel.setFavourites(favourites)
-
-
-
-
-
 }
 
 
