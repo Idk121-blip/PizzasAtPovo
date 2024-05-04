@@ -10,15 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.Order
-import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.UserData
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
-import com.google.firebase.Timestamp
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await

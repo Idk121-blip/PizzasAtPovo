@@ -16,12 +16,22 @@ data class RetrievedPizza(val name: String= "", val toppings: ArrayList<Topping>
 
 data class Topping(val name:String= "", val allergens: String="", val vegetarian: Boolean= true, val image: String= "", val availability:Boolean = true)
 
-data class Order(val topping: ArrayList<DocumentReference> = arrayListOf(),
+data class DBOrder(val topping: ArrayList<DocumentReference> = arrayListOf(),
+                   val price: Double=0.0,
+                   val image: String="",
+                   val uid: String= "",
+                   val date: Timestamp= Timestamp.now(),
+                   val pizzaNumber: Int= 0)
+
+data class Order(val topping: ArrayList<Topping> = arrayListOf(),
                  val price: Double=0.0,
                  val image: String="",
                  val uid: String= "",
                  val date: Timestamp= Timestamp.now(),
                  val pizzaNumber: Int= 0)
+
+
+
 
 data class RealTimeOrder(val uname:String= "",
                          val image:String = "",
