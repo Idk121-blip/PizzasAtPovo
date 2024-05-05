@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
+import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 
 class DetailsPizzaScreen {
@@ -118,6 +119,23 @@ class DetailsPizzaScreen {
                             .padding(start = 70.dp)
                     ){
                         //TODO
+                        val allergens:ArrayList<String> = arrayListOf()
+                        var vegetarian=true
+                        for (topping in pizza.toppings){
+                            if (!allergens.contains(topping.allergens)){
+                                allergens.add(topping.allergens)
+                            }
+                            vegetarian= vegetarian&&topping.vegetarian
+                        }
+
+                        if (allergens!= arrayListOf("")) {
+                            for (allergen in allergens) {
+                                if (allergen != "") {
+                                    Allergen(allergen = allergen)
+                                }
+                            }
+                        }
+
 //                        Allergen()
 //                        Allergen()
 //                        Allergen()

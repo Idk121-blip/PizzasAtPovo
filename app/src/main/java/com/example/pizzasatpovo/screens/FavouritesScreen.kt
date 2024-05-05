@@ -239,12 +239,14 @@ class FavouritesScreen {
                         Row(
                             verticalAlignment = Alignment.Bottom,
                         ) {
-                            if (allergens!= arrayListOf("")) {
+                            if (allergens != arrayListOf("")) {
                                 for (allergen in allergens) {
-                                    Allergen(
-                                        modifier = modifier.align(Alignment.Bottom),
-                                        allergen = allergen
-                                    )
+                                    if (allergen!="") {
+                                        Allergen(
+                                            modifier = modifier.align(Alignment.Bottom),
+                                            allergen = allergen
+                                        )
+                                    }
                                 }
                             }
                             if(!available){
