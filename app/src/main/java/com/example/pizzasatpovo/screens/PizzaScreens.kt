@@ -188,15 +188,6 @@ fun PizzasAtPovoApp(
                         navController.navigate(PizzaScreens.FirstPage.name)
                     }
                 },
-                onHomeButtonClicked = {
-                    navController.navigate(PizzaScreens.ListOfPizzas.name)
-                },
-                onAddPizzaButtonClicked = {
-                    navController.navigate(PizzaScreens.NewPizza.name)
-                },
-                onOrdersButtonClicked = {
-                    navController.navigate(PizzaScreens.RecentOrders.name)
-                }
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
