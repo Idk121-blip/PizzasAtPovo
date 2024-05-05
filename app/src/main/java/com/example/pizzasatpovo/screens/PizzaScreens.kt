@@ -194,16 +194,14 @@ fun PizzasAtPovoApp(
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             DetailsPizzaScreen().DetailsPizzaPage(
                 pizza = selectedPizza,
-                onBackButtonClicked = { navController.popBackStack() },
                 onOrderButtonClicked = {
-
                     lifecycleScope.launch {
                         sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
                         sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
                     }
                 },
-                viewModel = pizzaViewModel
-
+                viewModel = pizzaViewModel,
+                navViewModel = controller
             )
         }
 
