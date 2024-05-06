@@ -67,9 +67,9 @@ fun PizzasAtPovoApp(
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val pizzaViewModel = viewModel<PizzaViewModel>()
-    val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
+    //val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
-    val favourites by pizzaViewModel.favourites.collectAsState()
+    //val favourites by pizzaViewModel.favourites.collectAsState()
 
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
@@ -188,31 +188,20 @@ fun PizzasAtPovoApp(
                         navController.navigate(PizzaScreens.FirstPage.name)
                     }
                 },
-                onHomeButtonClicked = {
-                    navController.navigate(PizzaScreens.ListOfPizzas.name)
-                },
-                onAddPizzaButtonClicked = {
-                    navController.navigate(PizzaScreens.NewPizza.name)
-                },
-                onOrdersButtonClicked = {
-                    navController.navigate(PizzaScreens.RecentOrders.name)
-                }
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             DetailsPizzaScreen().DetailsPizzaPage(
                 pizza = selectedPizza,
-                onBackButtonClicked = { navController.popBackStack() },
                 onOrderButtonClicked = {
-
                     lifecycleScope.launch {
                         sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
                         sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
                     }
                 },
-                viewModel = pizzaViewModel
-
+                viewModel = pizzaViewModel,
+                navViewModel = controller
             )
         }
 
@@ -232,13 +221,12 @@ fun PizzasAtPovoApp(
             )
         }
 
-        composable(route= PizzaScreens.RecentOrders.name){
+        composable(route= PizzaScreens.RecentOrders.name) {
             OrdersScreen().OrdersPage(
                 navController = controller,
-                onHomeButtonClicked = { navController.navigate(
-                    PizzaScreens.ListOfPizzas.name
-                )},
-                viewModel = viewModel
+                viewModel = viewModel,
+                lifecycleScope= lifecycleScope,
+                sendRetrieveData = sendRetrieveData
             )
         }
 

@@ -51,7 +51,10 @@ import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.LoadingResult
 import com.example.pizzasatpovo.data.LoadingViewModel
 import com.example.pizzasatpovo.data.NavigationViewModel
+import com.example.pizzasatpovo.data.UserData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
+import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import kotlinx.coroutines.launch
 
@@ -59,41 +62,22 @@ import kotlinx.coroutines.launch
 class AccountPageScreen {
 
     @Composable
-    fun AccountPage(googleAuthUiClient: GoogleAuthUiClient,
-                    lifecycleScope: LifecycleCoroutineScope,
-                    modifier: Modifier= Modifier,
-                    navController2: NavHostController = rememberNavController(),
-                    navController: NavigationViewModel,
-                    onLogOutButtonClicked: ()->Unit,
-                    onProfileButtonClicked: () -> Unit={},
-                    onHomeButtonClicked:() ->Unit={},
-                    onFavouritesButtonClicked:()->Unit = {},
-                    onAddPizzaButtonClicked:()->Unit={},
-                    onOrdersButtonClicked:()->Unit={},
+    fun AccountPage(
+        googleAuthUiClient: GoogleAuthUiClient,
+        lifecycleScope: LifecycleCoroutineScope,
+        modifier: Modifier= Modifier,
+        navController2: NavHostController = rememberNavController(),
+        navController: NavigationViewModel,
+        onLogOutButtonClicked: ()->Unit,
     ){
         val viewModel = viewModel<LoadingViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
-        Box(modifier = modifier
-            .fillMaxSize()
-        ){
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.background),
-                    contentDescription = "Background image",
-                    contentScale = ContentScale.FillBounds,
-                    alpha = 0.5F,
-                    modifier = modifier
-                        .fillMaxSize()
-                )
-
-            }
-        }
+        BackgroundImage()
         NavHost(
             navController = navController2,
             startDestination = "LoadingPage",
             modifier = modifier
         ) {
-
             composable(route= "LoadingPage"){
 
                 Button(onClick = { /*TODO*/ }) {
@@ -101,243 +85,249 @@ class AccountPageScreen {
                 }
 
                 LaunchedEffect(key1 = Unit) {
-
                     lifecycleScope.launch {
                         val loadResult = LoadingResult(googleAuthUiClient.retrieveUserData(), null)
                         viewModel.onSignInResult(loadResult)
                     }
-
                 }
 
                 LaunchedEffect(state.isFinished) {
                     navController2.navigate("AccountPage")
                 }
             }
+
             composable(route= "AccountPage"){
+                Column {
+                    Bars().AppBar(
+                         text = "Account",
+                    )
                     Column {
-                        Bars().AppBar(
-                             text = "Account",
+                        UserInfoCard(viewModel = viewModel)
+
+                        SectionTitle(text = "Impostazioni generali")
+                        Section(
+                            text = "Notifiche",
+                            resourceId = R.drawable.notification_icon,
+                            description = "Notification icon"
                         )
-                        Column {
-                            Card (
-                                shape = RoundedCornerShape(15.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color.White,
-                                ),
-                                modifier = modifier
-                                    .fillMaxWidth()
-                                    .height(160.dp)
-                                    .padding(
-                                        start = 25.dp,
-                                        top = 10.dp,
-                                        end = 25.dp,
-                                        bottom = 10.dp
-                                    )
-//                                    .align(Alignment.CenterHorizontally)
+                        Section(
+                            text = "Lingua",
+                            resourceId = R.drawable.language_icon,
+                            description = "Language icon"
+                        )
 
-                            ){
-                                val userData by viewModel.userData.collectAsStateWithLifecycle()
-                                Card (shape = RoundedCornerShape(
-                                    topEnd = 15.dp,
-                                    topStart = 15.dp,
-                                    bottomEnd = 0.dp,
-                                    bottomStart = 0.dp
-                                ),
-                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                                modifier = modifier
-                                    .fillMaxWidth()
-                                    .height(105.dp)
-                                    .padding(0.dp, 0.dp)
+                        SectionTitle(text = "Aiuto e supporto")
+                        Section(
+                            text = "FAQ",
+                            resourceId = R.drawable.faq_icon,
+                            description = "FAQ icon"
+                        )
+                        Section(
+                            text = "Contatta il supporto",
+                            resourceId = R.drawable.email_icon,
+                            description = "Support icon"
+                        )
+                        Section(
+                            text = "Lascia un feedback",
+                            resourceId = R.drawable.review_icon,
+                            description = "Feedback icon"
+                        )
 
-                                ){
-                                Row (verticalAlignment = Alignment.CenterVertically, modifier = modifier
-                                    .fillMaxSize()) {
+                        SectionTitle(text = "Informazioni legali")
+                        Section(
+                            text = "Termini e condizioni",
+                            resourceId = R.drawable.terms_and_conditions_icon,
+                            description = "Notifiction icon"
+                        )
+                        Section(
+                            text = "Privacy e sicurezza",
+                            resourceId = R.drawable.privacy_and_security,
+                            description = "Language icon"
+                        )
 
-                                    Box(modifier = modifier.padding(start = 15.dp)){
-                                        AsyncImage(model = userData.image,
-                                            contentScale = ContentScale.Crop,
-                                            contentDescription = "user image",
-                                            modifier= modifier
-                                                .size(90.dp)
-                                                .clip(CircleShape)
-                                        )
-                                    }
-
-
-                                    Spacer(
-                                        Modifier
-                                            .weight(1f)
-                                            .fillMaxHeight())
-                                    Text(text = "€ " +String.format("%.2f", userData.credit),
-                                        fontSize = 30.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Center,
-                                        modifier = modifier.padding(end = 15.dp)
-                                    )
-
-
-                                }
-                            }
-                                Row(modifier= modifier
-                                    .align(Alignment.Start)
-                                    .fillMaxSize()) {
-                                    Text(text = userData.name!!,
-                                        modifier
-                                            .padding(start = 15.dp,end= 7.dp, bottom = 7.dp, top = 7.dp))
-                                    Spacer(
-                                        Modifier
-                                            .weight(1f)
-                                            .fillMaxHeight()
-                                            )
-                                    Image(painter = painterResource(id = R.drawable.unitn_logo), contentDescription = "logo unitn", modifier.padding(end= 15.dp, bottom = 5.dp, top = 5.dp))
-                                }
-
-                            }
-                            Text(text = "Impostazioni generali",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center,
-                                modifier = modifier.padding(top = 15.dp, bottom = 15.dp, start = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.notification_icon), contentDescription = "Notification icon", modifier.size(25.dp))
-                                Text(text = "Notifiche",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                                Spacer(
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                )
-                                var checked by remember { mutableStateOf(true) }
-                                Switch(
-                                    checked = checked,
-                                    onCheckedChange = {
-                                        checked = it
-                                    },
-                                    modifier
-                                        .scale(0.75F)
-                                        .height(10.dp)
-                                )
-
-                            }
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.language_icon), contentDescription = "Language icon", modifier.size(25.dp))
-                                Text(text = "Lingua",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                                Spacer(
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                )
-
-
-
-
-
-                                Text(text = "Italiano",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                            }
-
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-                            Text(text = "Aiuto e supporto",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center,
-                                modifier = modifier.padding(top = 15.dp, bottom = 15.dp, start = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.faq_icon), contentDescription = "Notification icon", modifier.size(25.dp))
-                                Text(text = "FAQ",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                            }
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.email_icon), contentDescription = "Language icon", modifier.size(25.dp))
-                                Text(text = "Contatta il supporto",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                                Spacer(
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                )
-
-                            }
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.review_icon), contentDescription = "Language icon", modifier.size(25.dp))
-                                Text(text = "Lascia un feedback",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                                Spacer(
-                                    Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                )
-
-                            }
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-
-                            Text(text = "Informazioni legali",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center,
-                                modifier = modifier.padding(top = 15.dp, bottom = 15.dp, start = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.terms_and_conditions_icon), contentDescription = "Notification icon", modifier.size(25.dp))
-                                Text(text = "Termini e condizioni",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-
-
-
-                            }
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-                            Row(modifier = modifier.padding(bottom = 2.dp, start = 28.dp, end = 25.dp)) {
-                                Icon(painter = painterResource(id = R.drawable.privacy_and_security), contentDescription = "Language icon", modifier.size(25.dp))
-                                Text(text = "Privacy e sicurezza",
-                                    modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(start = 10.dp))
-                            }
-                            HorizontalDivider(color = Color.Black.copy(alpha = 0.3F), thickness = 1.dp, modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
-
-                            Row(modifier = modifier
-                                .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-                                .clickable {
-                                    onLogOutButtonClicked()
-                                }) {
-                                Icon(painter = painterResource(id = R.drawable.logout_icon), contentDescription = "Logout icon", tint = MaterialTheme.colorScheme.primary, modifier = modifier.size(30.dp))
-                                Text(text = "Log out",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier= modifier.align(Alignment.CenterVertically)
-                                )
-                            }
-
-                        }
-                        Bars().BottomBar(
-                            screen = PizzaScreens.Account,
-                            navViewModel = navController
+                        LogoutButton(
+                            onLogOutButtonClicked = onLogOutButtonClicked
                         )
                     }
-
+                    Bars().BottomBar(
+                        screen = PizzaScreens.Account,
+                        navViewModel = navController
+                    )
+                }
             }
+        }
+    }
 
+    @Composable
+    fun UserInfoCard(
+        viewModel: LoadingViewModel,
+        modifier: Modifier = Modifier
+    ){
+        Card (
+            shape = RoundedCornerShape(15.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White,
+            ),
+            modifier = modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .padding(25.dp, 10.dp)
+        ){
+            val userData by viewModel.userData.collectAsStateWithLifecycle()
+            Card (
+                shape = RoundedCornerShape(15.dp, 0.dp),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(105.dp)
+                    .padding(0.dp)
+            ){
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier
+                        .fillMaxSize()
+                ) {
+                    Box(modifier = modifier.padding(start = 15.dp)){
+                        AsyncImage(
+                            model = userData.image,
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "user image",
+                            modifier= modifier
+                                .size(90.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    )
+                    Text(
+                        text = "€ " +String.format("%.2f", userData.credit),
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = modifier.padding(end = 15.dp)
+                    )
+                }
+            }
+            Row(
+                modifier= modifier
+                    .align(Alignment.Start)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = userData.name!!,
+                    modifier = modifier
+                        .padding(start = 15.dp,end= 7.dp, bottom = 7.dp, top = 7.dp)
+                )
+                Spacer(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.unitn_logo),
+                    contentDescription = "logo unitn",
+                    modifier = modifier.padding(end= 15.dp, bottom = 5.dp, top = 5.dp)
+                )
+            }
+        }
+    }
 
+    @Composable
+    fun SectionTitle(
+        text: String,
+        modifier: Modifier = Modifier
+    ){
+        Text(
+            text = text,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            modifier = modifier.padding(top = 15.dp, bottom = 15.dp, start = 25.dp)
+        )
+    }
 
+    @Composable
+    fun Section(
+        text: String,
+        resourceId: Int,
+        description: String,
+        modifier: Modifier = Modifier
+    ){
+        Row(
+            modifier = modifier.padding(bottom = 2.dp, start = 25.dp, end = 25.dp)) {
+            Icon(
+                painter = painterResource(id = resourceId),
+                contentDescription = description,
+                modifier = modifier.size(25.dp))
+            Text(
+                text = text,
+                modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = 10.dp))
+            if(text == "Notifiche"){
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+                var checked by remember { mutableStateOf(true) }
+                Switch(
+                    checked = checked,
+                    onCheckedChange = {
+                        checked = it
+                    },
+                    modifier = modifier
+                        .scale(0.75F)
+                        .height(10.dp)
+                )
+            }
+            if(text == "Lingua"){
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+                Text(
+                    text = "Italiano",
+                    modifier = modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(start = 10.dp)
+                )
+            }
+        }
+        HorizontalDivider(
+            color = Color.Black.copy(alpha = 0.3F),
+            thickness = 1.dp,
+            modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
+
+    }
+
+    @Composable
+    fun LogoutButton(
+        onLogOutButtonClicked: () -> Unit = {},
+        modifier: Modifier = Modifier
+    ){
+        Row(modifier = modifier
+            .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
+            .clickable {
+                onLogOutButtonClicked()
+            }) {
+            Icon(
+                painter = painterResource(id = R.drawable.logout_icon),
+                contentDescription = "Logout icon",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = modifier.size(30.dp))
+            Text(
+                text = "Log out",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.primary,
+                modifier= modifier.align(Alignment.CenterVertically)
+            )
         }
     }
 

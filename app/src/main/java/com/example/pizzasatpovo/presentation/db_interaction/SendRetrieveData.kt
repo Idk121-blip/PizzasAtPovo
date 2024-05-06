@@ -16,7 +16,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
@@ -42,7 +41,8 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                         image= pizza.image,
                         uid=uid,
                         date=pickupTime,
-                        pizzaNumber= pizzaNumber)
+                        pizzaNumber= pizzaNumber,
+                        pizzaName= pizza.name)
         var user= googleAuthUiClient.retrieveUserData() ?: return ResponseData(message = "Utente non trovato")
         if (user.credit <DBOrder.price){
             return ResponseData(false, message = "Credito non sufficiente")
@@ -95,7 +95,8 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                     image = dbOrders.image,
                     date =dbOrders.date,
                     uid = dbOrders.uid,
-                    price = dbOrders.price))
+                    price = dbOrders.price,
+                    pizzaName= dbOrders.pizzaName))
             }
         }
         return ResponseData(true, "Retrieved successfully", ordersToReturn)
@@ -112,7 +113,14 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                 for (toppingReference in DBOrder.topping){
                     toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
                 }
-                orders.add(UserOrders(image =  DBOrder.image, time = DBOrder.date.toString(), pizzaNumber = DBOrder.pizzaNumber, topping = toppings, uname = uid))
+                orders.add(UserOrders(
+                    image =  DBOrder.image,
+                    time = DBOrder.date.toString(),
+                    pizzaNumber = DBOrder.pizzaNumber,
+                    topping = toppings,
+                    uname = uid,
+                    pizzaName=DBOrder.pizzaName
+                    ))
             }
         }
         return ResponseData(true, "Retrieved successfully", orders)
@@ -294,8 +302,11 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             .reference
 
         val order= RealTimeOrder(topping = toppingList,
-            pizzaNumber = pizzaNumber, time = date,
-            image = pizza.image, uname = user.name!!)
+            pizzaNumber = pizzaNumber,
+            time = date,
+            image = pizza.image,
+            uname = user.name!!,
+            pizzaName= pizza.name)
 
         val orderRef= database.child("orders").push()
         orderRef.setValue(order)
