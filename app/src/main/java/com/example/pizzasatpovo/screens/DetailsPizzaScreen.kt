@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
+import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
@@ -54,9 +55,9 @@ class DetailsPizzaScreen {
     @Composable
     fun DetailsPizzaPage(
         pizza: RetrievedPizza,
-        onBackButtonClicked: () -> Unit = {},
         onOrderButtonClicked: () -> Unit={},
         viewModel: PizzaViewModel,
+        navViewModel: NavigationViewModel,
         modifier: Modifier = Modifier
     ){
         var listOfToppings = ""
@@ -83,11 +84,10 @@ class DetailsPizzaScreen {
                 .fillMaxSize()
         ) {
             Column {
-//                Bars().AppBarWithBackBtn(
-//                    pizzasName = pizza.name,
-//                    onBackButtonClicked = onBackButtonClicked,
-//                    navViewModel = na
-//                )
+                Bars().AppBarWithBackBtn(
+                    pizzasName = pizza.name,
+                    navViewModel = navViewModel
+                )
                 Column (
                     modifier = modifier
                         .padding(50.dp, 10.dp)
@@ -189,8 +189,6 @@ class DetailsPizzaScreen {
     ){
 
         val pizze by viewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
-        //val nPizzas by remember { mutableIntStateOf(pizze) }
-
         val customOrderSentDialog =  remember { mutableStateOf(false) }
 
         if(customOrderSentDialog.value) {
@@ -198,8 +196,6 @@ class DetailsPizzaScreen {
                 customOrderSentDialog.value = it
             })
         }
-
-
 
         val showDialog =  remember { mutableStateOf(false) }
 
@@ -224,18 +220,7 @@ class DetailsPizzaScreen {
                 .padding(20.dp, top = 175.dp)
         ){
 
-//                if(title != ""){
-//                    Text(
-//                        text = title,
-//                        fontWeight = FontWeight.Bold,
-//                        modifier = modifier
-//                            .padding(bottom = 20.dp)
-//                            //.fillMaxWidth()
-//                            .align(Alignment.CenterHorizontally)
-//                    )
-//                }else{
-                    Spacer(modifier = modifier.height(20.dp))
-//                }
+                Spacer(modifier = modifier.height(20.dp))
                 Row(
                     modifier = modifier
                 ) {
@@ -269,10 +254,10 @@ class DetailsPizzaScreen {
                                 onClick = { viewModel.decreaseNumberOfPizza() },
                                 shape = RoundedCornerShape(5.dp),
                                 content = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
+                                    Image(
+                                        painter = painterResource(id = R.drawable.minus_icon),
                                         contentDescription = "Add pizza",
-                                        modifier = modifier
+                                        modifier = modifier.size(15.dp)
                                     )
                                 },
                                 contentPadding = PaddingValues(),
