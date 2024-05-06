@@ -72,7 +72,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 text = "per € ",
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
-//                            fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = (numberOfPizzas*4.4).toString(),
@@ -84,18 +83,13 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 text = "?",
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
-//                            fontWeight = FontWeight.Bold
                             )
                         }
                     }
-
-
                     Spacer(modifier = Modifier.height(20.dp))
-
                     Row(modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 0.dp)) {
 
                         Button(
-                            colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
                             onClick = {
                                 setShowDialog(false)
                                 sendOrder()
@@ -109,13 +103,14 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                             Text(text = "Ordina")
                         }
                         Button(
+                            colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
                             onClick = {
                                 //TODO
                                 setShowDialog(false)
                             },
                             shape = RoundedCornerShape(10.dp),
                             modifier = Modifier
-                                .padding(end = 10.dp)
+                                .padding(start = 10.dp)
                                 .weight(0.5F)
                                 .fillMaxWidth()
                                 .height(35.dp)

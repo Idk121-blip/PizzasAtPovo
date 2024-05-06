@@ -26,6 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -198,14 +200,25 @@ class DetailsPizzaScreen {
         }
 
         val showDialog =  remember { mutableStateOf(false) }
-
+        var minusButtonColors: ButtonColors = ButtonDefaults.buttonColors()
+        println()
+        if(pizze == 1){
+            minusButtonColors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+        }
+        var plusButtonColors: ButtonColors = ButtonDefaults.buttonColors()
+        if(pizze == 3){
+            plusButtonColors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+        }
         if(showDialog.value) {
-            CustomDialog(setShowDialog = {
-                showDialog.value = it
-            }, sendOrder = {
-                onOrderButtonClicked()
-                customOrderSentDialog.value = true
-            }, pizze, pizzaName )
+            CustomDialog(
+                setShowDialog = { showDialog.value = it },
+                sendOrder = {
+                    onOrderButtonClicked()
+                    customOrderSentDialog.value = true
+                },
+                pizze,
+                pizzaName
+            )
         }
         Column (
             modifier = modifier
@@ -219,91 +232,91 @@ class DetailsPizzaScreen {
                 .fillMaxWidth()
                 .padding(20.dp, top = 175.dp)
         ){
-
-                Spacer(modifier = modifier.height(20.dp))
-                Row(
+            Spacer(modifier = modifier.height(20.dp))
+            Row(
+                modifier = modifier
+            ) {
+                Column(
                     modifier = modifier
+                        .padding(end = 10.dp)
                 ) {
-                    Column(
+                    Text(
+                        text = "Quantità: ",
                         modifier = modifier
-                            .padding(end = 10.dp)
-                    ) {
-                        Text(
-                            text = "Quantità: ",
+                            .padding(start = 20.dp)
+                            .height(45.dp)
+                    )
+                    Text(
+                        text = "Orario: ",
+                        modifier = modifier
+                            .padding(start = 20.dp)
+                            .height(45.dp)
+                    )
+                    Text(
+                        text = "Totale: ",
+                        modifier = modifier
+                            .padding(start = 20.dp)
+                            .height(45.dp)
+                    )
+                }
+                Column {
+                    Row {
+                        Button(
+                            colors = minusButtonColors,
+                            onClick = {
+                                viewModel.decreaseNumberOfPizza()
+                            },
+                            shape = RoundedCornerShape(5.dp),
+                            content = {
+                                Image(
+                                    painter = painterResource(id = R.drawable.minus_icon),
+                                    contentDescription = "Add pizza",
+                                    modifier = modifier.size(15.dp)
+                                )
+                            },
+                            contentPadding = PaddingValues(),
                             modifier = modifier
-                                .padding(start = 20.dp)
-                                .height(45.dp)
+                                .size(30.dp)
                         )
                         Text(
-                            text = "Orario: ",
-                            modifier = modifier
-                                .padding(start = 20.dp)
-                                .height(45.dp)
-                        )
-                        Text(
-                            text = "Totale: ",
-                            modifier = modifier
-                                .padding(start = 20.dp)
-                                .height(45.dp)
-                        )
-
-                    }
-                    Column {
-                        Row {
-                            Button(
-                                onClick = { viewModel.decreaseNumberOfPizza() },
-                                shape = RoundedCornerShape(5.dp),
-                                content = {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.minus_icon),
-                                        contentDescription = "Add pizza",
-                                        modifier = modifier.size(15.dp)
-                                    )
-                                },
-                                contentPadding = PaddingValues(),
-                                modifier = modifier
-                                    .size(30.dp)
-                            )
-                            Text(
-                                text = pizze.toString(),
-                                fontWeight = FontWeight.Bold,
-                                modifier = modifier
-                                    .padding(10.dp, 0.dp)
-                                    .align(Alignment.CenterVertically)
-                            )
-                            Button(
-                                onClick = { viewModel.increaseNumberOfPizza() },
-                                shape = RoundedCornerShape(5.dp),
-                                content = {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add pizza",
-                                        modifier = modifier
-                                    )
-                                },
-                                contentPadding = PaddingValues(),
-                                modifier = modifier
-                                    .size(30.dp)
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = modifier
-                                .padding(0.dp, 15.dp)
-
-                        ) {
-                            PickerExample()
-                        }
-                        val cost = 4.40F * pizze
-                        Text(
-                            text = "€ $cost",
+                            text = pizze.toString(),
                             fontWeight = FontWeight.Bold,
                             modifier = modifier
                                 .padding(10.dp, 0.dp)
+                                .align(Alignment.CenterVertically)
                         )
-
+                        Button(
+                            colors = plusButtonColors,
+                            onClick = { viewModel.increaseNumberOfPizza() },
+                            shape = RoundedCornerShape(5.dp),
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add pizza",
+                                    modifier = modifier
+                                )
+                            },
+                            contentPadding = PaddingValues(),
+                            modifier = modifier
+                                .size(30.dp)
+                        )
                     }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = modifier
+                            .padding(0.dp, 15.dp)
 
+                    ) {
+                        PickerExample()
+                    }
+                    val cost = 4.40 * pizze
+                    Text(
+                        text = "€ $cost",
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier
+                            .padding(10.dp, 0.dp)
+                    )
+                }
             }
 
             Button(
@@ -317,22 +330,8 @@ class DetailsPizzaScreen {
                 shape = RoundedCornerShape(10.dp),
                 modifier = modifier
                     .fillMaxWidth()
-
                     .padding(start = 10.dp, end = 30.dp)
             )
         }
-    }
-
-
-    fun addAnimation(
-        duration: Int = 800,
-        modifier: Modifier = Modifier
-    ): ContentTransform {
-        return slideInVertically(animationSpec = tween(durationMillis = duration)){
-            height -> height
-        } + fadeIn(animationSpec = tween(durationMillis = duration)
-        ) togetherWith slideOutVertically(animationSpec = tween(durationMillis = duration)){
-                height -> -height
-        } + fadeOut(animationSpec = tween(durationMillis = duration))
     }
 }
