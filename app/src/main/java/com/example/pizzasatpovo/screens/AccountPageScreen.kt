@@ -52,6 +52,7 @@ import com.example.pizzasatpovo.data.LoadingResult
 import com.example.pizzasatpovo.data.LoadingViewModel
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import kotlinx.coroutines.launch
 
@@ -65,29 +66,12 @@ class AccountPageScreen {
                     navController2: NavHostController = rememberNavController(),
                     navController: NavigationViewModel,
                     onLogOutButtonClicked: ()->Unit,
-                    onProfileButtonClicked: () -> Unit={},
-                    onHomeButtonClicked:() ->Unit={},
-                    onFavouritesButtonClicked:()->Unit = {},
-                    onAddPizzaButtonClicked:()->Unit={},
-                    onOrdersButtonClicked:()->Unit={},
     ){
         val viewModel = viewModel<LoadingViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
-        Box(modifier = modifier
-            .fillMaxSize()
-        ){
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.background),
-                    contentDescription = "Background image",
-                    contentScale = ContentScale.FillBounds,
-                    alpha = 0.5F,
-                    modifier = modifier
-                        .fillMaxSize()
-                )
+        BackgroundImage()
 
-            }
-        }
+
         NavHost(
             navController = navController2,
             startDestination = "LoadingPage",
