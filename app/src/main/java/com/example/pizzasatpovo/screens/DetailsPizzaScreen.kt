@@ -311,7 +311,7 @@ class DetailsPizzaScreen {
                     }
                     val cost = 4.40 * pizze
                     Text(
-                        text = "€ $cost",
+                        text = "€ " +String.format("%.2f", cost),
                         fontWeight = FontWeight.Bold,
                         modifier = modifier
                             .padding(10.dp, 0.dp)

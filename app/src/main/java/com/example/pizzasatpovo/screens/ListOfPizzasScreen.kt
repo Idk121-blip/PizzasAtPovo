@@ -205,7 +205,7 @@ class ListOfPizzasScreen() {
             }
         }
         var favourite by remember {mutableStateOf(isFavourite)}
-
+        favourite= isFavourite
         val interactionSource = remember { MutableInteractionSource() }
 
         Card(
