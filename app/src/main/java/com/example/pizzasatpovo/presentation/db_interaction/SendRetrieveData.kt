@@ -21,7 +21,7 @@ import kotlinx.coroutines.tasks.await
 
 class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
     private val auth = Firebase.auth
-    suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
+    private suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -59,24 +59,28 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                     user.orders!!.add(0, documentReference)
                 }
                 user.credit-=DBOrder.price
+
+                user.credit = Math.round(user.credit * 100.0) / 100.0
                 userRef.set(user)
             }
         return ResponseData(true, "Ordine completato con successo", DBOrder)
     }
 
-    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run{
-        if (retrievedPizza.toppings== null){
+    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
+        if (retrievedPizza.toppings == null) {
             return ResponseData(false, "Number of toppings not valid (null)")
         }
-        val pizza = Pizza(name =  retrievedPizza.name, image= retrievedPizza.image, toppings = arrayListOf())
+        val pizza = Pizza(
+            name = retrievedPizza.name,
+            image = retrievedPizza.image,
+            toppings = arrayListOf()
+        )
         val db = Firebase.firestore
-        for (topping in retrievedPizza.toppings){
+        for (topping in retrievedPizza.toppings) {
             pizza.toppings!!.add(db.collection("toppings").document(topping.name))
         }
 
-        val returnedValue= sendOrder(pizza, pickupTime, pizzaNumber)
-
-        return returnedValue
+        return sendOrder(pizza, pickupTime, pizzaNumber)
     }
 
     suspend fun retrieveOrders():ResponseData<ArrayList<Order>>? = auth.currentUser?.run {

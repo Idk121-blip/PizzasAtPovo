@@ -27,10 +27,14 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextFieldDefaults.indicatorLine
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,13 +61,12 @@ import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 
-class ListOfPizzasScreen() {
-
+class ListOfPizzasScreen {
     @Composable
     fun ListOfPizzasPage(
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
-        onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
+        onAddToFavouritesClicked:(String)->Unit={},
         onRemoveFromFavouritesClicked:(String)->Unit={},
         modifier: Modifier = Modifier
     ){
@@ -78,7 +81,7 @@ class ListOfPizzasScreen() {
             SearchBar(
                 viewModel= viewModel,
                 modifier = modifier
-                    .padding(10.dp)
+                    .padding(0.dp, 10.dp)
             )
             ListOfPizzas(
                 navViewModel = navViewModel,
@@ -95,28 +98,35 @@ class ListOfPizzasScreen() {
 
     @Composable
     fun SearchBar(viewModel: PizzaViewModel,modifier: Modifier = Modifier){
-
         val text by viewModel.searchQuery.collectAsStateWithLifecycle()
-
         TextField(
             value = text,
             onValueChange = {
                 viewModel.onSearchTextChanged(it)
             },
+
             leadingIcon = { Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "Search"
+                contentDescription = "SearchIcon"
             ) },
             textStyle = TextStyle(
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
             ),
-            shape = RoundedCornerShape(50.dp),
+            shape = RoundedCornerShape(15.dp),
             label = null,
             placeholder = { Text(text = "Cerca ...") },
-            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
+            ),
+            singleLine = false,
             modifier = modifier
-                .clip(CircleShape)
-                .background(Color.White)
+                .width(330.dp)
+                .padding()
+
+
         )
     }
 
@@ -145,7 +155,6 @@ class ListOfPizzasScreen() {
         ){
             items(pizzas){ pizza->
                 PizzaCard(
-                    //TODO! check names
                     viewModel = viewModel,
                     navViewModel = navViewModel,
                     pizza= pizza,
@@ -170,8 +179,6 @@ class ListOfPizzasScreen() {
                 }
 
             }
-
-
         }
 
         Spacer(
@@ -190,8 +197,6 @@ class ListOfPizzasScreen() {
         isFavourite: Boolean= false,
         modifier: Modifier = Modifier
     ){
-
-
         var toppingForCard=""
         for (topping in pizza.toppings!!){
             toppingForCard= toppingForCard.plus(topping.name).plus(", ")
@@ -205,7 +210,7 @@ class ListOfPizzasScreen() {
             }
         }
         var favourite by remember {mutableStateOf(isFavourite)}
-
+        favourite= isFavourite
         val interactionSource = remember { MutableInteractionSource() }
 
         Card(

@@ -182,6 +182,7 @@ class OrdersScreen {
 //                        name = pizzas[i].name,
 //                        pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
 //                        viewModel = viewModel
+                        price = ordersList[order].price
                     )
                     order++;
                 }
@@ -202,6 +203,7 @@ class OrdersScreen {
 //                        name = pizzas[i].name,
 //                        pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
 //                        viewModel = viewModel
+                        price = ordersList[order].price
                     )
                     order++;
                 }
@@ -218,6 +220,7 @@ class OrdersScreen {
     fun SingleOrderCard(
         image: String,
         name: String,
+        price: Double,
         modifier: Modifier = Modifier
     ){
         Card (
@@ -257,7 +260,7 @@ class OrdersScreen {
                     )
                 }
                 Text(
-                    text = "€ 4.40",
+                    text = "€ $price",
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.Bold,
                     modifier = modifier

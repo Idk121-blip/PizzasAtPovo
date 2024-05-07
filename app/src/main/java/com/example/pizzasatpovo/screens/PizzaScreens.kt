@@ -289,7 +289,6 @@ fun PizzasAtPovoApp(
 
 
 suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData, pizzaViewModel: PizzaViewModel) {
-    //TODO: try to do these as val
     var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
     var toppings: ArrayList<Topping> = arrayListOf()
     val reqRespone= sendRetrieveData.getPizzas()
