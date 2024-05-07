@@ -110,12 +110,9 @@ class FavouritesScreen {
                             favourites[i].image
                         )
                         PizzaCard(
+                            viewModel = viewModel,
                             navViewModel = navViewModel,
                             pizza = favourites[i],
-                            onNavbarButtonClicked = {
-                                viewModel.setPizza(retPizza)
-                                navViewModel.goToDetails()
-                            },
                             onAddToFavouritesClicked =
                             {
                                 onAddToFavouritesClicked(it)
@@ -139,9 +136,9 @@ class FavouritesScreen {
 
     @Composable
     fun PizzaCard(
+        viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
         pizza: RetrievedPizza,
-        onNavbarButtonClicked: () -> Unit,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
         modifier: Modifier = Modifier
@@ -197,6 +194,7 @@ class FavouritesScreen {
                             indication = null
                         ) {
                             if (available) {
+                                viewModel.setPizza(pizza)
                                 navViewModel.goToDetails()
                             } else {
                                 Toast

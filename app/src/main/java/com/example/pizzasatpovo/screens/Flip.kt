@@ -1,5 +1,4 @@
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,12 +36,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -56,24 +53,26 @@ fun PickerExample(
             verticalArrangement = Arrangement.Center,
 
         ) {
-
             val hours = remember { (11..14).map { it.toString() } }
-            val valuesPickerState = rememberPickerState()
+            val hoursPickerState = rememberPickerState()
             val minutes = remember { (0..59).map {
                 if(it in 0..9) "0$it" else it.toString()
             } }
-            val unitsPickerState = rememberPickerState()
+            val minutesPickerState = rememberPickerState()
 
             Row (modifier = modifier.width(100.dp)){
                 Picker(
-                    state = valuesPickerState,
+                    state = hoursPickerState,
                     items = hours,
                     visibleItemsCount = 1,
                     modifier = modifier.weight(0.5f),
                     textModifier = Modifier.padding(2.dp)
                 )
+                Text(
+                    text = " : "
+                )
                 Picker(
-                    state = unitsPickerState,
+                    state = minutesPickerState,
                     items = minutes,
                     visibleItemsCount = 1,
                     modifier = modifier.weight(0.5f),
@@ -115,7 +114,7 @@ fun Picker(
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     val itemHeightPixels = remember { mutableIntStateOf(0) }
-    val itemHeightDp = pixelsToDp(itemHeightPixels.value)
+    val itemHeightDp = pixelsToDp(itemHeightPixels.intValue)
 
     val fadingEdgeGradient = remember {
         Brush.verticalGradient(
@@ -150,21 +149,21 @@ fun Picker(
                     overflow = TextOverflow.Ellipsis,
                     style = textStyle,
                     modifier = Modifier
-                        .onSizeChanged { size -> itemHeightPixels.value = size.height }
+                        .onSizeChanged { size -> itemHeightPixels.intValue = size.height }
                         .then(textModifier)
                 )
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
-            color = dividerColor
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
-            color = dividerColor
-        )
+//        HorizontalDivider(
+//            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
+//            color = dividerColor
+//        )
+//
+//        HorizontalDivider(
+//            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
+//            color = dividerColor
+//        )
 
     }
 

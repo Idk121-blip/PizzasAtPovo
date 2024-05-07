@@ -72,7 +72,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 text = "per € ",
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
-//                            fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = (numberOfPizzas*4.4).toString(),
@@ -84,18 +83,27 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 text = "?",
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
-//                            fontWeight = FontWeight.Bold
                             )
                         }
                     }
-
-
                     Spacer(modifier = Modifier.height(20.dp))
-
                     Row(modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 0.dp)) {
-
                         Button(
                             colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
+                            onClick = {
+                                //TODO
+                                setShowDialog(false)
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .weight(0.5F)
+                                .fillMaxWidth()
+                                .height(35.dp)
+                        ) {
+                            Text(text = "Annulla")
+                        }
+                        Button(
                             onClick = {
                                 setShowDialog(false)
                                 sendOrder()
@@ -108,23 +116,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         ) {
                             Text(text = "Ordina")
                         }
-                        Button(
-                            onClick = {
-                                //TODO
-                                setShowDialog(false)
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .padding(end = 10.dp)
-                                .weight(0.5F)
-                                .fillMaxWidth()
-                                .height(35.dp)
-                        ) {
-                            Text(text = "Annulla")
-                        }
-
-
-
                     }
                 }
             }
@@ -134,7 +125,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
 
 @Composable
 fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
-    println("Ciao")
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -166,19 +156,11 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                         )
                     }
 
-
-
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(75.dp))
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(text = "Ordine effettuato!")
                     }
-
-
-
-
-
-
                 }
             }
         }
