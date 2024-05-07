@@ -88,20 +88,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 0.dp)) {
-
-                        Button(
-                            onClick = {
-                                setShowDialog(false)
-                                sendOrder()
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.5F)
-                                .height(35.dp)
-                        ) {
-                            Text(text = "Ordina")
-                        }
                         Button(
                             colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
                             onClick = {
@@ -117,9 +103,19 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         ) {
                             Text(text = "Annulla")
                         }
-
-
-
+                        Button(
+                            onClick = {
+                                setShowDialog(false)
+                                sendOrder()
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.5F)
+                                .height(35.dp)
+                        ) {
+                            Text(text = "Ordina")
+                        }
                     }
                 }
             }
@@ -129,7 +125,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
 
 @Composable
 fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
-    println("Ciao")
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -161,19 +156,11 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                         )
                     }
 
-
-
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(75.dp))
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(text = "Ordine effettuato!")
                     }
-
-
-
-
-
-
                 }
             }
         }
