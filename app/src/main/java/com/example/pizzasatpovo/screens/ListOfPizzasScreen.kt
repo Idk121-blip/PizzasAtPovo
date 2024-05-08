@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -104,7 +103,6 @@ class ListOfPizzasScreen {
             onValueChange = {
                 viewModel.onSearchTextChanged(it)
             },
-
             leadingIcon = { Icon(
                 imageVector = Icons.Filled.Search,
                 contentDescription = "SearchIcon"
@@ -125,8 +123,6 @@ class ListOfPizzasScreen {
             modifier = modifier
                 .width(330.dp)
                 .padding()
-
-
         )
     }
 
@@ -256,7 +252,8 @@ class ListOfPizzasScreen {
                             text = toppingForCard,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            modifier = modifier.padding(end = 15.dp)
                         )
                         Row(
                             verticalAlignment = Alignment.Bottom,

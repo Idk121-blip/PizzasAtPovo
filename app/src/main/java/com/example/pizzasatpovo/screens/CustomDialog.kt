@@ -44,11 +44,12 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
             shape = RoundedCornerShape(16.dp),
             color = Color.LightGray
         ) {
-            Box(modifier = Modifier.height(150.dp)
+            Box(
+            //modifier = Modifier.height(150.dp)
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Column( modifier = Modifier.padding(20.dp, 25.dp, 20.dp, 0.dp)) {
-            
+
                     Column (horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -74,7 +75,7 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 fontFamily = FontFamily.Default,
                             )
                             Text(
-                                text = (numberOfPizzas*4.4).toString(),
+                                text = String.format("%.2f", numberOfPizzas*4.4),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
@@ -86,12 +87,10 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 0.dp)) {
+                    Row(modifier = Modifier.padding(20.dp)) {
                         Button(
                             colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
                             onClick = {
-                                //TODO
                                 setShowDialog(false)
                             },
                             shape = RoundedCornerShape(10.dp),
