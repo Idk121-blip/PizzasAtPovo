@@ -283,6 +283,7 @@ fun PizzasAtPovoApp(
             }
 
             ordersRef.addChildEventListener(childEventListener)
+
             LazyColumn {
                 items(orders){
                     Box(modifier = modifier.height(50.dp)){
