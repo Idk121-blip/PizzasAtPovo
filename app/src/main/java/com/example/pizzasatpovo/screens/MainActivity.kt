@@ -1,4 +1,5 @@
 package com.example.pizzasatpovo.screens
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContent {
             ComposeGoogleSignInCleanArchitectureTheme {
                 // A surface container using the 'background' color from the theme
@@ -67,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
                 Surface(){
 
-                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
+                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext, activity = this)
                 }
 
                 //TODO: IMPLEMENTARE RICERCA, PIZZA

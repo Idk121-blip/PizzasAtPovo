@@ -1,7 +1,9 @@
 package com.example.pizzasatpovo.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedDispatcher
@@ -63,6 +65,7 @@ fun PizzasAtPovoApp(
     lifecycleScope: LifecycleCoroutineScope,
     applicationContext: Context,
     navController: NavHostController = rememberNavController(),
+    activity: Activity,
     modifier: Modifier = Modifier
 ){
     val viewModel = viewModel<SignInViewModel>()
@@ -87,9 +90,11 @@ fun PizzasAtPovoApp(
                     if (googleAuthUiClient.getSignedInUser() == null) {
                         //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
+                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
+                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }

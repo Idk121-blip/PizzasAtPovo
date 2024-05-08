@@ -75,7 +75,7 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 fontFamily = FontFamily.Default,
                             )
                             Text(
-                                text = (numberOfPizzas*4.4).toString(),
+                                text = String.format("%.2f", numberOfPizzas*4.40),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
