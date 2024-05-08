@@ -114,8 +114,10 @@ class AddPizzaScreen {
             Row {
                 for (topping in toppings){
                     if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
-                        IngredientCard(topping = topping,
-                            personalizedOrderViewMode= personalizedOrderViewMode)
+                        IngredientCard(
+                            topping = topping,
+                            personalizedOrderViewMode= personalizedOrderViewMode
+                        )
                     }
                 }
             }
@@ -147,8 +149,6 @@ class AddPizzaScreen {
        modifier: Modifier = Modifier
     ){
         var selected by remember { mutableStateOf(false) }
-
-
         TooltipBox(
             positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
             tooltip = {
@@ -171,7 +171,7 @@ class AddPizzaScreen {
                 shape = RoundedCornerShape(percent = 15),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                 modifier = modifier
-                    .padding(5.dp)
+                    .padding(2.dp)
                     .size(60.dp)
             ) {
                 Box(
@@ -187,10 +187,10 @@ class AddPizzaScreen {
                             .align(Alignment.TopEnd)
                     )
                     AsyncImage(model = topping.image, contentDescription = topping.name, modifier = modifier
-                        .padding(top = 10.dp)
-                        .size(50.dp)
+                        .padding(top = 8.dp)
+                        .size(55.dp)
                         .align(Alignment.BottomCenter)
-                        .padding(5.dp))
+                        .padding(4.dp))
                 }
             }
         }

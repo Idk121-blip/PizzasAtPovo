@@ -31,6 +31,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -99,6 +101,7 @@ class ListOfPizzasScreen() {
         val text by viewModel.searchQuery.collectAsStateWithLifecycle()
 
         TextField(
+            colors = TextFieldDefaults.colors(focusedIndicatorColor = Color.Cyan),
             value = text,
             onValueChange = {
                 viewModel.onSearchTextChanged(it)
@@ -251,7 +254,8 @@ class ListOfPizzasScreen() {
                             text = toppingForCard,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            modifier = modifier.padding(end = 15.dp)
                         )
                         Row(
                             verticalAlignment = Alignment.Bottom,
