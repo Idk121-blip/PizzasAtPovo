@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 class NavigationViewModel(val controller: NavHostController): ViewModel() {
     private val _navController = MutableStateFlow(controller)
     val navController = _navController.asStateFlow()
+    //TODO if not used remove
 
 
     fun goToListOfPizzas(){

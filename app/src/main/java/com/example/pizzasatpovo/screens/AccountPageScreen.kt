@@ -1,7 +1,9 @@
 package com.example.pizzasatpovo.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,6 +58,7 @@ import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
+import com.example.pizzasatpovo.ui.components.shimmerBrush
 import kotlinx.coroutines.launch
 
 
@@ -71,18 +74,14 @@ class AccountPageScreen {
         onLogOutButtonClicked: ()->Unit,
     ){
         val viewModel = viewModel<LoadingViewModel>()
-        val state by viewModel.state.collectAsStateWithLifecycle()
+
         BackgroundImage()
         NavHost(
             navController = navController2,
-            startDestination = "LoadingPage",
+            startDestination = "AccountPage",
             modifier = modifier
         ) {
-            composable(route= "LoadingPage"){
-
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Loading")
-                }
+            composable(route= "AccountPage"){
 
                 LaunchedEffect(key1 = Unit) {
                     lifecycleScope.launch {
@@ -90,16 +89,9 @@ class AccountPageScreen {
                         viewModel.onSignInResult(loadResult)
                     }
                 }
-
-                LaunchedEffect(state.isFinished) {
-                    navController2.navigate("AccountPage")
-                }
-            }
-
-            composable(route= "AccountPage"){
                 Column {
                     Bars().AppBar(
-                         text = "Account",
+                        text = "Account",
                     )
                     Column {
                         UserInfoCard(viewModel = viewModel)
@@ -146,7 +138,8 @@ class AccountPageScreen {
                         )
 
                         LogoutButton(
-                            onLogOutButtonClicked = onLogOutButtonClicked
+                            onLogOutButtonClicked = onLogOutButtonClicked,
+                            viewModel= viewModel
                         )
                     }
                     Bars().BottomBar(
@@ -154,9 +147,16 @@ class AccountPageScreen {
                         navViewModel = navController
                     )
                 }
+
             }
         }
     }
+
+
+
+
+
+
 
     @Composable
     fun UserInfoCard(
@@ -174,6 +174,9 @@ class AccountPageScreen {
                 .padding(25.dp, 10.dp)
         ){
             val userData by viewModel.userData.collectAsStateWithLifecycle()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val showShimmer = remember { mutableStateOf(true) }
+            showShimmer.value= !state.isFinished
             Card (
                 shape = RoundedCornerShape(15.dp, 0.dp),
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
@@ -192,9 +195,16 @@ class AccountPageScreen {
                             model = userData.image,
                             contentScale = ContentScale.Crop,
                             contentDescription = "user image",
+                            onSuccess = {  },
                             modifier= modifier
-                                .size(90.dp)
                                 .clip(CircleShape)
+                                .background(
+                                    shimmerBrush(
+                                        targetValue = 1300f,
+                                        showShimmer = showShimmer.value
+                                    )
+                                )
+                                .size(90.dp)
                         )
                     }
                     Spacer(
@@ -202,12 +212,21 @@ class AccountPageScreen {
                             .weight(1f)
                             .fillMaxHeight()
                     )
+
                     Text(
-                        text = "€ " +String.format("%.2f", userData.credit),
+
+                        text = "" +if(showShimmer.value){"            "} else { "€ "+String.format("%.2f", userData.credit)},
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        modifier = modifier.padding(end = 15.dp)
+                        modifier = modifier
+                            .padding(end = 15.dp)
+                            .background(
+                                shimmerBrush(
+                                    targetValue = 1300f,
+                                    showShimmer = showShimmer.value
+                                )
+                            )
                     )
                 }
             }
@@ -217,9 +236,15 @@ class AccountPageScreen {
                     .fillMaxSize()
             ) {
                 Text(
-                    text = userData.name!!,
+                    text = "" +if(showShimmer.value){"                    "} else {userData.name!!},
                     modifier = modifier
-                        .padding(start = 15.dp,end= 7.dp, bottom = 7.dp, top = 7.dp)
+                        .padding(start = 15.dp, end = 7.dp, bottom = 7.dp, top = 7.dp)
+                        .background(
+                            shimmerBrush(
+                                targetValue = 1300f,
+                                showShimmer = showShimmer.value
+                            )
+                        )
                 )
                 Spacer(
                     Modifier
@@ -308,13 +333,23 @@ class AccountPageScreen {
     @Composable
     fun LogoutButton(
         onLogOutButtonClicked: () -> Unit = {},
+        viewModel: LoadingViewModel,
         modifier: Modifier = Modifier
     ){
+        val interactionSource = remember { MutableInteractionSource() }
+        val state by viewModel.state.collectAsStateWithLifecycle()
+        val showShimmer = remember { mutableStateOf(true) }
+        showShimmer.value= !state.isFinished
         Row(modifier = modifier
             .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-            .clickable {
+            .clickable (enabled = !showShimmer.value,
+                interactionSource = interactionSource,
+                indication = null) {
                 onLogOutButtonClicked()
-            }) {
+            }
+
+
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout_icon),
                 contentDescription = "Logout icon",

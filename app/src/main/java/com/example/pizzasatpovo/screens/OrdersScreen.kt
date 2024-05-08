@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -42,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
+import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.OrdersViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
@@ -49,6 +50,8 @@ import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class OrdersScreen {
     @Composable
@@ -173,15 +176,12 @@ class OrdersScreen {
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 )
-                while (order<=3 && order<ordersList.size  /*TODO! and check date */) {
+                while (order<ordersList.size  &&
+                    (SimpleDateFormat("dd.MM.yyyy")
+                        .format(ordersList[order]
+                            .date.toDate())>=SimpleDateFormat("dd.MM.yyyy").format(Date()))) {
                     SingleOrderCard(
-                        //TODO! check names
-                        image = ordersList[order].image,
-                        name = ordersList[order].pizzaName,
-//                        image = pizzas[i].image,
-//                        name = pizzas[i].name,
-//                        pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
-//                        viewModel = viewModel
+                        order = ordersList[order]
                     )
                     order++;
                 }
@@ -193,15 +193,9 @@ class OrdersScreen {
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 )
-                while (order<=5  && order < ordersList.size/*TODO! and check date */) {
+                while (order < ordersList.size && ordersList[order].date.toDate().before(Date())) {
                     SingleOrderCard(
-                        //TODO! check names
-                        image = ordersList[order].image,
-                        name = ordersList[order].pizzaName,
-//                        image = pizzas[i].image,
-//                        name = pizzas[i].name,
-//                        pizza = RetrievedPizza("Margherita", image = "", toppings = arrayListOf()),
-//                        viewModel = viewModel
+                        order = ordersList[order],
                     )
                     order++;
                 }
@@ -216,8 +210,7 @@ class OrdersScreen {
 
     @Composable
     fun SingleOrderCard(
-        image: String,
-        name: String,
+        order: Order,
         modifier: Modifier = Modifier
     ){
         Card (
@@ -234,10 +227,10 @@ class OrdersScreen {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(20.dp, 10.dp)
+                    .padding(10.dp)
             ){
                 AsyncImage(
-                    model = image,
+                    model = order.image,
                     contentDescription = "pizza image",
                     modifier= modifier
                         .fillMaxHeight()
@@ -245,19 +238,20 @@ class OrdersScreen {
                 )
                 Column {
                     Text(
-                        text = name,
+                        text = order.pizzaName,
                         fontWeight = FontWeight.Bold,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        modifier = modifier.width(120.dp)
                     )
                     Text(
-                        text = "01/02/2023",
+                        text = SimpleDateFormat("dd.MM.yyyy").format(order.date.toDate()),
                         fontSize = 16.sp,
                     )
                 }
                 Text(
-                    text = "€ 4.40",
+                    text = "€ " +String.format("%.2f", order.price),
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.Bold,
                     modifier = modifier

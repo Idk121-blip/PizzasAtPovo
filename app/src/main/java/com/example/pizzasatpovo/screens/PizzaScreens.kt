@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,7 +78,6 @@ fun PizzasAtPovoApp(
         startDestination = PizzaScreens.FirstPage.name,
         modifier = modifier
     ){
-
         composable(
             route = PizzaScreens.FirstPage.name
         ){
@@ -128,6 +128,7 @@ fun PizzasAtPovoApp(
                         ).show()
                     }else{
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
+                        navController.enableOnBackPressed(enabled = false)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }
 
@@ -185,6 +186,7 @@ fun PizzasAtPovoApp(
                 onLogOutButtonClicked =  {
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
+                        navController.enableOnBackPressed(enabled = false)
                         navController.navigate(PizzaScreens.FirstPage.name)
                     }
                 },
@@ -289,7 +291,6 @@ fun PizzasAtPovoApp(
 
 
 suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData, pizzaViewModel: PizzaViewModel) {
-    //TODO: try to do these as val
     var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
     var toppings: ArrayList<Topping> = arrayListOf()
     val reqRespone= sendRetrieveData.getPizzas()
