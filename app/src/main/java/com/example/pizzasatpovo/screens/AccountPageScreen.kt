@@ -3,6 +3,7 @@ package com.example.pizzasatpovo.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -77,18 +78,10 @@ class AccountPageScreen {
         BackgroundImage()
         NavHost(
             navController = navController2,
-            startDestination = "LoadingPage",
+            startDestination = "AccountPage",
             modifier = modifier
         ) {
-            composable(route= "LoadingPage"){
-
-
-
-
-
-//                Button(onClick = { /*TODO*/ }) {
-//                    Text(text = "Loading")
-//                }
+            composable(route= "AccountPage"){
 
                 LaunchedEffect(key1 = Unit) {
                     lifecycleScope.launch {
@@ -145,7 +138,8 @@ class AccountPageScreen {
                         )
 
                         LogoutButton(
-                            onLogOutButtonClicked = onLogOutButtonClicked
+                            onLogOutButtonClicked = onLogOutButtonClicked,
+                            viewModel= viewModel
                         )
                     }
                     Bars().BottomBar(
@@ -153,10 +147,6 @@ class AccountPageScreen {
                         navViewModel = navController
                     )
                 }
-
-            }
-
-            composable(route= "AccountPage"){
 
             }
         }
@@ -194,8 +184,6 @@ class AccountPageScreen {
                     .fillMaxWidth()
                     .height(105.dp)
                     .padding(0.dp)
-
-
             ){
                 Row (
                     verticalAlignment = Alignment.CenterVertically,
@@ -210,7 +198,12 @@ class AccountPageScreen {
                             onSuccess = {  },
                             modifier= modifier
                                 .clip(CircleShape)
-                                .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
+                                .background(
+                                    shimmerBrush(
+                                        targetValue = 1300f,
+                                        showShimmer = showShimmer.value
+                                    )
+                                )
                                 .size(90.dp)
                         )
                     }
@@ -222,12 +215,18 @@ class AccountPageScreen {
 
                     Text(
 
-                        text = "" +if(showShimmer.value){"         "} else { "€ "+String.format("%.2f", userData.credit)},
+                        text = "" +if(showShimmer.value){"            "} else { "€ "+String.format("%.2f", userData.credit)},
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        modifier = modifier.padding(end = 15.dp)
-                            .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value) )
+                        modifier = modifier
+                            .padding(end = 15.dp)
+                            .background(
+                                shimmerBrush(
+                                    targetValue = 1300f,
+                                    showShimmer = showShimmer.value
+                                )
+                            )
                     )
                 }
             }
@@ -239,8 +238,13 @@ class AccountPageScreen {
                 Text(
                     text = "" +if(showShimmer.value){"                    "} else {userData.name!!},
                     modifier = modifier
-                        .padding(start = 15.dp,end= 7.dp, bottom = 7.dp, top = 7.dp)
-                        .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value) )
+                        .padding(start = 15.dp, end = 7.dp, bottom = 7.dp, top = 7.dp)
+                        .background(
+                            shimmerBrush(
+                                targetValue = 1300f,
+                                showShimmer = showShimmer.value
+                            )
+                        )
                 )
                 Spacer(
                     Modifier
@@ -329,14 +333,23 @@ class AccountPageScreen {
     @Composable
     fun LogoutButton(
         onLogOutButtonClicked: () -> Unit = {},
+        viewModel: LoadingViewModel,
         modifier: Modifier = Modifier
     ){
+        val interactionSource = remember { MutableInteractionSource() }
+        val state by viewModel.state.collectAsStateWithLifecycle()
+        val showShimmer = remember { mutableStateOf(true) }
+        showShimmer.value= !state.isFinished
         Row(modifier = modifier
             .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-            .clickable {
-
+            .clickable (enabled = !showShimmer.value,
+                interactionSource = interactionSource,
+                indication = null) {
                 onLogOutButtonClicked()
-            }) {
+            }
+
+
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout_icon),
                 contentDescription = "Logout icon",
