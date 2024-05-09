@@ -3,46 +3,27 @@ package com.example.pizzasatpovo.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
+
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.ChefViewModel
 import com.example.pizzasatpovo.data.MyViewModelFactory
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
-import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
@@ -50,12 +31,6 @@ import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.google.firebase.Timestamp
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-
 enum class PizzaScreens {
     FirstPage,
     ListOfPizzas,
@@ -74,9 +49,9 @@ fun PizzasAtPovoApp(
     sendRetrieveData: SendRetrieveData,
     lifecycleScope: LifecycleCoroutineScope,
     applicationContext: Context,
-    navController: NavHostController = rememberNavController(),
     activity: Activity,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController()
 ){
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -261,17 +236,7 @@ fun PizzasAtPovoApp(
             )
         }
         composable(route= PizzaScreens.ChefOrders.name){
-            val chefViewModel = viewModel<ChefViewModel>()
-            val x by chefViewModel
-                .orders
-                .observeAsState(initial = arrayListOf(RealTimeOrder()))
-            LazyColumn {
-                items(x) { order ->
-                    Box(modifier = Modifier.height(50.dp)) {
-                        Text(text = order.pizzaName)
-                    }
-                }
-            }
+            ChefOrdersScreen().ChefOrdersPage()
         }
     }
 }

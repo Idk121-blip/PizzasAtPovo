@@ -1,8 +1,6 @@
 package com.example.pizzasatpovo.screens
 
-//import android.text.Layout.Alignment
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -44,9 +41,7 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
             shape = RoundedCornerShape(16.dp),
             color = Color.LightGray
         ) {
-            Box(
-            //modifier = Modifier.height(150.dp)
-            ) {
+            Box{
                 Spacer(modifier = Modifier.height(20.dp))
                 Column( modifier = Modifier.padding(20.dp, 25.dp, 20.dp, 0.dp)) {
 
@@ -135,13 +130,11 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                     .fillMaxWidth()
                     .height(150.dp)
             ) {
-                Column(Modifier.fillMaxWidth()) {0
+                Column(Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(end = 10.dp, top = 10.dp),
-
-
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Close,

@@ -52,10 +52,10 @@ class FavouritesScreen {
     @Composable
     fun FavouritesPage(
         navViewModel: NavigationViewModel,
-        onAddToFavouritesClicked:(String)->Unit={},//TODO: maybe add a screen when clicked?
-        onRemoveFromFavouritesClicked:(String)->Unit={},
         viewModel: PizzaViewModel,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        onRemoveFromFavouritesClicked:(String)->Unit={},
+        onAddToFavouritesClicked:(String)->Unit={}//TODO: maybe add a screen when clicked?
     ){
         BackgroundImage()
 
@@ -83,9 +83,9 @@ class FavouritesScreen {
     fun ListOfPizzas(
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
-        onAddToFavouritesClicked:(String)->Unit = {},
+        modifier: Modifier = Modifier,
         onRemoveFromFavouritesClicked:(String)->Unit = {},
-        modifier: Modifier = Modifier
+        onAddToFavouritesClicked:(String)->Unit = {}
     ){
         val favourites by viewModel.favourites.collectAsStateWithLifecycle()
         Column(
@@ -139,9 +139,9 @@ class FavouritesScreen {
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
         pizza: RetrievedPizza,
+        modifier: Modifier = Modifier,
         onAddToFavouritesClicked:(String)->Unit = {},
-        onRemoveFromFavouritesClicked:(String)->Unit = {},
-        modifier: Modifier = Modifier
+        onRemoveFromFavouritesClicked:(String)->Unit = {}
     ){
         var toppingForCard=""
         for (topping in pizza.toppings!!){
@@ -159,7 +159,7 @@ class FavouritesScreen {
             if(!pizzaToppings[i].availability){
                 available = false
             }
-            i++;
+            i++
         }
 
         val allergens:ArrayList<String> = arrayListOf()

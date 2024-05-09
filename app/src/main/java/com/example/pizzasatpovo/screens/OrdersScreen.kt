@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -47,14 +46,11 @@ import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.OrdersViewModel
-import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
-import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.shimmerBrush
 import kotlinx.coroutines.launch
-import java.awt.font.NumericShaper.Range
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -136,8 +132,8 @@ class OrdersScreen {
 
     @Composable
     fun ListOfChargingOrders(modifier: Modifier) {
-        var verticalArrangement: Arrangement.Vertical = Arrangement.Center
-        var horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
+        val verticalArrangement: Arrangement.Vertical = Arrangement.Center
+        val horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
         Column(
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
@@ -146,7 +142,7 @@ class OrdersScreen {
                 .padding(30.dp, 10.dp)
                 .fillMaxSize()
         ) {
-            var order = 0;
+            var order = 0
             Text(
                 text = "Recenti",
                 fontWeight = FontWeight.Bold,
@@ -168,7 +164,7 @@ class OrdersScreen {
             )
             while (order < 8) {
                 SingleOrderChargingCard()
-                order++;
+                order++
             }
             Spacer(
                 modifier = modifier
@@ -185,7 +181,7 @@ class OrdersScreen {
     ) {
         val ordersList by ordersViewModel.orders.collectAsStateWithLifecycle()
         var verticalArrangement: Arrangement.Vertical = Arrangement.Center
-        var horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
+        val horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
         println("Size array list: " + ordersList.size)
         if (ordersList.size != 0) {
             verticalArrangement = Arrangement.Top
@@ -218,7 +214,7 @@ class OrdersScreen {
                 )
                 return
             } else {
-                var order = 0;
+                var order = 0
                 Text(
                     text = "Recenti",
                     fontWeight = FontWeight.Bold,
@@ -237,7 +233,7 @@ class OrdersScreen {
                     SingleOrderCard(
                         order = ordersList[order]
                     )
-                    order++;
+                    order++
                 }
                 Text(
                     text = "Meno recenti",
@@ -251,7 +247,7 @@ class OrdersScreen {
                     SingleOrderCard(
                         order = ordersList[order],
                     )
-                    order++;
+                    order++
                 }
 
                 Spacer(
