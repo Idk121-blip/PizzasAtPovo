@@ -82,6 +82,6 @@ dependencies {
 
     //For time picker
     implementation ("com.github.kshitijskumar:Ticker:1.0.0")
-
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
 
 }

@@ -39,7 +39,7 @@ class PizzaViewModel: ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _pizzas.value)
 
 
-    fun addPizzas(pizzaArrayList: ArrayList<RetrievedPizza>) {
+    fun setPizzas(pizzaArrayList: ArrayList<RetrievedPizza>) {
         _pizzas.update {
             pizzaArrayList
         }
