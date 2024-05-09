@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
 
                 Surface(){
 
-                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
+                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext, activity = this)
                 }
 
                 //TODO: IMPLEMENTARE RICERCA, PIZZA
