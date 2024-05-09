@@ -1,13 +1,6 @@
 package com.example.pizzasatpovo.screens
 
 import PickerExample
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -57,10 +49,10 @@ class DetailsPizzaScreen {
     @Composable
     fun DetailsPizzaPage(
         pizza: RetrievedPizza,
-        onOrderButtonClicked: () -> Unit={},
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        onOrderButtonClicked: () -> Unit={}
     ){
         var listOfToppings = ""
         for (topping in pizza.toppings!!){
@@ -137,12 +129,7 @@ class DetailsPizzaScreen {
                                 }
                             }
                         }
-
-//                        Allergen()
-//                        Allergen()
-//                        Allergen()
                     }
-                
             }
         }
 
@@ -154,7 +141,8 @@ class DetailsPizzaScreen {
 
         ){
             Box(modifier = modifier){
-                orderDetails(
+                viewModel.resetNumberOfPizza()
+                OrderDetails(
                     onOrderButtonClicked= onOrderButtonClicked,
                     pizzaName = pizza.name,
                     viewModel = viewModel
@@ -162,8 +150,6 @@ class DetailsPizzaScreen {
             }
 
         }
-
-
 
         Box (
             modifier = modifier.fillMaxSize()
@@ -183,11 +169,11 @@ class DetailsPizzaScreen {
     }
 
     @Composable
-    fun orderDetails(
-        onOrderButtonClicked: () -> Unit={},
+    fun OrderDetails(
         pizzaName:String,
         viewModel: PizzaViewModel,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        onOrderButtonClicked: () -> Unit={}
     ){
 
         val pizze by viewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()

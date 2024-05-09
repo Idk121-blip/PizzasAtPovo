@@ -36,21 +36,21 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             return ResponseData(false, message = "Errore nella richiesta del prezzo al Database")
         }
 
-        val DBOrder= DBOrder(topping=pizza.toppings!!,
+        val dbOrder= DBOrder(topping=pizza.toppings!!,
                         price= price.price*pizzaNumber,
                         image= pizza.image,
                         uid=uid,
                         date=pickupTime,
                         pizzaNumber= pizzaNumber,
                         pizzaName= pizza.name)
-        var user= googleAuthUiClient.retrieveUserData() ?: return ResponseData(message = "Utente non trovato")
-        if (user.credit <DBOrder.price){
+        val user= googleAuthUiClient.retrieveUserData() ?: return ResponseData(message = "Utente non trovato")
+        if (user.credit <dbOrder.price){
             return ResponseData(false, message = "Credito non sufficiente")
         }
 
         val userRef = db.collection("users").document(uid)
         db.collection("orders")
-            .add(DBOrder)
+            .add(dbOrder)
             .addOnSuccessListener { documentReference->
                 if (user.orders == null){
                     user.orders= arrayListOf(documentReference)
@@ -58,12 +58,12 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                 }else{
                     user.orders!!.add(0, documentReference)
                 }
-                user.credit-=DBOrder.price
+                user.credit-=dbOrder.price
 
                 user.credit = Math.round(user.credit * 100.0) / 100.0
                 userRef.set(user)
             }
-        return ResponseData(true, "Ordine completato con successo", DBOrder)
+        return ResponseData(true, "Ordine completato con successo", dbOrder)
     }
 
     suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
@@ -112,18 +112,18 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         if (userData.orders!=null){
             for (documentReference in userData.orders!!) {
-                val DBOrder= documentReference.get().await().toObject(DBOrder::class.java)?: continue
+                val dbOrder= documentReference.get().await().toObject(DBOrder::class.java)?: continue
                 val toppings: ArrayList<Topping> = arrayListOf()
-                for (toppingReference in DBOrder.topping){
+                for (toppingReference in dbOrder.topping){
                     toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
                 }
                 orders.add(UserOrders(
-                    image =  DBOrder.image,
-                    time = DBOrder.date.toString(),
-                    pizzaNumber = DBOrder.pizzaNumber,
+                    image =  dbOrder.image,
+                    time = dbOrder.date.toString(),
+                    pizzaNumber = dbOrder.pizzaNumber,
                     topping = toppings,
                     uname = uid,
-                    pizzaName=DBOrder.pizzaName
+                    pizzaName=dbOrder.pizzaName
                     ))
             }
         }

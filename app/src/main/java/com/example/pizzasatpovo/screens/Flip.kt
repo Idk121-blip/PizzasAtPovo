@@ -3,10 +3,8 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,17 +26,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -94,13 +88,13 @@ class PickerState {
 @Composable
 fun Picker(
     items: List<String>,
-    state: PickerState = rememberPickerState(),
     modifier: Modifier = Modifier,
+    state: PickerState = rememberPickerState(),
     startIndex: Int = 0,
     visibleItemsCount: Int,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
-    dividerColor: Color = LocalContentColor.current,
+    //dividerColor: Color = LocalContentColor.current, TODO check if it is possible to remove
 ) {
 
     val visibleItemsMiddle = visibleItemsCount / 3

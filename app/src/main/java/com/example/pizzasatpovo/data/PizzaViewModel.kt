@@ -25,9 +25,6 @@ class PizzaViewModel: ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-//    private val _isSearching= MutableStateFlow(false)
-//    val isSearching= _isSearching.asStateFlow()
-
     val searchPizza = searchQuery.combine(_pizzas){ text, pizzas->
         if (text.isBlank()){
             pizzas
@@ -39,7 +36,7 @@ class PizzaViewModel: ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _pizzas.value)
 
 
-    fun addPizzas(pizzaArrayList: ArrayList<RetrievedPizza>) {
+    fun setPizzas(pizzaArrayList: ArrayList<RetrievedPizza>) {
         _pizzas.update {
             pizzaArrayList
         }
@@ -100,6 +97,13 @@ class PizzaViewModel: ViewModel() {
                 it+1
             }
             number
+        }
+    }
+
+
+    fun resetNumberOfPizza(){
+        _numberOfPizzaToOrder.update {
+            1
         }
     }
 

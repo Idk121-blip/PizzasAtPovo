@@ -1,7 +1,6 @@
 package com.example.pizzasatpovo.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -17,10 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -28,12 +24,9 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TextFieldDefaults.indicatorLine
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -52,12 +44,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
-import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class ListOfPizzasScreen {
@@ -65,9 +55,9 @@ class ListOfPizzasScreen {
     fun ListOfPizzasPage(
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
+        modifier: Modifier = Modifier,
         onAddToFavouritesClicked:(String)->Unit={},
         onRemoveFromFavouritesClicked:(String)->Unit={},
-        modifier: Modifier = Modifier
     ){
         BackgroundImage()
         //Page content
@@ -130,9 +120,9 @@ class ListOfPizzasScreen {
     fun ListOfPizzas(
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
+        modifier: Modifier = Modifier,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
-        modifier: Modifier = Modifier
     ){
         val pizzas by viewModel.searchPizza.collectAsStateWithLifecycle()
         val favourites by viewModel.favourites.collectAsStateWithLifecycle()
@@ -187,11 +177,11 @@ class ListOfPizzasScreen {
     fun PizzaCard(
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
+        modifier: Modifier = Modifier,
         onAddToFavouritesClicked:(String)->Unit = {},
         onRemoveFromFavouritesClicked:(String)->Unit = {},
         pizza: RetrievedPizza,
         isFavourite: Boolean= false,
-        modifier: Modifier = Modifier
     ){
         var toppingForCard=""
         for (topping in pizza.toppings!!){

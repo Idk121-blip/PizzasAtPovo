@@ -49,8 +49,8 @@ class AddPizzaScreen {
     fun AddPizzaPage(
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
+        modifier: Modifier = Modifier,
         onOrderButtonClicked: (RetrievedPizza) -> Unit = {},
-        modifier: Modifier = Modifier
     ){
         val personalizedOrderViewMode = viewModel<PersonalizedOrderViewMode>()
         val toppings by viewModel.toppings.collectAsStateWithLifecycle()
@@ -65,15 +65,15 @@ class AddPizzaScreen {
                     navViewModel = navViewModel
                 )
                 IngredientList(toppings = toppings,
-                    personalizedOrderViewMode= personalizedOrderViewMode,
-                    onOrderButtonClicked= onOrderButtonClicked )
+                    personalizedOrderViewMode= personalizedOrderViewMode)
                 //White container
                 Column (
                     verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
                         .fillMaxSize()
                 ){
-                    DetailsPizzaScreen().orderDetails(
+                    viewModel.resetNumberOfPizza()
+                    DetailsPizzaScreen().OrderDetails(
                         pizzaName = "La tua pizza",
                         viewModel = viewModel,
                         onOrderButtonClicked = {
@@ -100,7 +100,6 @@ class AddPizzaScreen {
     fun IngredientList(
         toppings: ArrayList<Topping>,
         personalizedOrderViewMode: PersonalizedOrderViewMode,
-        onOrderButtonClicked: (RetrievedPizza)->Unit= {},
         modifier: Modifier = Modifier
     ){
         Column(
@@ -114,9 +113,11 @@ class AddPizzaScreen {
             Row {
                 for (topping in toppings){
                     if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
+                        personalizedOrderViewMode.addTopping(topping)
                         IngredientCard(
                             topping = topping,
-                            personalizedOrderViewMode= personalizedOrderViewMode
+                            personalizedOrderViewMode= personalizedOrderViewMode,
+                            defaultSelected = true
                         )
                     }
                 }
@@ -146,53 +147,58 @@ class AddPizzaScreen {
    fun IngredientCard(
        topping: Topping,
        personalizedOrderViewMode: PersonalizedOrderViewMode,
-       modifier: Modifier = Modifier
-    ){
-        var selected by remember { mutableStateOf(false) }
-        TooltipBox(
-            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-            tooltip = {
-                PlainTooltip {
-                    Text(topping.name)
-                }
-            },
-            state = rememberTooltipState()
-        ) {
-            Card(
-                onClick =
-                {
-                    selected = !selected
-                    if (selected){
-                        personalizedOrderViewMode.addTopping(topping)
-                    }else{
-                        personalizedOrderViewMode.removeTopping(topping)
-                    }
-                },
-                shape = RoundedCornerShape(percent = 15),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                modifier = modifier
-                    .padding(2.dp)
-                    .size(60.dp)
-            ) {
-                Box(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(2.dp)
-                ) {
-                    Image(
-                        imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.AddCircle,
-                        contentDescription = "Selected",
-                        modifier = modifier
-                            .size(20.dp)
-                            .align(Alignment.TopEnd)
-                    )
-                    AsyncImage(model = topping.image, contentDescription = topping.name, modifier = modifier
-                        .padding(top = 8.dp)
-                        .size(55.dp)
-                        .align(Alignment.BottomCenter)
-                        .padding(4.dp))
-                }
-            }
-        }
-    }
+       modifier: Modifier = Modifier,
+       defaultSelected:Boolean= false
+   ) {
+       var selected by remember { mutableStateOf(defaultSelected) }
+
+
+       TooltipBox(
+           positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+           tooltip = {
+               PlainTooltip {
+                   Text(topping.name)
+               }
+           },
+           state = rememberTooltipState()
+       ) {
+           Card(
+               onClick =
+               {
+                   selected = !selected
+                   if (selected) {
+                       personalizedOrderViewMode.addTopping(topping)
+                   } else {
+                       personalizedOrderViewMode.removeTopping(topping)
+                   }
+               },
+               shape = RoundedCornerShape(percent = 15),
+               colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+               modifier = modifier
+                   .padding(2.dp)
+                   .size(60.dp)
+           ) {
+               Box(
+                   modifier = modifier
+                       .fillMaxSize()
+                       .padding(2.dp)
+               ) {
+                   Image(
+                       imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.AddCircle,
+                       contentDescription = "Selected",
+                       modifier = modifier
+                           .size(20.dp)
+                           .align(Alignment.TopEnd)
+                   )
+                   AsyncImage(
+                       model = topping.image, contentDescription = topping.name, modifier = modifier
+                           .padding(top = 8.dp)
+                           .size(55.dp)
+                           .align(Alignment.BottomCenter)
+                           .padding(4.dp)
+                   )
+               }
+           }
+       }
+   }
 }

@@ -1,28 +1,22 @@
 package com.example.pizzasatpovo.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+
+import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.MyViewModelFactory
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
-import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import kotlinx.coroutines.launch
@@ -38,12 +31,6 @@ import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.google.firebase.Timestamp
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-
 enum class PizzaScreens {
     FirstPage,
     ListOfPizzas,
@@ -62,8 +49,9 @@ fun PizzasAtPovoApp(
     sendRetrieveData: SendRetrieveData,
     lifecycleScope: LifecycleCoroutineScope,
     applicationContext: Context,
-    navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
+    activity: Activity,
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController()
 ){
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -78,6 +66,7 @@ fun PizzasAtPovoApp(
         startDestination = PizzaScreens.FirstPage.name,
         modifier = modifier
     ){
+
         composable(
             route = PizzaScreens.FirstPage.name
         ){
@@ -87,9 +76,11 @@ fun PizzasAtPovoApp(
                     if (googleAuthUiClient.getSignedInUser() == null) {
                         //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
+                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
+                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }
@@ -118,8 +109,6 @@ fun PizzasAtPovoApp(
                             "Error retrieving pizzas",
                             Toast.LENGTH_LONG
                         ).show()
-                        //TODO: DO SOMETHING IF NO PIZZAS ARE RETRIEVED?
-                        return@LaunchedEffect
                     }else if (!listResponseData.isSuccessful){
                         Toast.makeText(
                             applicationContext,
@@ -131,7 +120,6 @@ fun PizzasAtPovoApp(
                         navController.enableOnBackPressed(enabled = false)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }
-
                     Toast.makeText(
                         applicationContext,
                         "Sign in successful",
@@ -226,7 +214,6 @@ fun PizzasAtPovoApp(
         composable(route= PizzaScreens.RecentOrders.name) {
             OrdersScreen().OrdersPage(
                 navController = controller,
-                viewModel = viewModel,
                 lifecycleScope= lifecycleScope,
                 sendRetrieveData = sendRetrieveData
             )
@@ -248,46 +235,13 @@ fun PizzasAtPovoApp(
                 },
             )
         }
-
-
-
         composable(route= PizzaScreens.ChefOrders.name){
-            val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            val ordersRef = database.getReference("orders")
-            val orders= mutableStateListOf<RealTimeOrder?>()
-            val childEventListener = object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    val newOrder = snapshot.getValue(RealTimeOrder::class.java)
-                    newOrder?.let { order ->
-                        orders.add(order)
-
-                    }
-                }
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    // Handle order changed
-                }
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    // Handle order removed
-                }
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    // Handle order moved
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    // Handle error
-                }
-            }
-
-            ordersRef.addChildEventListener(childEventListener)
-            LazyColumn {
-                items(orders){
-                    Box(modifier = modifier.height(50.dp)){
-                        Text(text = it!!.uname)
-                    }
-                }
-            }
+            ChefOrdersScreen().ChefOrdersPage()
         }
     }
 }
+
+
 
 
 suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData, pizzaViewModel: PizzaViewModel) {
@@ -347,7 +301,7 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
 
 
     pizzaViewModel.setToppings(toppings)
-    pizzaViewModel.addPizzas(pizzas)
+    pizzaViewModel.setPizzas(pizzas)
     pizzaViewModel.setFavourites(favourites)
 }
 

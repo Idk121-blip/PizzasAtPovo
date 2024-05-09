@@ -1,62 +1,72 @@
 package com.example.pizzasatpovo.data
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.database.*
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ChefViewModel : ViewModel(){
-    private val _orders = MutableLiveData<ArrayList<RealTimeOrder>>()
-    val orders: LiveData<ArrayList<RealTimeOrder>> = _orders
+class ChefViewModel : ViewModel() {
+//    private val _orders = MutableStateFlow<ArrayList<RealTimeOrder>>(arrayListOf())
+//    val orders = _orders.asStateFlow()
 
-    val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-    private val ordersRef = database.getReference("orders")
+    private val _orders = MutableLiveData<SnapshotStateList<RealTimeOrder>>()
+    private val orderSnapshotStateList= mutableStateListOf<RealTimeOrder>()
 
-    private val childEventListener = object : ChildEventListener {
-        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            val newOrder = snapshot.getValue(RealTimeOrder::class.java)
 
-            newOrder?.let { order ->
-                //println(order)
-                _orders.value!!.add(order)
-                fetchData()
+    val orders: LiveData<SnapshotStateList<RealTimeOrder>>
+        get() = _orders
+    fun addOrder(order: RealTimeOrder) {
+        var low = 0
+        var high = orderSnapshotStateList.size
+        while (low<high){
+            val mid= (low+high)/2
+            if (order.time<orderSnapshotStateList[mid].time){
+                high= mid
+            }else{
+                low= mid+1
             }
         }
-
-        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            // Handle order changed
-        }
-
-        override fun onChildRemoved(snapshot: DataSnapshot) {
-            // Handle order removed
-        }
-
-        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            // Handle order moved
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            // Handle error
-        }
+        orderSnapshotStateList.add(low,order)
+        _orders.value = orderSnapshotStateList
     }
 
     init {
-        ordersRef.addChildEventListener(childEventListener)
-        _orders.value = arrayListOf()
+        val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+        val ordersRef = database.getReference("orders")
+        ordersRef.addChildEventListener( object: ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val newOrder = snapshot.getValue(RealTimeOrder::class.java)
+                if (newOrder!=null){
+                    addOrder(newOrder)
+                }
+
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                // Handle order changed
+
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                // Handle order removed
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+
+                // Handle order moved
+            }
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
     }
 
-    fun fetchData(): ArrayList<RealTimeOrder>{
-        return orders.value!!
-    }
 
 
-    override fun onCleared() {
-        super.onCleared()
-        ordersRef.removeEventListener(childEventListener)
-    }
 }
 
 

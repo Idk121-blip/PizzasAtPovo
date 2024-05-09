@@ -1,6 +1,7 @@
 package com.example.pizzasatpovo.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,11 +46,10 @@ import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.OrdersViewModel
-import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
-import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
+import com.example.pizzasatpovo.ui.components.shimmerBrush
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -57,48 +58,65 @@ class OrdersScreen {
     @Composable
     fun OrdersPage(
         navController: NavigationViewModel,
-        viewModel: SignInViewModel,
         modifier: Modifier = Modifier,
         lifecycleScope: LifecycleCoroutineScope,
         sendRetrieveData: SendRetrieveData
-    ){
-        val ordersViewModel= viewModel <OrdersViewModel>()
+    ) {
+
+        val ordersViewModel = viewModel<OrdersViewModel>()
         val navController2: NavHostController = rememberNavController()
+
         NavHost(
             navController = navController2,
             startDestination = "LoadingPage",
             modifier = modifier
-        ){
-            composable(route= "LoadingPage"){
-
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Loading")
-                }
+        ) {
+            composable(route = "LoadingPage") {
 
                 LaunchedEffect(key1 = Unit) {
 
                     lifecycleScope.launch {
-                        val orders= sendRetrieveData.retrieveOrders()
+                        val orders = sendRetrieveData.retrieveOrders()
                         ordersViewModel.addOrders(orders!!.retrievedObject ?: arrayListOf())
-                        println(orders.retrievedObject)
+                        //println(orders)
                         navController2.navigate("OrdersPage")
+
                     }
 
                 }
-
-            }
-                composable(route= "OrdersPage") {
-                Box(modifier = modifier
-                    .fillMaxSize()
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
                 ) {
                     BackgroundImage()
-                    Column () {
+                    Column {
                         Bars().AppBar(text = "Ordini")
-                        ListOfOrders(
-                            viewModel = viewModel,
+                        ListOfChargingOrders(
                             modifier = modifier
                                 .fillMaxHeight(),
-                            ordersViewModel= ordersViewModel
+
+                            )
+                    }
+                    Bars().BottomBar(
+                        navViewModel = navController,
+                        screen = PizzaScreens.RecentOrders
+                    )
+                }
+
+
+            }
+            composable(route = "OrdersPage") {
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
+                ) {
+                    BackgroundImage()
+                    Column {
+                        Bars().AppBar(text = "Ordini")
+                        ListOfOrders(
+                            modifier = modifier
+                                .fillMaxHeight(),
+                            ordersViewModel = ordersViewModel
                         )
                     }
                     Bars().BottomBar(
@@ -110,45 +128,74 @@ class OrdersScreen {
         }
 
 
-
-
     }
 
     @Composable
-
-    fun ListOfOrders(
-        pizzas: ArrayList<RetrievedPizza> = arrayListOf(),
-        viewModel: SignInViewModel = SignInViewModel(),
-        ordersViewModel: OrdersViewModel,
-        modifier: Modifier = Modifier
-    ){
-        val ordersList by ordersViewModel.orders.collectAsStateWithLifecycle()
-        var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
-        var verticalArrangement: Arrangement.Vertical = Arrangement.Center
-        var horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
-        println("Size array list: " + ordersList.size)
-        if(pizzas.size == 0){
-            verticalArrangement = Arrangement.Top
-        }
-        Column (
+    fun ListOfChargingOrders(modifier: Modifier) {
+        val verticalArrangement: Arrangement.Vertical = Arrangement.Center
+        val horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
+        Column(
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .padding(30.dp, 10.dp)
                 .fillMaxSize()
-        ){
-//            pizzas.add(
-//                RetrievedPizza(
-//                    name = "Margherita",
-//                    image = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png",
-//
-//                )
-//            )
+        ) {
+            var order = 0
+            Text(
+                text = "Recenti",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+            )
 
-            println("--------------------------")
+            SingleOrderChargingCard()
 
-            if(ordersList.size == 0){
+            Text(
+                text = "Meno recenti",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+            )
+            while (order < 8) {
+                SingleOrderChargingCard()
+                order++
+            }
+            Spacer(
+                modifier = modifier
+                    .height(60.dp)
+            )
+
+        }
+    }
+
+    @Composable
+    fun ListOfOrders(
+        ordersViewModel: OrdersViewModel,
+        modifier: Modifier = Modifier
+    ) {
+        val ordersList by ordersViewModel.orders.collectAsStateWithLifecycle()
+        var verticalArrangement: Arrangement.Vertical = Arrangement.Center
+        val horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
+        println("Size array list: " + ordersList.size)
+        if (ordersList.size != 0) {
+            verticalArrangement = Arrangement.Top
+        }
+        Column(
+            verticalArrangement = verticalArrangement,
+            horizontalAlignment = horizontalAlignment,
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .padding(30.dp, 10.dp)
+                .fillMaxSize()
+        ) {
+
+            if (ordersList.size == 0) {
                 Text(
                     text = "Non hai ancora effettuato",
                     fontSize = 20.sp,
@@ -167,7 +214,7 @@ class OrdersScreen {
                 )
                 return
             } else {
-                var order = 0;
+                var order = 0
                 Text(
                     text = "Recenti",
                     fontWeight = FontWeight.Bold,
@@ -176,14 +223,17 @@ class OrdersScreen {
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 )
-                while (order<ordersList.size  &&
+                while (order < ordersList.size &&
                     (SimpleDateFormat("dd.MM.yyyy")
-                        .format(ordersList[order]
-                            .date.toDate())>=SimpleDateFormat("dd.MM.yyyy").format(Date()))) {
+                        .format(
+                            ordersList[order]
+                                .date.toDate()
+                        ) >= SimpleDateFormat("dd.MM.yyyy").format(Date()))
+                ) {
                     SingleOrderCard(
                         order = ordersList[order]
                     )
-                    order++;
+                    order++
                 }
                 Text(
                     text = "Meno recenti",
@@ -193,11 +243,11 @@ class OrdersScreen {
                         .fillMaxWidth()
                         .padding(top = 10.dp)
                 )
-                while (order < ordersList.size && ordersList[order].date.toDate().before(Date())) {
+                while (order < ordersList.size) {
                     SingleOrderCard(
                         order = ordersList[order],
                     )
-                    order++;
+                    order++
                 }
 
                 Spacer(
@@ -208,6 +258,81 @@ class OrdersScreen {
         }
     }
 
+    @Composable
+    fun SingleOrderChargingCard(modifier: Modifier= Modifier) {
+        Card(
+            shape = RoundedCornerShape(15.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White,
+            ),
+            modifier = modifier
+                .fillMaxWidth()
+                .height(140.dp)
+                .padding(0.dp, 10.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                AsyncImage(
+                    model = "",
+                    contentDescription = "pizza image",
+                    modifier = modifier
+                        .padding(end = 15.dp)
+                        .clip(CircleShape)
+                        .size(95.dp)
+                        .background(
+                            shimmerBrush(
+                                targetValue = 1300f,
+                                showShimmer = true
+                            )
+                        )
+                )
+                Column {
+                    Text(
+                        text = " ",
+                        fontWeight = FontWeight.Bold,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        fontSize = 18.sp,
+                        modifier = modifier.width(90.dp).height(30.dp).background(
+                                shimmerBrush(
+                                    targetValue = 1300f,
+                                    showShimmer = true
+                                )
+                        )
+                    )
+                    Text(
+                        text = "                                ",
+                        fontSize = 16.sp,
+                        modifier= modifier.width(80.dp).height(30.dp).background(
+                            shimmerBrush(
+                                targetValue = 1300f,
+                                showShimmer = true
+                            )
+                        )
+                    )
+                }
+                Text(
+                    text = "              ",
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Bold,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(start= 10.dp, end= 20.dp)
+                        .height(30.dp)
+                        .background(
+                            shimmerBrush(
+                                targetValue = 1300f,
+                                showShimmer = true
+                            )
+                        )
+                )
+            }
+        }
+    }
     @Composable
     fun SingleOrderCard(
         order: Order,

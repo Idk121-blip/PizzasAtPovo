@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -53,9 +52,7 @@ import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.LoadingResult
 import com.example.pizzasatpovo.data.LoadingViewModel
 import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.UserData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
-import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.shimmerBrush
@@ -332,9 +329,9 @@ class AccountPageScreen {
 
     @Composable
     fun LogoutButton(
-        onLogOutButtonClicked: () -> Unit = {},
         viewModel: LoadingViewModel,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        onLogOutButtonClicked: () -> Unit = {}
     ){
         val interactionSource = remember { MutableInteractionSource() }
         val state by viewModel.state.collectAsStateWithLifecycle()

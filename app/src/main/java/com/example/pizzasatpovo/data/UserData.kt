@@ -49,7 +49,8 @@ data class RealTimeOrder(val uname:String= "",
                          val topping: ArrayList<String> = arrayListOf(),
                          val pizzaNumber: Int =  0,
                          val time: String= "",
-                         val pizzaName:String= "")
+                         val pizzaName:String= "",
+                         val completed: Boolean=false)
 
 data class UserOrders(val uname:String= "",
                          val image:String = "",
