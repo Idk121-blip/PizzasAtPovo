@@ -26,6 +26,7 @@ import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
+import com.example.pizzasatpovo.data.UserOrderViewModel
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
@@ -59,6 +60,9 @@ fun PizzasAtPovoApp(
     //val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     //val favourites by pizzaViewModel.favourites.collectAsState()
+
+    val notificationViewModdel= viewModel<UserOrderViewModel>()
+    notificationViewModdel.setContext(applicationContext)
 
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
@@ -187,7 +191,8 @@ fun PizzasAtPovoApp(
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
                         sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
-                        sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza)
+                        notificationViewModdel.addListenerForSpecificDocuments(
+                            listOf(sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza, notificationViewModdel)!!))
                     }
                 },
                 viewModel = pizzaViewModel,
@@ -203,7 +208,7 @@ fun PizzasAtPovoApp(
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
                         sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = Timestamp.now())
-                        sendRetrieveData.sendRTOrderd(it, "12.30", numberOfPizza)
+                        sendRetrieveData.sendRTOrderd(it, "12.30", numberOfPizza, notificationViewModdel)
                     }
 
                 }
