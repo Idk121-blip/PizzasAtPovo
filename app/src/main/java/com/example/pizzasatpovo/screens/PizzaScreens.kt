@@ -241,7 +241,11 @@ fun PizzasAtPovoApp(
             )
         }
         composable(route= PizzaScreens.ChefOrders.name){
-            ChefOrdersScreen().ChefOrdersPage()
+            ChefOrdersScreen().ChefOrdersPage {
+                lifecycleScope.launch {
+                    sendRetrieveData.ProcessOrder(it)
+                }
+            }
         }
     }
 }

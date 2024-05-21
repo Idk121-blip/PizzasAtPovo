@@ -315,13 +315,27 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             uname = user.name!!,
             pizzaName= pizza.name)
 
-        val orderRef= database.child("orders").push()
+        val orderRef= database.child("orders").child(order.id)
         orderRef.setValue(order).await()
 
 
         return orderRef
     }
 
+
+
+    suspend fun ProcessOrder(documentName: String){
+        var order: RealTimeOrder? = Firebase
+            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+            .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
+            ?: return
+
+            order!!.completed=true
+
+        Firebase
+            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+            .reference.child("orders").child(documentName).setValue(order)
+    }
 
 
 }
