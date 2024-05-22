@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.presentation.db_interaction
 
+
 import com.example.pizzasatpovo.data.DBOrder
 import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.Pizza
@@ -9,10 +10,12 @@ import com.example.pizzasatpovo.data.ResponseData
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserData
+import com.example.pizzasatpovo.data.UserOrderViewModel
 import com.example.pizzasatpovo.data.UserOrders
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
@@ -272,7 +275,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza retrieved successfully", favourites)
     }
 
-    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int ): Boolean? = auth.currentUser?.run {
+    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int, viewModel: UserOrderViewModel): DatabaseReference? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -281,16 +284,16 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         val price= snapPrice.toObject(PizzaPrice::class.java)
 
         if (pizzaNumber<1){
-            return false
+            return null
         }
         if (price == null){
-            return false
+            return null
         }
 
         val user= googleAuthUiClient.retrieveUserData()!!
 
         if (user.credit<(price.price * pizzaNumber)){
-            return false
+            return null
         }
 
 
@@ -312,9 +315,27 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             uname = user.name!!,
             pizzaName= pizza.name)
 
-        val orderRef= database.child("orders").push()
-        orderRef.setValue(order)
-        return true
+        val orderRef= database.child("orders").child(order.id)
+        orderRef.setValue(order).await()
+
+
+        return orderRef
     }
+
+
+
+    suspend fun ProcessOrder(documentName: String){
+        var order: RealTimeOrder? = Firebase
+            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+            .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
+            ?: return
+
+            order!!.completed=true
+
+        Firebase
+            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+            .reference.child("orders").child(documentName).setValue(order)
+    }
+
 
 }

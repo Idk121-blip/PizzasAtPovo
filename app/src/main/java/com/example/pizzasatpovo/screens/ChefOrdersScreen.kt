@@ -38,21 +38,22 @@ class ChefOrdersScreen {
     @Composable
     fun ChefOrdersPage(
         //modifier:Modifier = Modifier //TODO, REMOVE?
+        processOrder: (String)->Unit
     ){
         val chefViewModel = viewModel<ChefViewModel>()
         val orders by chefViewModel.orders.observeAsState(initial = arrayListOf(RealTimeOrder()))
 
         LazyColumn {
             items(orders){ order ->
-                SingleOrderCard(order = order)
+                SingleOrderCard(order = order, processOrder= {processOrder(order.id)} )
             }
         }
     }
 
     @Composable
-    @Preview(showBackground=true)
     fun SingleOrderCard(
         modifier : Modifier = Modifier,
+        processOrder: ()->Unit,
         order: RealTimeOrder = RealTimeOrder(uname = "NoOne", pizzaName = "Margherita", image = "", time = "07:30", pizzaNumber = 1, topping = arrayListOf("Pomodoro", "Mozzarella", "Prosciutto")),
     ){
         Card (
@@ -92,7 +93,7 @@ class ChefOrdersScreen {
                     }
                     Button(
                         onClick = {
-                                  //TODO set pizza as done
+                            processOrder()
                                   },
                         content = {
                             Icon(
