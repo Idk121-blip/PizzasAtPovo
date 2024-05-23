@@ -1,10 +1,9 @@
 package com.example.pizzasatpovo.data
 
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.snapshots.Snapshot
-import androidx.compose.runtime.snapshots.SnapshotMutableState
-import androidx.compose.runtime.snapshots.SnapshotStateObserver
-import androidx.lifecycle.LiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +12,7 @@ import kotlinx.coroutines.flow.update
 
 class PersonalizedOrderViewMode: ViewModel() {
     private val _toppings = MutableStateFlow<ArrayList<Topping>>(arrayListOf())
-    val topping = _toppings.asStateFlow()
-    val _isEmpty= MutableLiveData<Boolean>(true)
+    val _isEmpty = MutableLiveData(true)
 
 
     fun addTopping(topping: Topping){
@@ -23,11 +21,11 @@ class PersonalizedOrderViewMode: ViewModel() {
             newTopping.add(topping)
             newTopping
         }
-        if (!_toppings.value.isEmpty()){
-            println(_toppings.value)
-            _isEmpty.postValue(false)
-        }
+        _isEmpty.postValue(_toppings.value.isEmpty())
+        println("Empty add? " + _isEmpty.value)
+
     }
+
 
     fun removeTopping(topping: Topping){
         _toppings.update {
@@ -37,15 +35,9 @@ class PersonalizedOrderViewMode: ViewModel() {
             }
             newTopping
         }
-        if (_toppings.value.isEmpty()){
-            val y= true
-
-            _isEmpty.postValue(y)
-        }
+        _isEmpty.postValue(_toppings.value.isEmpty())
+        println("Empty remove? " + _isEmpty.value)
     }
-
-
-
 
 
     fun getRetrievedPizza():RetrievedPizza{

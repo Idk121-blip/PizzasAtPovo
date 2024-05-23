@@ -1,7 +1,6 @@
 package com.example.pizzasatpovo.data
 
 import androidx.lifecycle.ViewModel
-import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -34,7 +33,7 @@ class LoadingViewModel: ViewModel() {
 
     //TODO: ADD A RESET SETTING WHEN LOGGED OUT
 
-    fun resetState() {
-        _state.update { LoadingState() }
-    }
+//    fun resetState() {
+//        _state.update { LoadingState() }
+//    }
 }

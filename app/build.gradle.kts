@@ -82,6 +82,9 @@ dependencies {
 
     //For time picker
     implementation ("com.github.kshitijskumar:Ticker:1.0.0")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
+    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
 
 
 }

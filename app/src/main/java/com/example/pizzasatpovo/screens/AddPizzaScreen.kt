@@ -26,6 +26,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,20 +35,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.NavigationViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pizzasatpovo.data.PersonalizedOrderViewMode
 import com.example.pizzasatpovo.data.PizzaViewModel
+import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.ui.components.BackgroundImage
-import com.example.pizzasatpovo.ui.components.Bars
 
 class AddPizzaScreen {
     @Composable
     fun AddPizzaPage(
         navViewModel: NavigationViewModel,
-        toppings: ArrayList<Topping> = arrayListOf(),
         viewModel: PizzaViewModel,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        onOrderButtonClicked: (RetrievedPizza) -> Unit = {},
     ){
+        val personalizedOrderViewModel = viewModel<PersonalizedOrderViewMode>()
+        val toppings by viewModel.toppings.collectAsStateWithLifecycle()
+        val isToppingEmpty by personalizedOrderViewModel._isEmpty.observeAsState(true)
         Box(modifier = modifier
             .fillMaxSize()
         ){
@@ -58,14 +66,25 @@ class AddPizzaScreen {
                     pizzasName = "Crea la tua pizza",
                     navViewModel = navViewModel
                 )
-                IngredientList(toppings = toppings)
+                IngredientList(toppings = toppings,
+                    personalizedOrderViewModel= personalizedOrderViewModel)
                 //White container
                 Column (
                     verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
                         .fillMaxSize()
                 ){
-                    DetailsPizzaScreen().orderDetails(title = "La tua creazione", pizza_name = "La tua pizza", viewModel = viewModel)
+
+
+                    viewModel.resetNumberOfPizza()
+                    DetailsPizzaScreen().OrderDetails(
+                        pizzaName = "La tua pizza",
+                        viewModel = viewModel,
+                        onOrderButtonClicked = {
+                            onOrderButtonClicked(personalizedOrderViewModel.getRetrievedPizza())
+                        },
+                        toppingsEmpty = isToppingEmpty
+                    )
                 }
             }
             Column(
@@ -86,6 +105,7 @@ class AddPizzaScreen {
     @Composable
     fun IngredientList(
         toppings: ArrayList<Topping>,
+        personalizedOrderViewModel: PersonalizedOrderViewMode,
         modifier: Modifier = Modifier
     ){
         Column(
@@ -99,7 +119,10 @@ class AddPizzaScreen {
             Row {
                 for (topping in toppings){
                     if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
-                        IngredientCard(topping = topping)
+                        IngredientCard(
+                            topping = topping,
+                            personalizedOrderViewModel= personalizedOrderViewModel,
+                        )
                     }
                 }
             }
@@ -115,7 +138,8 @@ class AddPizzaScreen {
             ){
                 for (topping in toppings){
                     if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
-                        IngredientCard(topping = topping)
+                        IngredientCard(topping = topping,
+                            personalizedOrderViewModel= personalizedOrderViewModel)
                     }
                 }
             }
@@ -126,9 +150,12 @@ class AddPizzaScreen {
    @Composable
    fun IngredientCard(
        topping: Topping,
-       modifier: Modifier = Modifier
-   ){
-       var selected by remember { mutableStateOf(false) }
+       personalizedOrderViewModel: PersonalizedOrderViewMode,
+       modifier: Modifier = Modifier,
+       defaultSelected:Boolean= false
+   ) {
+       var selected by remember { mutableStateOf(defaultSelected) }
+
        TooltipBox(
            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
            tooltip = {
@@ -139,11 +166,19 @@ class AddPizzaScreen {
            state = rememberTooltipState()
        ) {
            Card(
-               onClick = { selected = !selected },
+               onClick =
+               {
+                   selected = !selected
+                   if (selected) {
+                       personalizedOrderViewModel.addTopping(topping)
+                   } else {
+                       personalizedOrderViewModel.removeTopping(topping)
+                   }
+               },
                shape = RoundedCornerShape(percent = 15),
                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                modifier = modifier
-                   .padding(5.dp)
+                   .padding(2.dp)
                    .size(60.dp)
            ) {
                Box(
@@ -159,13 +194,12 @@ class AddPizzaScreen {
                            .align(Alignment.TopEnd)
                    )
                    AsyncImage(
-                       model = topping.image,
-                       contentDescription = topping.name,
-                       modifier = modifier
-                           .padding(top = 10.dp)
-                           .size(50.dp)
+                       model = topping.image, contentDescription = topping.name, modifier = modifier
+                           .padding(top = 8.dp)
+                           .size(55.dp)
                            .align(Alignment.BottomCenter)
-                           .padding(5.dp))
+                           .padding(4.dp)
+                   )
                }
            }
        }

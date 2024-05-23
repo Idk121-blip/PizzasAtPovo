@@ -1,7 +1,12 @@
 package com.example.pizzasatpovo.screens
+
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,24 +15,23 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.Observer
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pizzasatpovo.data.ChefViewModel
+import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
-import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.profile.ProfileScreen
 import com.google.android.gms.auth.api.identity.Identity
@@ -35,13 +39,8 @@ import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInScreen
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
-import com.google.firebase.Timestamp
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -56,22 +55,18 @@ class MainActivity : ComponentActivity() {
     private val  sendRetrieveData by lazy{
         SendRetrieveData(googleAuthUiClient)
     }
-    @RequiresApi(Build.VERSION_CODES.O)
+
+
+    @RequiresApi(Build.VERSION_CODES.O) //CHECK IF REMOVING IT WORKS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContent {
             ComposeGoogleSignInCleanArchitectureTheme {
-                // A surface container using the 'background' color from the theme
-                //
-                //sign_in_button()
-
-                Surface(){
-
-                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext)
+                Surface{
+                    PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext, activity = this)
                 }
-
-                //TODO: IMPLEMENTARE RICERCA, PIZZA
-                //
             }
         }
     }

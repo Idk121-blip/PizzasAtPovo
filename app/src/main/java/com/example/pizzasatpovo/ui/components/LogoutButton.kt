@@ -33,17 +33,17 @@ fun LogoutButton(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val showShimmer = remember { mutableStateOf(true) }
     showShimmer.value = !state.isFinished
-    Row(modifier = modifier
-        .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-        .clickable(
-            enabled = !showShimmer.value,
-            interactionSource = interactionSource,
-            indication = null
-        ) {
-            onLogOutButtonClicked()
-        }
-
-
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(start = 25.dp, end = 25.dp)
+            .clickable(
+                enabled = !showShimmer.value,
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                onLogOutButtonClicked()
+            }
     ) {
         Icon(
             painter = painterResource(id = R.drawable.logout_icon),

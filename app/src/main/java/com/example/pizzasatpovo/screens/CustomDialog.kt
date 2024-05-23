@@ -1,8 +1,6 @@
 package com.example.pizzasatpovo.screens
 
-//import android.text.Layout.Alignment
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -44,11 +41,10 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
             shape = RoundedCornerShape(16.dp),
             color = Color.LightGray
         ) {
-            Box(modifier = Modifier.height(150.dp)
-            ) {
+            Box{
                 Spacer(modifier = Modifier.height(20.dp))
                 Column( modifier = Modifier.padding(20.dp, 25.dp, 20.dp, 0.dp)) {
-            
+
                     Column (horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -56,10 +52,8 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         ) {
                             Text(
                                 text = "Ordinare $numberOfPizzas pizza",
-
                                     fontSize = 20.sp,
                                     fontFamily = FontFamily.Default,
-
                             )
                             Text(
                                 text = " $pizzaName",
@@ -74,10 +68,9 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 text = "per € ",
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
-//                            fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = (numberOfPizzas*4.4).toString(),
+                                text = String.format("%.2f", numberOfPizzas*4.4),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
@@ -86,18 +79,25 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 text = "?",
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
-//                            fontWeight = FontWeight.Bold
                             )
                         }
                     }
-
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Row(modifier = Modifier.padding(20.dp, 10.dp, 20.dp, 0.dp)) {
-
+                    Row(modifier = Modifier.padding(20.dp)) {
                         Button(
                             colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
+                            onClick = {
+                                setShowDialog(false)
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .weight(0.5F)
+                                .fillMaxWidth()
+                                .height(35.dp)
+                        ) {
+                            Text(text = "Annulla")
+                        }
+                        Button(
                             onClick = {
                                 setShowDialog(false)
                                 sendOrder()
@@ -110,23 +110,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                         ) {
                             Text(text = "Ordina")
                         }
-                        Button(
-                            onClick = {
-                                //TODO
-                                setShowDialog(false)
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .padding(end = 10.dp)
-                                .weight(0.5F)
-                                .fillMaxWidth()
-                                .height(35.dp)
-                        ) {
-                            Text(text = "Annulla")
-                        }
-
-
-
                     }
                 }
             }
@@ -136,7 +119,6 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
 
 @Composable
 fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
-    println("Ciao")
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -148,13 +130,11 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                     .fillMaxWidth()
                     .height(150.dp)
             ) {
-                Column(Modifier.fillMaxWidth()) {0
+                Column(Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(end = 10.dp, top = 10.dp),
-
-
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Close,
@@ -168,19 +148,11 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                         )
                     }
 
-
-
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(75.dp))
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(text = "Ordine effettuato!")
                     }
-
-
-
-
-
-
                 }
             }
         }
