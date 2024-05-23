@@ -2,12 +2,14 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.gms.google-services")
+
 }
+
+
 
 android {
     namespace = "com.example.pizzasatpovo"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.example.pizzasatpovo"
         minSdk = 25
@@ -20,6 +22,7 @@ android {
             useSupportLibrary = true
         }
     }
+
 
     buildTypes {
         release {
@@ -70,7 +73,6 @@ dependencies {
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.6")
     debugImplementation ("androidx.compose.ui:ui-tooling:1.6.6")
     debugImplementation ("androidx.compose.ui:ui-test-manifest:1.6.6")
-    //TODO REMOVE:
     implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
     implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation ("com.google.android.gms:play-services-auth:20.4.1")

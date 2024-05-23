@@ -7,24 +7,18 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.input.key.Key
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pizzasatpovo.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import kotlin.random.Random
 
-class UserOrderViewModel : ViewModel( ) {
+class NotificationViewModel : ViewModel( ) {
 
     private val CHANNEL_ID = "basic_notifications"
     private var context: Context?= null
@@ -39,7 +33,6 @@ class UserOrderViewModel : ViewModel( ) {
 
     fun setContext(newContext: Context) {
         context = newContext
-
         createNotificationChannel()
     }
 
@@ -52,23 +45,21 @@ class UserOrderViewModel : ViewModel( ) {
 
                 override fun onCancelled(error: DatabaseError) {
                     // Handle error
+
                 }
             }
             documentRef.addValueEventListener(listener)
             listenerMap[documentRef] = listener // Store the listener
-            listenerMapNumberRequest[documentRef] = 0;
+            listenerMapNumberRequest[documentRef] = 0
         }
     }
 
     private fun handleDatabaseChange(snapshot: DataSnapshot) {
-
-
         val order = snapshot.getValue(RealTimeOrder::class.java)
         if (order != null) {
             if (order.completed){
-                sendNotification(context!!, "Order Updated: ${order.pizzaName}", 123)
+                sendNotification(context!!, "Il tuo ordine è pronto: ${order.pizzaName}", Random.nextInt(100, 300))
                 snapshot.ref.removeValue() // Delete the document after processing
-
                 // Remove the listener after deleting the document
                 val listener = listenerMap[snapshot.ref]
                 if (listener != null) {
@@ -96,7 +87,7 @@ class UserOrderViewModel : ViewModel( ) {
     private fun sendNotification(context: Context, message: String, notificationId: Int) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.margherita)
-            .setContentTitle("Order Notification")
+            .setContentTitle("Notifica ordine")
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 

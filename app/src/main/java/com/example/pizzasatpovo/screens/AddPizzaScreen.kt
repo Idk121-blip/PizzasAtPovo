@@ -38,6 +38,7 @@ import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.NavigationViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pizzasatpovo.data.OrderViewModel
 import com.example.pizzasatpovo.data.PersonalizedOrderViewMode
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
@@ -50,6 +51,7 @@ class AddPizzaScreen {
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
+        orderViewModel: OrderViewModel,
         onOrderButtonClicked: (RetrievedPizza) -> Unit = {},
     ){
         val personalizedOrderViewMode = viewModel<PersonalizedOrderViewMode>()
@@ -76,9 +78,11 @@ class AddPizzaScreen {
                     DetailsPizzaScreen().OrderDetails(
                         pizzaName = "La tua pizza",
                         viewModel = viewModel,
+                        orderViewModel=orderViewModel,
                         onOrderButtonClicked = {
                             onOrderButtonClicked(personalizedOrderViewMode.getRetrievedPizza())
                         })
+
                 }
             }
             Column(

@@ -10,8 +10,8 @@ import com.example.pizzasatpovo.data.ResponseData
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserData
-import com.example.pizzasatpovo.data.UserOrderViewModel
-import com.example.pizzasatpovo.data.UserOrders
+import com.example.pizzasatpovo.data.NotificationViewModel
+
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
@@ -107,30 +107,6 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             }
         }
         return ResponseData(true, "Retrieved successfully", ordersToReturn)
-    }
-
-    suspend fun retrieveUserOrders():ResponseData<ArrayList<UserOrders>>? = auth.currentUser?.run {
-        val userData= googleAuthUiClient.retrieveUserData() ?: return ResponseData()
-        val orders:ArrayList<UserOrders> = arrayListOf()
-
-        if (userData.orders!=null){
-            for (documentReference in userData.orders!!) {
-                val dbOrder= documentReference.get().await().toObject(DBOrder::class.java)?: continue
-                val toppings: ArrayList<Topping> = arrayListOf()
-                for (toppingReference in dbOrder.topping){
-                    toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
-                }
-                orders.add(UserOrders(
-                    image =  dbOrder.image,
-                    time = dbOrder.date.toString(),
-                    pizzaNumber = dbOrder.pizzaNumber,
-                    topping = toppings,
-                    uname = uid,
-                    pizzaName=dbOrder.pizzaName
-                    ))
-            }
-        }
-        return ResponseData(true, "Retrieved successfully", orders)
     }
 
 
@@ -275,7 +251,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza retrieved successfully", favourites)
     }
 
-    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int, viewModel: UserOrderViewModel): DatabaseReference? = auth.currentUser?.run {
+    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int, viewModel: NotificationViewModel): DatabaseReference? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -324,18 +300,23 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
 
 
-    suspend fun ProcessOrder(documentName: String){
-        var order: RealTimeOrder? = Firebase
+    suspend fun processOrder(documentName: String){
+        val order: RealTimeOrder = Firebase
             .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
             .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
             ?: return
 
-            order!!.completed=true
+            order.completed=true
 
         Firebase
             .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
             .reference.child("orders").child(documentName).setValue(order)
     }
 
+    suspend fun isThisSlotFree(time: String): Boolean{
+        val spots: Int= Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+            .reference.child("timeslots").child(time).get().await().getValue(Int::class.java) ?:return false
+        return spots>0
+    }
 
 }
