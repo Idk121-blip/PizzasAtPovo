@@ -55,7 +55,7 @@ class FavouritesScreen {
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
         onRemoveFromFavouritesClicked:(String)->Unit={},
-        onAddToFavouritesClicked:(String)->Unit={}//TODO: maybe add a screen when clicked?
+        onAddToFavouritesClicked:(String)->Unit={}
     ){
         BackgroundImage()
 

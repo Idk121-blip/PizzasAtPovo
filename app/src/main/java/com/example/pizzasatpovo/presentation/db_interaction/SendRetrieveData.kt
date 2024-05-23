@@ -251,7 +251,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza retrieved successfully", favourites)
     }
 
-    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int, viewModel: NotificationViewModel): DatabaseReference? = auth.currentUser?.run {
+    suspend fun sendRTOrder(pizza: RetrievedPizza, date: String, pizzaNumber: Int): DatabaseReference? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -275,8 +275,11 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
 
         val toppingList: ArrayList<String> = arrayListOf()
+
+
+
+
         for (topping in pizza.toppings!!){
-            //TODO! add checks
             toppingList.add((topping).name)
         }
 

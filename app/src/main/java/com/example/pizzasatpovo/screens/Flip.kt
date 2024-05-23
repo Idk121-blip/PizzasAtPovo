@@ -112,7 +112,7 @@ fun Picker(
     visibleItemsCount: Int,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
-    //dividerColor: Color = LocalContentColor.current, TODO check if it is possible to remove
+
 ) {
     val visibleItemsMiddle = visibleItemsCount / 3
     val listScrollCount = Integer.MAX_VALUE
