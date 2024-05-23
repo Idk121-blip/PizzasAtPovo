@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -151,8 +152,7 @@ fun PizzasAtPovoApp(
         composable(
             route = PizzaScreens.ListOfPizzas.name
         ){
-
-//            var context = LocalContext.current
+            navController.popBackStack()
             ListOfPizzasScreen().ListOfPizzasPage(
                 navViewModel = controller,
                 viewModel = pizzaViewModel,
