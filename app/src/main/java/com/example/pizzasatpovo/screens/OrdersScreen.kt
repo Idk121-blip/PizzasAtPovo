@@ -45,7 +45,7 @@ import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.Order
-import com.example.pizzasatpovo.data.OrdersViewModel
+import com.example.pizzasatpovo.data.OrderListViewModel
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
@@ -63,7 +63,7 @@ class OrdersScreen {
         sendRetrieveData: SendRetrieveData
     ) {
 
-        val ordersViewModel = viewModel<OrdersViewModel>()
+        val ordersViewModel = viewModel<OrderListViewModel>()
         val navController2: NavHostController = rememberNavController()
 
         NavHost(
@@ -80,7 +80,6 @@ class OrdersScreen {
                         ordersViewModel.addOrders(orders!!.retrievedObject ?: arrayListOf())
                         //println(orders)
                         navController2.navigate("OrdersPage")
-
                     }
 
                 }
@@ -176,7 +175,7 @@ class OrdersScreen {
 
     @Composable
     fun ListOfOrders(
-        ordersViewModel: OrdersViewModel,
+        ordersViewModel: OrderListViewModel,
         modifier: Modifier = Modifier
     ) {
         val ordersList by ordersViewModel.orders.collectAsStateWithLifecycle()

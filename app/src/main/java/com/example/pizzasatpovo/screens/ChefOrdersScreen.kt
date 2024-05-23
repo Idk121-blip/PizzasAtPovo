@@ -54,7 +54,10 @@ class ChefOrdersScreen {
     fun SingleOrderCard(
         modifier : Modifier = Modifier,
         processOrder: ()->Unit,
-        order: RealTimeOrder = RealTimeOrder(uname = "NoOne", pizzaName = "Margherita", image = "", time = "07:30", pizzaNumber = 1, topping = arrayListOf("Pomodoro", "Mozzarella", "Prosciutto")),
+        order: RealTimeOrder = RealTimeOrder(uname = "NoOne",
+            pizzaName = "Margherita", image = "",
+            time = "07:30", pizzaNumber = 1,
+            topping = arrayListOf("Pomodoro", "Mozzarella", "Prosciutto")),
     ){
         Card (
             shape = RoundedCornerShape(15.dp),

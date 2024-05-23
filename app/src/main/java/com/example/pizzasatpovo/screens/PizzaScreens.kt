@@ -26,12 +26,14 @@ import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
-import com.example.pizzasatpovo.data.UserOrderViewModel
+import com.example.pizzasatpovo.data.NotificationViewModel
+import com.example.pizzasatpovo.data.OrderViewModel
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
-import com.google.firebase.Timestamp
+import java.util.Calendar
+
 enum class PizzaScreens {
     FirstPage,
     ListOfPizzas,
@@ -60,10 +62,10 @@ fun PizzasAtPovoApp(
     //val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     //val favourites by pizzaViewModel.favourites.collectAsState()
-
-    val notificationViewModdel= viewModel<UserOrderViewModel>()
+    val orderViewModel = viewModel<OrderViewModel>()
+    val notificationViewModdel= viewModel<NotificationViewModel>()
     notificationViewModdel.setContext(applicationContext)
-
+    val timestamp by orderViewModel.time.collectAsStateWithLifecycle()
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
         navController = navController,
@@ -80,6 +82,7 @@ fun PizzasAtPovoApp(
                     if (googleAuthUiClient.getSignedInUser() == null) {
                         //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
+                        //
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
@@ -105,6 +108,10 @@ fun PizzasAtPovoApp(
 
             LaunchedEffect(key1 = state.isSignInSuccessful) {
                 if (state.isSignInSuccessful) {
+                    if (googleAuthUiClient.getSignedInUser()!!.role=="Chef"){
+                        navController.navigate(PizzaScreens.ChefOrders.name)
+                    }
+
                     val listResponseData= sendRetrieveData.getPizzas()
 
                     if (listResponseData==null){
@@ -190,12 +197,15 @@ fun PizzasAtPovoApp(
                 pizza = selectedPizza,
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
-                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
+                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza)
+                        val cal = Calendar.getInstance()
+                        cal.time=timestamp.toDate()
                         notificationViewModdel.addListenerForSpecificDocuments(
-                            listOf(sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza, notificationViewModdel)!!))
+                            listOf(sendRetrieveData.sendRTOrderd(selectedPizza, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString(), numberOfPizza, notificationViewModdel)!!))
                     }
                 },
                 viewModel = pizzaViewModel,
+                orderViewModel = orderViewModel,
                 navViewModel = controller
             )
         }
@@ -205,10 +215,14 @@ fun PizzasAtPovoApp(
             AddPizzaScreen().AddPizzaPage(
                 navViewModel = controller,
                 viewModel= pizzaViewModel,
+                orderViewModel = orderViewModel,
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
-                        sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = Timestamp.now())
-                        sendRetrieveData.sendRTOrderd(it, "12.30", numberOfPizza, notificationViewModdel)
+                        sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = timestamp)
+                        val cal = Calendar.getInstance()
+                        cal.time=timestamp.toDate()
+                        notificationViewModdel.addListenerForSpecificDocuments(
+                        listOf( sendRetrieveData.sendRTOrderd(it, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString() , numberOfPizza, notificationViewModdel)!!))
                     }
 
                 }
@@ -243,7 +257,7 @@ fun PizzasAtPovoApp(
         composable(route= PizzaScreens.ChefOrders.name){
             ChefOrdersScreen().ChefOrdersPage {
                 lifecycleScope.launch {
-                    sendRetrieveData.ProcessOrder(it)
+                    sendRetrieveData.processOrder(it)
                 }
             }
         }

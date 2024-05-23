@@ -1,10 +1,5 @@
 package com.example.pizzasatpovo.screens
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -21,16 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.Pizza
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.profile.ProfileScreen
@@ -39,7 +30,6 @@ import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInScreen
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
-import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -194,11 +184,11 @@ class MainActivity : ComponentActivity() {
 
                                 //send
 
-                                val ResponseFavourites= sendRetrieveData.retrieveFavourites()
+                                val responseFavourites= sendRetrieveData.retrieveFavourites()
 
-                                if (ResponseFavourites!=null){
-                                    if (ResponseFavourites.isSuccessful){
-                                        println(ResponseFavourites.retrievedObject)
+                                if (responseFavourites!=null){
+                                    if (responseFavourites.isSuccessful){
+                                        println(responseFavourites.retrievedObject)
                                     }
                                 }
 

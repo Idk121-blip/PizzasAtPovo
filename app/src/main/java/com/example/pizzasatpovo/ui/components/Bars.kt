@@ -36,7 +36,7 @@ import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.screens.PizzaScreens
 
-class Bars() {
+class Bars {
     private val weightText: FontWeight = FontWeight.Bold
     private val dimIcons: Dp = 25.dp
     @Composable
