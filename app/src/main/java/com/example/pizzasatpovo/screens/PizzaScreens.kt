@@ -82,7 +82,6 @@ fun PizzasAtPovoApp(
                     if (googleAuthUiClient.getSignedInUser() == null) {
                         //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
-                        //
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
@@ -201,7 +200,7 @@ fun PizzasAtPovoApp(
                         val cal = Calendar.getInstance()
                         cal.time=timestamp.toDate()
                         notificationViewModdel.addListenerForSpecificDocuments(
-                            listOf(sendRetrieveData.sendRTOrderd(selectedPizza, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString(), numberOfPizza, notificationViewModdel)!!))
+                            listOf(sendRetrieveData.sendRTOrder(selectedPizza, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString(), numberOfPizza)!!))
                     }
                 },
                 viewModel = pizzaViewModel,
@@ -222,7 +221,7 @@ fun PizzasAtPovoApp(
                         val cal = Calendar.getInstance()
                         cal.time=timestamp.toDate()
                         notificationViewModdel.addListenerForSpecificDocuments(
-                        listOf( sendRetrieveData.sendRTOrderd(it, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString() , numberOfPizza, notificationViewModdel)!!))
+                        listOf( sendRetrieveData.sendRTOrder(it, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString() , numberOfPizza)!!))
                     }
 
                 }
