@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.Pizza
+import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
@@ -132,7 +132,7 @@ class DetailsPizzaScreen {
                         Allergen()
                         Allergen()
                     }
-                
+
             }
         }
 

@@ -19,6 +19,7 @@ class PizzaViewModel: ViewModel() {
     val favourites= _favourites.asStateFlow()
     private val _numberOfPizzaToOrder= MutableStateFlow<Int>(1)
     val numberOfPizzaToOrder= _numberOfPizzaToOrder.asStateFlow()
+    private val _toppingIsEmpty = MutableStateFlow(true);
 
 
 

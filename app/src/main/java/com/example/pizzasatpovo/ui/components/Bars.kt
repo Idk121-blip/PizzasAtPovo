@@ -1,6 +1,8 @@
 package com.example.pizzasatpovo.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +43,7 @@ class Bars() {
     private val weightText: FontWeight = FontWeight.Bold
     private val dimIcons: Dp = 25.dp
     @Composable
-    fun AppBar(text:String= "Pizza at Povo", modifier: Modifier = Modifier){
+    fun AppBar(text: String = "Pizza at Povo", modifier: Modifier = Modifier){
         Column (
             modifier = modifier
                 .padding(0.dp, 15.dp, 0.dp, 5.dp)
