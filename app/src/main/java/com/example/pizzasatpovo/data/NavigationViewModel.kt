@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.example.pizzasatpovo.screens.PizzaScreens
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class NavigationViewModel(controller: NavHostController): ViewModel() {

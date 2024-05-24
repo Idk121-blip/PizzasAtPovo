@@ -3,7 +3,6 @@ package com.example.pizzasatpovo.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -46,7 +45,7 @@ enum class PizzaScreens {
 }
 
 @Composable
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "SourceLockedOrientationActivity")
 fun PizzasAtPovoApp(
     googleAuthUiClient: GoogleAuthUiClient,
     sendRetrieveData: SendRetrieveData,
@@ -63,8 +62,8 @@ fun PizzasAtPovoApp(
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     //val favourites by pizzaViewModel.favourites.collectAsState()
     val orderViewModel = viewModel<OrderViewModel>()
-    val notificationViewModdel= viewModel<NotificationViewModel>()
-    notificationViewModdel.setContext(applicationContext)
+    val notificationViewModel= viewModel<NotificationViewModel>()
+    notificationViewModel.setContext(applicationContext)
     val timestamp by orderViewModel.time.collectAsStateWithLifecycle()
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
@@ -199,8 +198,18 @@ fun PizzasAtPovoApp(
                         sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza)
                         val cal = Calendar.getInstance()
                         cal.time=timestamp.toDate()
-                        notificationViewModdel.addListenerForSpecificDocuments(
-                            listOf(sendRetrieveData.sendRTOrder(selectedPizza, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString(), numberOfPizza)!!))
+                        var time= cal.get(Calendar.HOUR_OF_DAY).toString()+":"
+                        time+= if (cal.get(Calendar.MINUTE).toString()=="0"){
+                            "00"
+                        }else if (cal.get(Calendar.MINUTE).toString()=="5"){
+                            "05"
+                        }else{
+                            cal.get(Calendar.MINUTE).toString()
+                        }
+
+
+                        notificationViewModel.addListenerForSpecificDocuments(
+                            listOf(sendRetrieveData.sendRTOrder(selectedPizza,  time, numberOfPizza)!!))
                     }
                 },
                 viewModel = pizzaViewModel,
@@ -220,8 +229,16 @@ fun PizzasAtPovoApp(
                         sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = timestamp)
                         val cal = Calendar.getInstance()
                         cal.time=timestamp.toDate()
-                        notificationViewModdel.addListenerForSpecificDocuments(
-                        listOf( sendRetrieveData.sendRTOrder(it, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString() , numberOfPizza)!!))
+                        val time= cal.get(Calendar.HOUR_OF_DAY).toString()+":"
+                        time+ if (cal.get(Calendar.MINUTE).toString()==""){
+                            "00"
+                        }else if (cal.get(Calendar.MINUTE).toString()=="5"){
+                            "05"
+                        }else{
+                            cal.get(Calendar.MINUTE).toString()
+                        }
+                        notificationViewModel.addListenerForSpecificDocuments(
+                            listOf(sendRetrieveData.sendRTOrder(selectedPizza,  time, numberOfPizza)!!))
                     }
 
                 }
@@ -269,7 +286,7 @@ fun PizzasAtPovoApp(
 suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrieveData, pizzaViewModel: PizzaViewModel) {
     var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
     var toppings: ArrayList<Topping> = arrayListOf()
-    val reqRespone= sendRetrieveData.getPizzas()
+    val reqResponse= sendRetrieveData.getPizzas()
     val toppingResponse= sendRetrieveData.getToppings()
 
     if (toppingResponse == null){
@@ -297,26 +314,26 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
 
 
 
-    if (reqRespone==null){
+    if (reqResponse==null){
         Toast.makeText(
             applicationContext,
             "Error retrieving pizzas",
             Toast.LENGTH_LONG
         ).show()
-    }else if (!reqRespone.isSuccessful) {
+    }else if (!reqResponse.isSuccessful) {
         Toast.makeText(
             applicationContext,
             "Error retrieving pizzas",
             Toast.LENGTH_LONG
         ).show()
     }else{
-        pizzas = reqRespone.retrievedObject!!
+        pizzas = reqResponse.retrievedObject!!
     }
 
-    val favouritesRespone = sendRetrieveData.retrieveFavourites()
+    val favouritesResponse = sendRetrieveData.retrieveFavourites()
 
-    val favourites = if (favouritesRespone!=null){
-        favouritesRespone.retrievedObject?: arrayListOf()
+    val favourites = if (favouritesResponse!=null){
+        favouritesResponse.retrievedObject?: arrayListOf()
     }else{
         arrayListOf()
     }

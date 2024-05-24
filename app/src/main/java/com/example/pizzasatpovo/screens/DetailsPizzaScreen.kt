@@ -1,6 +1,5 @@
 package com.example.pizzasatpovo.screens
 
-import PickerExample
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,9 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
@@ -301,7 +298,7 @@ class DetailsPizzaScreen {
                             .padding(0.dp, 15.dp)
 
                     ) {
-                        PickerExample(orderViewModel)
+                        FlipClock(orderViewModel)
                     }
                     val cost = 4.40 * pizze
                     Text(

@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -173,6 +174,7 @@ class OrdersScreen {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Composable
     fun ListOfOrders(
         ordersViewModel: OrderListViewModel,
@@ -332,6 +334,7 @@ class OrdersScreen {
             }
         }
     }
+    @SuppressLint("SimpleDateFormat")
     @Composable
     fun SingleOrderCard(
         order: Order,

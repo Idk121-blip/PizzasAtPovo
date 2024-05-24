@@ -1,12 +1,12 @@
 package com.example.pizzasatpovo.data
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -18,18 +18,15 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import kotlin.random.Random
 
-class NotificationViewModel : ViewModel( ) {
+class NotificationViewModel : ViewModel() {
 
-    private val CHANNEL_ID = "basic_notifications"
-    private var context: Context?= null
-
+    private val channelId = "basic_notifications"
+    @SuppressLint("StaticFieldLeak")
+    private var context: Context? = null
 
     // Map to keep track of listeners and their respective references
     private val listenerMap = mutableMapOf<DatabaseReference, ValueEventListener>()
-    private val listenerMapNumberRequest= mutableMapOf<DatabaseReference, Int>()
-
-
-
+    private val listenerMapNumberRequest = mutableMapOf<DatabaseReference, Int>()
 
     fun setContext(newContext: Context) {
         context = newContext
@@ -45,7 +42,6 @@ class NotificationViewModel : ViewModel( ) {
 
                 override fun onCancelled(error: DatabaseError) {
                     // Handle error
-
                 }
             }
             documentRef.addValueEventListener(listener)
@@ -57,7 +53,7 @@ class NotificationViewModel : ViewModel( ) {
     private fun handleDatabaseChange(snapshot: DataSnapshot) {
         val order = snapshot.getValue(RealTimeOrder::class.java)
         if (order != null) {
-            if (order.completed){
+            if (order.completed) {
                 sendNotification(context!!, "Il tuo ordine è pronto: ${order.pizzaName}", Random.nextInt(100, 300))
                 snapshot.ref.removeValue() // Delete the document after processing
                 // Remove the listener after deleting the document
@@ -75,17 +71,17 @@ class NotificationViewModel : ViewModel( ) {
             val name = "Basic Notifications"
             val descriptionText = "Channel for basic notifications"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
             val notificationManager: NotificationManager =
-                context!!.getSystemService(ComponentActivity.NOTIFICATION_SERVICE) as NotificationManager
+                context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
     private fun sendNotification(context: Context, message: String, notificationId: Int) {
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.margherita)
             .setContentTitle("Notifica ordine")
             .setContentText(message)

@@ -40,7 +40,7 @@ class Bars {
     private val weightText: FontWeight = FontWeight.Bold
     private val dimIcons: Dp = 25.dp
     @Composable
-    fun AppBar(text:String= "Pizza at Povo", modifier: Modifier = Modifier){
+    fun AppBar(modifier: Modifier = Modifier, text:String= "Pizza at Povo"){
         Column (
             modifier = modifier
                 .padding(0.dp, 15.dp, 0.dp, 5.dp)

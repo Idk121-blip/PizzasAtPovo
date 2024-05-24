@@ -10,14 +10,12 @@ import com.example.pizzasatpovo.data.ResponseData
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserData
-import com.example.pizzasatpovo.data.NotificationViewModel
 
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -155,10 +153,6 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
     }
 
 
-    suspend fun getToppingByRef(toppingReference: DocumentReference): ResponseData<Topping>? =auth.currentUser?.run{
-        val topping= (toppingReference.get().await()).toObject(Topping::class.java)
-        return ResponseData(true, "Fetched successfully", topping)
-    }
 
     suspend fun addFavourite(pizzaName: String, googleAuthUiClient: GoogleAuthUiClient? = null): ResponseData<Boolean>? = auth.currentUser?.run{
         val db= Firebase.firestore
@@ -252,6 +246,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
     }
 
     suspend fun sendRTOrder(pizza: RetrievedPizza, date: String, pizzaNumber: Int): DatabaseReference? = auth.currentUser?.run {
+        println(date)
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -271,14 +266,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         if (user.credit<(price.price * pizzaNumber)){
             return null
         }
-
-
-
         val toppingList: ArrayList<String> = arrayListOf()
-
-
-
-
         for (topping in pizza.toppings!!){
             toppingList.add((topping).name)
         }
@@ -296,7 +284,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
         val orderRef= database.child("orders").child(order.id)
         orderRef.setValue(order).await()
-
+        println(orderRef)
 
         return orderRef
     }

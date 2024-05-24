@@ -1,3 +1,5 @@
+package com.example.pizzasatpovo.screens
+
 import android.icu.util.Calendar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -35,14 +37,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pizzasatpovo.data.OrderViewModel
 import com.google.firebase.Timestamp
 import java.util.Date
 
 @Composable
-fun PickerExample(
+fun FlipClock(
     orderViewModel: OrderViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -82,15 +83,13 @@ fun PickerExample(
             }
 
             val calendar = Calendar.getInstance()
-            calendar.time = Date() // Set your date object here
+            calendar.time = Date() // Set date object here
             if (hoursPickerState.selectedItem!=""){
                 calendar.set(Calendar.HOUR_OF_DAY, hoursPickerState.selectedItem.toInt())
                 calendar.set(Calendar.MINUTE, minutesPickerState.selectedItem.toInt())
             }
             calendar.set(Calendar.SECOND, 0)
             orderViewModel.setTime(Timestamp(calendar.time))
-
-
         }
 }
 
@@ -113,7 +112,7 @@ fun Picker(
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
 
-) {
+    ) {
     val visibleItemsMiddle = visibleItemsCount / 3
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 3
