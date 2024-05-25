@@ -83,9 +83,11 @@ fun PizzasAtPovoApp(
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }
@@ -152,7 +154,7 @@ fun PizzasAtPovoApp(
         composable(
                 route = PizzaScreens.ListOfPizzas.name
         ){
-            navController.popBackStack()
+
             ListOfPizzasScreen().ListOfPizzasPage(
                     navViewModel = controller,
                     viewModel = pizzaViewModel,
