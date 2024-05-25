@@ -55,6 +55,7 @@ import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
+import com.example.pizzasatpovo.ui.components.LogoutButton
 import com.example.pizzasatpovo.ui.components.shimmerBrush
 import kotlinx.coroutines.launch
 
@@ -325,42 +326,6 @@ class AccountPageScreen {
             thickness = 1.dp,
             modifier = modifier.padding(bottom = 7.dp, start = 25.dp, end = 25.dp))
 
-    }
-
-    @Composable
-    fun LogoutButton(
-        viewModel: LoadingViewModel,
-        modifier: Modifier = Modifier,
-        onLogOutButtonClicked: () -> Unit = {}
-    ){
-        val interactionSource = remember { MutableInteractionSource() }
-        val state by viewModel.state.collectAsStateWithLifecycle()
-        val showShimmer = remember { mutableStateOf(true) }
-        showShimmer.value= !state.isFinished
-        Row(modifier = modifier
-            .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-            .clickable (enabled = !showShimmer.value,
-                interactionSource = interactionSource,
-                indication = null) {
-                onLogOutButtonClicked()
-            }
-
-
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.logout_icon),
-                contentDescription = "Logout icon",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = modifier.size(30.dp))
-            Text(
-                text = "Log out",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.primary,
-                modifier= modifier.align(Alignment.CenterVertically)
-            )
-        }
     }
 
 }

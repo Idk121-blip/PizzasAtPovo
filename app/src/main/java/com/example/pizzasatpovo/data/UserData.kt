@@ -2,7 +2,7 @@ package com.example.pizzasatpovo.data
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
-
+import java.util.UUID
 
 
 data class UserData(val name: String?= "",
@@ -44,13 +44,15 @@ data class Order(val topping: ArrayList<Topping> = arrayListOf(),
 
 
 
-data class RealTimeOrder(val uname:String= "",
+data class RealTimeOrder(val id: String = UUID.randomUUID().toString(),
+                         val uname:String= "",
                          val image:String = "",
                          val topping: ArrayList<String> = arrayListOf(),
                          val pizzaNumber: Int =  0,
                          val time: String= "",
                          val pizzaName:String= "",
-                         val completed: Boolean=false)
+                         var completed: Boolean=false) {
+}
 
 data class UserOrders(val uname:String= "",
                          val image:String = "",
