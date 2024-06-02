@@ -39,6 +39,7 @@ import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.NavigationViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pizzasatpovo.data.OrderViewModel
 import com.example.pizzasatpovo.data.PersonalizedOrderViewMode
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
@@ -51,6 +52,7 @@ class AddPizzaScreen {
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
+        orderViewModel: OrderViewModel,
         onOrderButtonClicked: (RetrievedPizza) -> Unit = {},
     ){
         val personalizedOrderViewModel = viewModel<PersonalizedOrderViewMode>()
@@ -74,12 +76,11 @@ class AddPizzaScreen {
                     modifier = modifier
                         .fillMaxSize()
                 ){
-
-
                     viewModel.resetNumberOfPizza()
                     DetailsPizzaScreen().OrderDetails(
                         pizzaName = "La tua pizza",
                         viewModel = viewModel,
+                        orderViewModel=orderViewModel,
                         onOrderButtonClicked = {
                             onOrderButtonClicked(personalizedOrderViewModel.getRetrievedPizza())
                         },
@@ -119,9 +120,11 @@ class AddPizzaScreen {
             Row {
                 for (topping in toppings){
                     if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
+                        personalizedOrderViewModel.addTopping(topping)
                         IngredientCard(
                             topping = topping,
-                            personalizedOrderViewModel= personalizedOrderViewModel,
+                            personalizedOrderViewMode= personalizedOrderViewModel,
+                            defaultSelected = true
                         )
                     }
                 }
@@ -139,7 +142,7 @@ class AddPizzaScreen {
                 for (topping in toppings){
                     if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
                         IngredientCard(topping = topping,
-                            personalizedOrderViewModel= personalizedOrderViewModel)
+                            personalizedOrderViewMode= personalizedOrderViewModel)
                     }
                 }
             }
@@ -150,11 +153,12 @@ class AddPizzaScreen {
    @Composable
    fun IngredientCard(
        topping: Topping,
-       personalizedOrderViewModel: PersonalizedOrderViewMode,
+       personalizedOrderViewMode: PersonalizedOrderViewMode,
        modifier: Modifier = Modifier,
        defaultSelected:Boolean= false
    ) {
        var selected by remember { mutableStateOf(defaultSelected) }
+
 
        TooltipBox(
            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -170,9 +174,9 @@ class AddPizzaScreen {
                {
                    selected = !selected
                    if (selected) {
-                       personalizedOrderViewModel.addTopping(topping)
+                       personalizedOrderViewMode.addTopping(topping)
                    } else {
-                       personalizedOrderViewModel.removeTopping(topping)
+                       personalizedOrderViewMode.removeTopping(topping)
                    }
                },
                shape = RoundedCornerShape(percent = 15),

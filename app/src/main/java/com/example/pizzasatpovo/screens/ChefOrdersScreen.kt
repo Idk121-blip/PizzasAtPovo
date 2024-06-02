@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,10 @@ import com.example.pizzasatpovo.data.RealTimeOrder
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.LogoutButton
+import com.google.firebase.Timestamp
+import java.util.Calendar
+import java.util.Date
+import kotlin.math.ceil
 
 class ChefOrdersScreen {
     @Composable
@@ -47,7 +52,7 @@ class ChefOrdersScreen {
         processOrder: (String)->Unit,
         onLogOutButtonClicked: () -> Unit,
         modifier:Modifier = Modifier,
-    ){
+    ) {
         val viewModel = viewModel<ChefViewModel>()
         val chefViewModel = viewModel<LoadingViewModel>()
         val orders by viewModel.orders.observeAsState(initial = arrayListOf(RealTimeOrder()))
@@ -61,10 +66,10 @@ class ChefOrdersScreen {
             ) {
                 Box(
                     modifier = modifier
-                        .border(1.dp, Color.Blue)
                         .height(40.dp)
                 ) {
                     Bars().AppBar(
+                        fontSize = 22.sp,
                         modifier = modifier
                     )
                     LogoutButton(
@@ -79,40 +84,17 @@ class ChefOrdersScreen {
                     i++;
                 }
 
-                var groupedOrders = groupOrdersByTime(orders)
-                    LazyColumn {
-                        groupedOrders.forEach { (time, orders) ->
-                            val allOrdersCompleted = orders.all { it.completed }
-                            if (!allOrdersCompleted) {
-                                item {
-                                    Text(
-                                        text = time,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 20.sp,
-                                        modifier = modifier
-                                    )
-                                }
-                                items(orders) { order ->
-                                    SingleOrderCard(order = order,
-                                        processOrder = { processOrder(order.id) })
-                                }
-                            }
-                        }
-//                        LazyColumn {
-//
-//                            items(orders) { order ->
-//
-//                                if (!order.completed)
-//                                    if (order.time.startsWith(hour) && order.time.endsWith(hour))
-//                                        SingleOrderCard(
-//                                            order = order,
-//                                            processOrder = { processOrder(order.id) })
-//
-//                            }
-//                        }
+                LazyColumn {
+                    items(orders) { order ->
+                        SingleOrderCard(order = order, processOrder = { processOrder(order.id) })
                     }
+                }
             }
         }
+    }
+
+    private fun getMinutesLeft(until: Date): Int {
+        return ceil((until.time - Date().time) / 60_000.0).toInt()
     }
 
     private fun groupOrdersByTime(orders: List<RealTimeOrder>): Map<String, List<RealTimeOrder>> {

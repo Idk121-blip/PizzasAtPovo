@@ -25,25 +25,25 @@ import com.example.pizzasatpovo.data.LoadingViewModel
 
 @Composable
 fun LogoutButton(
-    viewModel: LoadingViewModel,
-    modifier: Modifier = Modifier,
-    onLogOutButtonClicked: () -> Unit = {}
+        viewModel: LoadingViewModel,
+        modifier: Modifier = Modifier,
+        onLogOutButtonClicked: () -> Unit = {}
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val state by viewModel.state.collectAsStateWithLifecycle()
     val showShimmer = remember { mutableStateOf(true) }
     showShimmer.value = !state.isFinished
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 25.dp, end = 25.dp)
-            .clickable(
-                enabled = !showShimmer.value,
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                onLogOutButtonClicked()
-            }
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                    .padding(start = 25.dp, end = 25.dp)
+                    .clickable(
+                            enabled = !showShimmer.value,
+                            interactionSource = interactionSource,
+                            indication = null
+                    ) {
+                        onLogOutButtonClicked()
+                    }
     ) {
         Icon(
             painter = painterResource(id = R.drawable.logout_icon),

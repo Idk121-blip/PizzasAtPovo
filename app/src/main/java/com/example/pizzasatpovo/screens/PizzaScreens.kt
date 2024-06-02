@@ -28,11 +28,14 @@ import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserOrderViewModel
+import com.example.pizzasatpovo.data.NotificationViewModel
+import com.example.pizzasatpovo.data.OrderViewModel
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.google.firebase.Timestamp
+import java.util.Calendar
 enum class PizzaScreens {
     FirstPage,
     ListOfPizzas,
@@ -61,9 +64,10 @@ fun PizzasAtPovoApp(
     //val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     //val favourites by pizzaViewModel.favourites.collectAsState()
-
-    val notificationViewModdel= viewModel<UserOrderViewModel>()
+    val orderViewModel = viewModel<OrderViewModel>()
+    val notificationViewModdel= viewModel<NotificationViewModel>()
     notificationViewModdel.setContext(applicationContext)
+    val timestamp by orderViewModel.time.collectAsStateWithLifecycle()
 
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
@@ -83,9 +87,11 @@ fun PizzasAtPovoApp(
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }
@@ -106,6 +112,10 @@ fun PizzasAtPovoApp(
 
             LaunchedEffect(key1 = state.isSignInSuccessful) {
                 if (state.isSignInSuccessful) {
+                    if (googleAuthUiClient.getSignedInUser()!!.role=="Chef"){
+                        navController.navigate(PizzaScreens.ChefOrders.name)
+                    }
+
                     val listResponseData= sendRetrieveData.getPizzas()
 
                     if (listResponseData==null){
@@ -152,7 +162,8 @@ fun PizzasAtPovoApp(
         composable(
             route = PizzaScreens.ListOfPizzas.name
         ){
-            navController.popBackStack()
+
+//            var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(
                 navViewModel = controller,
                 viewModel = pizzaViewModel,
@@ -190,12 +201,15 @@ fun PizzasAtPovoApp(
                 pizza = selectedPizza,
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
-                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
+                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza)
+                        val cal = Calendar.getInstance()
+                        cal.time=timestamp.toDate()
                         notificationViewModdel.addListenerForSpecificDocuments(
-                            listOf(sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza, notificationViewModdel)!!))
+                            listOf(sendRetrieveData.sendRTOrder(selectedPizza, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString(), numberOfPizza)!!))
                     }
                 },
                 viewModel = pizzaViewModel,
+                orderViewModel = orderViewModel,
                 navViewModel = controller
             )
         }
@@ -205,10 +219,14 @@ fun PizzasAtPovoApp(
             AddPizzaScreen().AddPizzaPage(
                 navViewModel = controller,
                 viewModel= pizzaViewModel,
+                orderViewModel = orderViewModel,
                 onOrderButtonClicked = {
                     lifecycleScope.launch {
-                        sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = Timestamp.now())
-                        sendRetrieveData.sendRTOrderd(it, "12.30", numberOfPizza, notificationViewModdel)
+                        sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = timestamp)
+                        val cal = Calendar.getInstance()
+                        cal.time=timestamp.toDate()
+                        notificationViewModdel.addListenerForSpecificDocuments(
+                        listOf( sendRetrieveData.sendRTOrder(it, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString() , numberOfPizza)!!))
                     }
 
                 }
@@ -242,19 +260,19 @@ fun PizzasAtPovoApp(
         }
         composable(route= PizzaScreens.ChefOrders.name){
             ChefOrdersScreen().ChefOrdersPage(
-                onLogOutButtonClicked =  {
-                    lifecycleScope.launch {
-                        googleAuthUiClient.signOut()
-                        navController.enableOnBackPressed(enabled = false)
-                        navController.navigate(PizzaScreens.FirstPage.name)
-                    }
-                },
-                processOrder = {
-                lifecycleScope.launch {
-                    sendRetrieveData.ProcessOrder(it)
-                }
+                    onLogOutButtonClicked =  {
+                        lifecycleScope.launch {
+                            googleAuthUiClient.signOut()
+                            navController.enableOnBackPressed(enabled = false)
+                            navController.navigate(PizzaScreens.FirstPage.name)
+                        }
+                    },
+                    processOrder = {
+                        lifecycleScope.launch {
+                            sendRetrieveData.ProcessOrder(it)
+                        }
 
-            }
+                    }
             )
         }
     }

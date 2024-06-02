@@ -55,7 +55,7 @@ class FavouritesScreen {
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
         onRemoveFromFavouritesClicked:(String)->Unit={},
-        onAddToFavouritesClicked:(String)->Unit={}//TODO: maybe add a screen when clicked?
+        onAddToFavouritesClicked:(String)->Unit={}
     ){
         BackgroundImage()
 
@@ -65,8 +65,8 @@ class FavouritesScreen {
         ) {
             Column {
                 Bars().AppBar(
-                    modifier = modifier
-                        .height(30.dp)
+                    text = "Preferiti",
+                    modifier = modifier.height(35.dp).padding(2.dp)
                 )
                 ListOfPizzas(
                     viewModel = viewModel,

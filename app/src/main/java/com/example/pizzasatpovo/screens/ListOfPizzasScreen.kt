@@ -67,8 +67,8 @@ class ListOfPizzasScreen {
                 .fillMaxSize()
         ){
             Bars().AppBar(
-                modifier = modifier
-                    .height(30.dp)
+                text = "Pizze di oggi",
+                modifier = modifier.height(35.dp).padding(2.dp)
             )
             SearchBar(
                 viewModel= viewModel,

@@ -1,6 +1,5 @@
 package com.example.pizzasatpovo.presentation.db_interaction
 
-
 import com.example.pizzasatpovo.data.DBOrder
 import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.Pizza
@@ -12,6 +11,8 @@ import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserData
 import com.example.pizzasatpovo.data.UserOrderViewModel
 import com.example.pizzasatpovo.data.UserOrders
+import com.example.pizzasatpovo.data.NotificationViewModel
+
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
@@ -121,13 +122,13 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
                     toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
                 }
                 orders.add(UserOrders(
-                    image =  dbOrder.image,
-                    time = dbOrder.date.toString(),
-                    pizzaNumber = dbOrder.pizzaNumber,
-                    topping = toppings,
-                    uname = uid,
-                    pizzaName=dbOrder.pizzaName
-                    ))
+                        image =  dbOrder.image,
+                        time = dbOrder.date.toString(),
+                        pizzaNumber = dbOrder.pizzaNumber,
+                        topping = toppings,
+                        uname = uid,
+                        pizzaName=dbOrder.pizzaName
+                ))
             }
         }
         return ResponseData(true, "Retrieved successfully", orders)
@@ -275,7 +276,7 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Pizza retrieved successfully", favourites)
     }
 
-    suspend fun sendRTOrderd(pizza: RetrievedPizza, date: String, pizzaNumber: Int, viewModel: UserOrderViewModel): DatabaseReference? = auth.currentUser?.run {
+    suspend fun sendRTOrder(pizza: RetrievedPizza, date: String, pizzaNumber: Int): DatabaseReference? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice= db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
@@ -305,8 +306,8 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
         }
 
         val database= Firebase
-            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference
+                .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference
 
         val order= RealTimeOrder(topping = toppingList,
             pizzaNumber = pizzaNumber,
@@ -326,15 +327,15 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
     suspend fun ProcessOrder(documentName: String){
         var order: RealTimeOrder? = Firebase
-            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
-            ?: return
+                .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
+                ?: return
 
-            order!!.completed=true
+        order!!.completed=true
 
         Firebase
-            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference.child("orders").child(documentName).setValue(order)
+                .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("orders").child(documentName).setValue(order)
     }
 
 
