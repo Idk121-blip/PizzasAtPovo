@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.LoadingViewModel
+import com.example.pizzasatpovo.data.viewmodel.LoadingViewModel
 
 @Composable
 fun LogoutButton(
@@ -46,18 +46,18 @@ fun LogoutButton(
                     }
     ) {
         Icon(
-                painter = painterResource(id = R.drawable.logout_icon),
-                contentDescription = "Logout icon",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = modifier.size(30.dp)
+            painter = painterResource(id = R.drawable.logout_icon),
+            contentDescription = "Logout icon",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = modifier.size(30.dp)
         )
         Text(
-                text = "Log out",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = modifier.align(Alignment.CenterVertically)
+            text = "Log out",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = modifier.align(Alignment.CenterVertically)
         )
     }
 }

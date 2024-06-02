@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,32 +31,35 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.screens.PizzaScreens
+import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
+import com.example.pizzasatpovo.ui.screens.PizzaScreens
 
-class Bars {
+class Bars() {
     private val weightText: FontWeight = FontWeight.Bold
     private val dimIcons: Dp = 25.dp
     @Composable
+
     fun AppBar(
         text: String = "Pizza at Povo",
+        fontSize: TextUnit = 18.sp,
         modifier: Modifier = Modifier
     ){
         Column (
             verticalArrangement = Arrangement.Center,
             modifier = modifier
-                    .fillMaxSize()
+                .fillMaxSize()
         ) {
             Text(
                 text = text,
-                fontSize = 22.sp,
+                fontSize = fontSize,
                 fontWeight = weightText,
                 textAlign = TextAlign.Center,
                 modifier = modifier
-                        .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally)
             )
         }
     }
