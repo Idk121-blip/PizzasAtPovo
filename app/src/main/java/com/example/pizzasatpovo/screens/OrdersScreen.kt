@@ -89,7 +89,10 @@ class OrdersScreen {
                 ) {
                     BackgroundImage()
                     Column {
-                        Bars().AppBar(text = "Ordini")
+                        Bars().AppBar(
+                            text = "Ordini",
+                            modifier = modifier.height(35.dp).padding(2.dp)
+                        )
                         ListOfChargingOrders(
                             modifier = modifier
                                 .fillMaxHeight(),
@@ -111,7 +114,10 @@ class OrdersScreen {
                 ) {
                     BackgroundImage()
                     Column {
-                        Bars().AppBar(text = "Ordini")
+                        Bars().AppBar(
+                            text = "Ordini",
+                            modifier = modifier.height(35.dp).padding(2.dp)
+                        )
                         ListOfOrders(
                             modifier = modifier
                                 .fillMaxHeight(),

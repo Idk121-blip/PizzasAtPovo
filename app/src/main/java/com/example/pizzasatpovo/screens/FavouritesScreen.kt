@@ -64,7 +64,10 @@ class FavouritesScreen {
                 .fillMaxSize()
         ) {
             Column {
-                Bars().AppBar()
+                Bars().AppBar(
+                    text = "Preferiti",
+                    modifier = modifier.height(35.dp).padding(2.dp)
+                )
                 ListOfPizzas(
                     viewModel = viewModel,
                     navViewModel = navViewModel,

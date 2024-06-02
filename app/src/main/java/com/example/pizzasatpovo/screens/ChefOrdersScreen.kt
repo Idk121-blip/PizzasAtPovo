@@ -69,6 +69,7 @@ class ChefOrdersScreen {
                         .height(40.dp)
                 ) {
                     Bars().AppBar(
+                        fontSize = 22.sp,
                         modifier = modifier
                     )
                     LogoutButton(

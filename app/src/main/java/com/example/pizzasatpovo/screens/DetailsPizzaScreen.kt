@@ -315,7 +315,7 @@ class DetailsPizzaScreen {
 
             Button(
                 content = {
-                    Text(text = "ORDINA") //TODO: CHANGE THE DIMENSION
+                    Text(text = "ORDINA")
                 },
                 onClick = {
                     showDialog.value = true

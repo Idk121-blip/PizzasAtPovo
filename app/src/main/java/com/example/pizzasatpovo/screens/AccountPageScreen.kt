@@ -90,6 +90,7 @@ class AccountPageScreen {
                 Column {
                     Bars().AppBar(
                         text = "Account",
+                        modifier = modifier.height(35.dp).padding(2.dp)
                     )
                     Column {
                         UserInfoCard(viewModel = viewModel)

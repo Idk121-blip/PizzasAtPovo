@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
@@ -44,6 +45,7 @@ class Bars {
     @Composable
     fun AppBar(
         text: String = "Pizza at Povo",
+        fontSize: TextUnit = 18.sp,
         modifier: Modifier = Modifier
     ){
         Column (
@@ -53,7 +55,7 @@ class Bars {
         ) {
             Text(
                 text = text,
-                fontSize = 22.sp,
+                fontSize = fontSize,
                 fontWeight = weightText,
                 textAlign = TextAlign.Center,
                 modifier = modifier
