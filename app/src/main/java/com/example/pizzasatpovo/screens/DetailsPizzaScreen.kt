@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.OrderViewModel
-import com.example.pizzasatpovo.data.PizzaViewModel
-import com.example.pizzasatpovo.data.RetrievedPizza
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
+import com.example.pizzasatpovo.data.viewModels.TimeOrderViewModel
+import com.example.pizzasatpovo.data.viewModels.PizzaViewModel
+import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 
@@ -52,14 +52,13 @@ class DetailsPizzaScreen {
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
         modifier: Modifier = Modifier,
-        orderViewModel: OrderViewModel,
+        timeOrderViewModel: TimeOrderViewModel,
         onOrderButtonClicked: () -> Unit={}
     ){
         var listOfToppings = ""
         for (topping in pizza.toppings!!){
             listOfToppings= listOfToppings.plus(topping.name).plus(", ")
         }
-
         listOfToppings= listOfToppings.removeSuffix(", ")
         Box(modifier = modifier
             .fillMaxSize()
@@ -148,7 +147,7 @@ class DetailsPizzaScreen {
                     onOrderButtonClicked= onOrderButtonClicked,
                     pizzaName = pizza.name,
                     viewModel = viewModel,
-                    orderViewModel=  orderViewModel
+                    timeOrderViewModel=  timeOrderViewModel
                 )
             }
 
@@ -176,10 +175,10 @@ class DetailsPizzaScreen {
         pizzaName:String,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
-        orderViewModel:OrderViewModel,
-        onOrderButtonClicked: () -> Unit={}
+        timeOrderViewModel: TimeOrderViewModel,
+        onOrderButtonClicked: () -> Unit={},
+        toppingsEmpty: Boolean = false,
     ){
-
 
         val pizze by viewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
         val customOrderSentDialog =  remember { mutableStateOf(false) }
@@ -298,7 +297,7 @@ class DetailsPizzaScreen {
                             .padding(0.dp, 15.dp)
 
                     ) {
-                        FlipClock(orderViewModel)
+                        FlipClock(timeOrderViewModel)
                     }
                     val cost = 4.40 * pizze
                     Text(
@@ -314,9 +313,9 @@ class DetailsPizzaScreen {
                 content = {
                     Text(text = "ORDINA") //TODO: CHANGE THE DIMENSION
                 },
+                enabled = if(toppingsEmpty) { false } else { true },
                 onClick = {
                     showDialog.value = true
-                          //onOrderButtonClicked()
                 },
                 shape = RoundedCornerShape(10.dp),
                 modifier = modifier

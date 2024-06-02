@@ -26,6 +26,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,14 +36,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.ui.components.Bars
-import com.example.pizzasatpovo.data.NavigationViewModel
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pizzasatpovo.data.OrderViewModel
-import com.example.pizzasatpovo.data.PersonalizedOrderViewMode
-import com.example.pizzasatpovo.data.PizzaViewModel
-import com.example.pizzasatpovo.data.RetrievedPizza
-import com.example.pizzasatpovo.data.Topping
+import com.example.pizzasatpovo.data.viewModels.TimeOrderViewModel
+import com.example.pizzasatpovo.data.viewModels.PersonalizedOrderViewModel
+import com.example.pizzasatpovo.data.viewModels.PizzaViewModel
+import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
+import com.example.pizzasatpovo.data.dataModel.Topping
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 
 class AddPizzaScreen {
@@ -51,11 +52,12 @@ class AddPizzaScreen {
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
-        orderViewModel: OrderViewModel,
+        timeOrderViewModel: TimeOrderViewModel,
         onOrderButtonClicked: (RetrievedPizza) -> Unit = {},
     ){
-        val personalizedOrderViewMode = viewModel<PersonalizedOrderViewMode>()
+        val personalizedOrderViewModel = viewModel<PersonalizedOrderViewModel>()
         val toppings by viewModel.toppings.collectAsStateWithLifecycle()
+        val isToppingEmpty by personalizedOrderViewModel.isEmpty.observeAsState(true)
         Box(modifier = modifier
             .fillMaxSize()
         ){
@@ -67,21 +69,25 @@ class AddPizzaScreen {
                     navViewModel = navViewModel
                 )
                 IngredientList(toppings = toppings,
-                    personalizedOrderViewMode= personalizedOrderViewMode)
+                    personalizedOrderViewModel= personalizedOrderViewModel)
                 //White container
                 Column (
                     verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
                         .fillMaxSize()
                 ){
+
+
                     viewModel.resetNumberOfPizza()
                     DetailsPizzaScreen().OrderDetails(
                         pizzaName = "La tua pizza",
                         viewModel = viewModel,
-                        orderViewModel=orderViewModel,
+                        timeOrderViewModel=timeOrderViewModel,
                         onOrderButtonClicked = {
-                            onOrderButtonClicked(personalizedOrderViewMode.getRetrievedPizza())
-                        })
+                            onOrderButtonClicked(personalizedOrderViewModel.getRetrievedPizza())
+                        },
+                        toppingsEmpty = isToppingEmpty
+                        )
 
                 }
             }
@@ -103,7 +109,7 @@ class AddPizzaScreen {
     @Composable
     fun IngredientList(
         toppings: ArrayList<Topping>,
-        personalizedOrderViewMode: PersonalizedOrderViewMode,
+        personalizedOrderViewModel: PersonalizedOrderViewModel,
         modifier: Modifier = Modifier
     ){
         Column(
@@ -117,11 +123,9 @@ class AddPizzaScreen {
             Row {
                 for (topping in toppings){
                     if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
-                        personalizedOrderViewMode.addTopping(topping)
                         IngredientCard(
                             topping = topping,
-                            personalizedOrderViewMode= personalizedOrderViewMode,
-                            defaultSelected = true
+                            personalizedOrderViewModel= personalizedOrderViewModel,
                         )
                     }
                 }
@@ -139,7 +143,7 @@ class AddPizzaScreen {
                 for (topping in toppings){
                     if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
                         IngredientCard(topping = topping,
-                            personalizedOrderViewMode= personalizedOrderViewMode)
+                            personalizedOrderViewModel= personalizedOrderViewModel)
                     }
                 }
             }
@@ -150,12 +154,11 @@ class AddPizzaScreen {
    @Composable
    fun IngredientCard(
        topping: Topping,
-       personalizedOrderViewMode: PersonalizedOrderViewMode,
+       personalizedOrderViewModel: PersonalizedOrderViewModel,
        modifier: Modifier = Modifier,
        defaultSelected:Boolean= false
    ) {
        var selected by remember { mutableStateOf(defaultSelected) }
-
 
        TooltipBox(
            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -171,9 +174,9 @@ class AddPizzaScreen {
                {
                    selected = !selected
                    if (selected) {
-                       personalizedOrderViewMode.addTopping(topping)
+                       personalizedOrderViewModel.addTopping(topping)
                    } else {
-                       personalizedOrderViewMode.removeTopping(topping)
+                       personalizedOrderViewModel.removeTopping(topping)
                    }
                },
                shape = RoundedCornerShape(percent = 15),

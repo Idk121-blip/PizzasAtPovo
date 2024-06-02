@@ -3,7 +3,7 @@ package com.example.pizzasatpovo.database
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DatabaseReference
 
-class OrderRepository(private val ordersRef: DatabaseReference) {
+class ListenerManager(private val ordersRef: DatabaseReference) {
 
     private val listeners = mutableListOf<ChildEventListener>()
 

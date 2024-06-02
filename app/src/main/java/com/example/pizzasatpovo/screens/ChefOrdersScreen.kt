@@ -1,10 +1,13 @@
 package com.example.pizzasatpovo.screens
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,23 +33,90 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pizzasatpovo.data.ChefViewModel
-import com.example.pizzasatpovo.data.RealTimeOrder
+import com.example.pizzasatpovo.data.viewModels.ChefViewModel
+import com.example.pizzasatpovo.data.viewModels.LoadingViewModel
+import com.example.pizzasatpovo.data.dataModel.RealTimeOrder
+import com.example.pizzasatpovo.ui.components.BackgroundImage
+import com.example.pizzasatpovo.ui.components.Bars
+import com.example.pizzasatpovo.ui.components.LogoutButton
 
 class ChefOrdersScreen {
     @Composable
     fun ChefOrdersPage(
-        //modifier:Modifier = Modifier //TODO, REMOVE?
-        processOrder: (String)->Unit
-    ){
-        val chefViewModel = viewModel<ChefViewModel>()
-        val orders by chefViewModel.orders.observeAsState(initial = arrayListOf(RealTimeOrder()))
 
-        LazyColumn {
-            items(orders){ order ->
-                SingleOrderCard(order = order, processOrder= {processOrder(order.id)} )
+        processOrder: (String)->Unit,
+        onLogOutButtonClicked: () -> Unit,
+        modifier:Modifier = Modifier,
+    ){
+        val viewModel = viewModel<ChefViewModel>()
+        val chefViewModel = viewModel<LoadingViewModel>()
+        val orders by viewModel.orders.observeAsState(initial = arrayListOf(RealTimeOrder()))
+
+        Box {
+            BackgroundImage()
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = modifier
+                    .padding(40.dp, 10.dp)
+            ) {
+            Box(
+                modifier = modifier
+                    .border(1.dp, Color.Blue)
+                    .height(40.dp)
+            ) {
+                Bars().AppBar(
+                    modifier = modifier
+                )
+                LogoutButton(
+                    onLogOutButtonClicked = onLogOutButtonClicked,
+                    viewModel = chefViewModel,
+                    modifier = modifier
+                        .align(Alignment.CenterEnd)
+                )
+            }
+            var i = 0
+            while (orders[i].completed) {
+                i++
+            }
+
+            val groupedOrders = groupOrdersByTime(orders)
+                LazyColumn {
+                    groupedOrders.forEach { (time, orders) ->
+                        val allOrdersCompleted = orders.all { it.completed }
+                        if (!allOrdersCompleted) {
+                            item {
+                                Text(
+                                    text = time,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp,
+                                    modifier = modifier
+                                )
+                            }
+                            items(orders) { order ->
+                                SingleOrderCard(order = order,
+                                    processOrder = { processOrder(order.id) })
+                            }
+                        }
+                    }
+//                        LazyColumn {
+//
+//                            items(orders) { order ->
+//
+//                                if (!order.completed)
+//                                    if (order.time.startsWith(hour) && order.time.endsWith(hour))
+//                                        SingleOrderCard(
+//                                            order = order,
+//                                            processOrder = { processOrder(order.id) })
+//
+//                            }
+//                        }
+                }
             }
         }
+    }
+
+    private fun groupOrdersByTime(orders: List<RealTimeOrder>): Map<String, List<RealTimeOrder>> {
+        return orders.groupBy { it.time }
     }
 
     @Composable
@@ -61,7 +131,7 @@ class ChefOrdersScreen {
         Card (
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color.Cyan,
+                containerColor = Color.White,
             ),
             modifier = modifier
                 .fillMaxWidth()

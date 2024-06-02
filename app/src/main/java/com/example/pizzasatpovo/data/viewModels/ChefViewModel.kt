@@ -1,11 +1,12 @@
-package com.example.pizzasatpovo.data
+package com.example.pizzasatpovo.data.viewModels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.pizzasatpovo.database.OrderRepository
+import com.example.pizzasatpovo.data.dataModel.RealTimeOrder
+import com.example.pizzasatpovo.database.ListenerManager
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,7 +19,7 @@ class ChefViewModel : ViewModel() {
     private val orderSnapshotStateList = mutableStateListOf<RealTimeOrder>()
     val orders: LiveData<SnapshotStateList<RealTimeOrder>> get() = _orders
 
-    private val repository: OrderRepository
+    private val repository: ListenerManager
 
     private val orderEventListener = object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
@@ -54,7 +55,7 @@ class ChefViewModel : ViewModel() {
     init {
         val database = Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
         val ordersRef = database.getReference("orders")
-        repository = OrderRepository(ordersRef)
+        repository = ListenerManager(ordersRef)
 
         repository.addOrderEventListener(orderEventListener)
     }

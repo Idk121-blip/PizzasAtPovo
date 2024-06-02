@@ -1,11 +1,16 @@
-package com.example.pizzasatpovo.data
+package com.example.pizzasatpovo.data.viewModels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
+import com.example.pizzasatpovo.data.dataModel.Topping
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-class PersonalizedOrderViewMode: ViewModel() {
+class PersonalizedOrderViewModel: ViewModel() {
     private val _toppings = MutableStateFlow<ArrayList<Topping>>(arrayListOf())
+    val isEmpty = MutableLiveData(true)
+
 
     fun addTopping(topping: Topping){
         _toppings.update {
@@ -13,6 +18,8 @@ class PersonalizedOrderViewMode: ViewModel() {
             newTopping.add(topping)
             newTopping
         }
+        isEmpty.postValue(_toppings.value.isEmpty())
+        println("Empty add? " + isEmpty.value)
     }
 
     fun removeTopping(topping: Topping){
@@ -23,10 +30,11 @@ class PersonalizedOrderViewMode: ViewModel() {
             }
             newTopping
         }
+        isEmpty.postValue(_toppings.value.isEmpty())
+        println("Empty remove? " + isEmpty.value)
     }
 
-
-    fun getRetrievedPizza():RetrievedPizza{
+    fun getRetrievedPizza(): RetrievedPizza {
         return RetrievedPizza(name= "La tua pizza",
             toppings = _toppings.value,
             image = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png")

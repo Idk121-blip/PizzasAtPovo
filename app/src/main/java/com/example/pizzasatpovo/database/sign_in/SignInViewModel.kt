@@ -1,4 +1,4 @@
-package com.example.pizzasatpovo.presentation.sign_in
+package com.example.pizzasatpovo.database.sign_in
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +10,7 @@ class SignInViewModel: ViewModel() {
     val state = _state.asStateFlow()
     //private val time = MutableStateFlow()
     fun onSignInResult(result: SignInResult) {
+
         _state.update { it.copy(
             isSignInSuccessful = result.data != null,
             signInError = result.errorMessage

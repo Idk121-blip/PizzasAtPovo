@@ -41,9 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.PizzaViewModel
-import com.example.pizzasatpovo.data.RetrievedPizza
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
+import com.example.pizzasatpovo.data.viewModels.PizzaViewModel
+import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
@@ -64,7 +64,10 @@ class FavouritesScreen {
                 .fillMaxSize()
         ) {
             Column {
-                Bars().AppBar()
+                Bars().AppBar(
+                    modifier = modifier
+                        .height(30.dp)
+                )
                 ListOfPizzas(
                     viewModel = viewModel,
                     navViewModel = navViewModel,

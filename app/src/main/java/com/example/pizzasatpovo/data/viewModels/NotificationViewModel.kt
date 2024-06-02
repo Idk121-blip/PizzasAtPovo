@@ -1,4 +1,4 @@
-package com.example.pizzasatpovo.data
+package com.example.pizzasatpovo.data.viewModels
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import com.example.pizzasatpovo.R
+import com.example.pizzasatpovo.data.dataModel.RealTimeOrder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -41,7 +42,7 @@ class NotificationViewModel : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle error
+                    println("Document has been deleted, documento eliminato")
                 }
             }
             documentRef.addValueEventListener(listener)

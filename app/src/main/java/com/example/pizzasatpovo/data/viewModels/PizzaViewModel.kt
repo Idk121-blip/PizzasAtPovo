@@ -1,7 +1,9 @@
-package com.example.pizzasatpovo.data
+package com.example.pizzasatpovo.data.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
+import com.example.pizzasatpovo.data.dataModel.Topping
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow

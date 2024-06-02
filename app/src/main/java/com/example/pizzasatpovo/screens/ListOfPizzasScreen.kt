@@ -43,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.PizzaViewModel
-import com.example.pizzasatpovo.data.RetrievedPizza
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
+import com.example.pizzasatpovo.data.viewModels.PizzaViewModel
+import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.BackgroundImage
@@ -66,7 +66,10 @@ class ListOfPizzasScreen {
             modifier = modifier
                 .fillMaxSize()
         ){
-            Bars().AppBar()
+            Bars().AppBar(
+                modifier = modifier
+                    .height(30.dp)
+            )
             SearchBar(
                 viewModel= viewModel,
                 modifier = modifier
@@ -86,7 +89,7 @@ class ListOfPizzasScreen {
     }
 
     @Composable
-    fun SearchBar(viewModel: PizzaViewModel,modifier: Modifier = Modifier){
+    fun SearchBar(viewModel: PizzaViewModel, modifier: Modifier = Modifier){
         val text by viewModel.searchQuery.collectAsStateWithLifecycle()
         TextField(
             value = text,

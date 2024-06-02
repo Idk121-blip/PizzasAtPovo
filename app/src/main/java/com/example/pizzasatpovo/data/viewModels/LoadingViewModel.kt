@@ -1,6 +1,9 @@
-package com.example.pizzasatpovo.data
+package com.example.pizzasatpovo.data.viewModels
 
 import androidx.lifecycle.ViewModel
+import com.example.pizzasatpovo.data.dataModel.LoadingResult
+import com.example.pizzasatpovo.data.dataModel.LoadingState
+import com.example.pizzasatpovo.data.dataModel.UserData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

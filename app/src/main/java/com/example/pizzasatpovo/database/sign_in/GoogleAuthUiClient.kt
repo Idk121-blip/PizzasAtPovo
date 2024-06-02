@@ -1,4 +1,4 @@
-package com.example.pizzasatpovo.presentation.sign_in
+package com.example.pizzasatpovo.database.sign_in
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.UserData
+import com.example.pizzasatpovo.data.dataModel.UserData
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
@@ -20,7 +20,7 @@ class GoogleAuthUiClient(
     private val oneTapClient: SignInClient
 ) {
     private val auth = Firebase.auth
-    private var userData:UserData?=null
+    private var userData: UserData?=null
     suspend fun signIn(): IntentSender? {
         val result = try {
             oneTapClient.beginSignIn(
@@ -103,30 +103,6 @@ class GoogleAuthUiClient(
         userData= userRef.get().await().toObject(UserData::class.java)
         userData
     }
-
-
-
-
-    private fun getUserInformation(): Boolean? = auth.currentUser?.run {
-        val db = Firebase.firestore
-        val userRef = db.collection("users").document(uid)
-        val pizzaRef= db.collection("pizze").document("Margherita")
-        db.runTransaction { transaction ->
-            if (!transaction.get(userRef).exists()) {
-                val user = UserData(
-                    name = displayName,
-                    credit = 50.0,
-                    favourites = arrayListOf(pizzaRef),
-                    image = photoUrl?.toString(),
-                    orders = null
-                )
-                transaction.set(userRef, user)
-            }
-        }
-
-        true
-    }
-
 
     private fun buildSignInRequest(): BeginSignInRequest {
         return BeginSignInRequest.Builder()

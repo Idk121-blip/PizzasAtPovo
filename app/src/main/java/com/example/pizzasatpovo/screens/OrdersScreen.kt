@@ -44,10 +44,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.data.Order
-import com.example.pizzasatpovo.data.OrderListViewModel
-import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
+import com.example.pizzasatpovo.data.dataModel.Order
+import com.example.pizzasatpovo.data.viewModels.OrderListViewModel
+import com.example.pizzasatpovo.database.OrderManager
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.shimmerBrush
@@ -61,7 +61,7 @@ class OrdersScreen {
         navController: NavigationViewModel,
         modifier: Modifier = Modifier,
         lifecycleScope: LifecycleCoroutineScope,
-        sendRetrieveData: SendRetrieveData
+        orderManager: OrderManager
     ) {
 
         val ordersViewModel = viewModel<OrderListViewModel>()
@@ -77,7 +77,7 @@ class OrdersScreen {
                 LaunchedEffect(key1 = Unit) {
 
                     lifecycleScope.launch {
-                        val orders = sendRetrieveData.retrieveOrders()
+                        val orders = orderManager.retrieveOrders()
                         ordersViewModel.addOrders(orders!!.retrievedObject ?: arrayListOf())
                         //println(orders)
                         navController2.navigate("OrdersPage")
@@ -90,7 +90,11 @@ class OrdersScreen {
                 ) {
                     BackgroundImage()
                     Column {
-                        Bars().AppBar(text = "Ordini")
+                        Bars().AppBar(
+                            text = "Ordini",
+                            modifier = modifier
+                                .height(30.dp)
+                        )
                         ListOfChargingOrders(
                             modifier = modifier
                                 .fillMaxHeight(),
@@ -112,7 +116,11 @@ class OrdersScreen {
                 ) {
                     BackgroundImage()
                     Column {
-                        Bars().AppBar(text = "Ordini")
+                        Bars().AppBar(
+                            text = "Ordini",
+                            modifier = modifier
+                                .height(30.dp)
+                        )
                         ListOfOrders(
                             modifier = modifier
                                 .fillMaxHeight(),
@@ -126,8 +134,6 @@ class OrdersScreen {
                 }
             }
         }
-
-
     }
 
     @Composable

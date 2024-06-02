@@ -3,6 +3,7 @@ package com.example.pizzasatpovo.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,22 +34,26 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.NavigationViewModel
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
 import com.example.pizzasatpovo.screens.PizzaScreens
 
 class Bars {
     private val weightText: FontWeight = FontWeight.Bold
     private val dimIcons: Dp = 25.dp
     @Composable
-    fun AppBar(modifier: Modifier = Modifier, text:String= "Pizza at Povo"){
+
+    fun AppBar(
+        text: String = "Pizza at Povo",
+        modifier: Modifier = Modifier
+    ){
         Column (
+            verticalArrangement = Arrangement.Center,
             modifier = modifier
-                .padding(0.dp, 15.dp, 0.dp, 5.dp)
-                .fillMaxWidth()
+                .fillMaxSize()
         ) {
             Text(
                 text = text,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontWeight = weightText,
                 textAlign = TextAlign.Center,
                 modifier = modifier

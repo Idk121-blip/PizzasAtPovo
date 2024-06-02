@@ -49,10 +49,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.LoadingResult
-import com.example.pizzasatpovo.data.LoadingViewModel
-import com.example.pizzasatpovo.data.NavigationViewModel
-import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
+import com.example.pizzasatpovo.data.dataModel.LoadingResult
+import com.example.pizzasatpovo.data.viewModels.LoadingViewModel
+import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
+import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.shimmerBrush
@@ -89,6 +89,8 @@ class AccountPageScreen {
                 Column {
                     Bars().AppBar(
                         text = "Account",
+                        modifier = modifier
+                            .height(30.dp)
                     )
                     Column {
                         UserInfoCard(viewModel = viewModel)

@@ -38,13 +38,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.unit.dp
-import com.example.pizzasatpovo.data.OrderViewModel
+import com.example.pizzasatpovo.data.viewModels.TimeOrderViewModel
 import com.google.firebase.Timestamp
 import java.util.Date
 
 @Composable
 fun FlipClock(
-    orderViewModel: OrderViewModel,
+    timeOrderViewModel: TimeOrderViewModel,
     modifier: Modifier = Modifier
 ) {
         Column(
@@ -89,7 +89,7 @@ fun FlipClock(
                 calendar.set(Calendar.MINUTE, minutesPickerState.selectedItem.toInt())
             }
             calendar.set(Calendar.SECOND, 0)
-            orderViewModel.setTime(Timestamp(calendar.time))
+            timeOrderViewModel.setTime(Timestamp(calendar.time))
         }
 }
 
