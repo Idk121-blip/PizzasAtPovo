@@ -10,7 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.dataModel.UserData
+import com.example.pizzasatpovo.data.model.UserData
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await

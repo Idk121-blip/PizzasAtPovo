@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.viewModels.LoadingViewModel
+import com.example.pizzasatpovo.data.viewmodel.LoadingViewModel
 
 @Composable
 fun LogoutButton(

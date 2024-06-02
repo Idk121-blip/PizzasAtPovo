@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,8 +35,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
-import com.example.pizzasatpovo.screens.PizzaScreens
+import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
+import com.example.pizzasatpovo.ui.screens.PizzaScreens
 
 class Bars() {
     private val weightText: FontWeight = FontWeight.Bold

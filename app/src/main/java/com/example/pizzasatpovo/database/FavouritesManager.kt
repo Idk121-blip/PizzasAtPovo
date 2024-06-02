@@ -1,9 +1,9 @@
 package com.example.pizzasatpovo.database
-import com.example.pizzasatpovo.data.dataModel.Pizza
-import com.example.pizzasatpovo.data.dataModel.ResponseData
-import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
-import com.example.pizzasatpovo.data.dataModel.Topping
-import com.example.pizzasatpovo.data.dataModel.UserData
+import com.example.pizzasatpovo.data.model.Pizza
+import com.example.pizzasatpovo.data.model.ResponseData
+import com.example.pizzasatpovo.data.model.RetrievedPizza
+import com.example.pizzasatpovo.data.model.Topping
+import com.example.pizzasatpovo.data.model.UserData
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore

@@ -1,13 +1,13 @@
 package com.example.pizzasatpovo.database
 
-import com.example.pizzasatpovo.data.dataModel.DBOrder
-import com.example.pizzasatpovo.data.dataModel.Order
-import com.example.pizzasatpovo.data.dataModel.Pizza
-import com.example.pizzasatpovo.data.dataModel.PizzaPrice
-import com.example.pizzasatpovo.data.dataModel.RealTimeOrder
-import com.example.pizzasatpovo.data.dataModel.ResponseData
-import com.example.pizzasatpovo.data.dataModel.RetrievedPizza
-import com.example.pizzasatpovo.data.dataModel.Topping
+import com.example.pizzasatpovo.data.model.DBOrder
+import com.example.pizzasatpovo.data.model.Order
+import com.example.pizzasatpovo.data.model.Pizza
+import com.example.pizzasatpovo.data.model.PizzaPrice
+import com.example.pizzasatpovo.data.model.RealTimeOrder
+import com.example.pizzasatpovo.data.model.ResponseData
+import com.example.pizzasatpovo.data.model.RetrievedPizza
+import com.example.pizzasatpovo.data.model.Topping
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
