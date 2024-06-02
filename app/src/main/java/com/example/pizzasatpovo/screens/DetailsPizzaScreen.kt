@@ -36,10 +36,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.NavigationViewModel
+import com.example.pizzasatpovo.data.OrderViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.ui.components.Allergen
@@ -52,12 +55,14 @@ class DetailsPizzaScreen {
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
         modifier: Modifier = Modifier,
+        orderViewModel: OrderViewModel,
         onOrderButtonClicked: () -> Unit={}
     ){
         var listOfToppings = ""
         for (topping in pizza.toppings!!){
             listOfToppings= listOfToppings.plus(topping.name).plus(", ")
         }
+
         listOfToppings= listOfToppings.removeSuffix(", ")
         Box(modifier = modifier
             .fillMaxSize()
@@ -145,7 +150,8 @@ class DetailsPizzaScreen {
                 OrderDetails(
                     onOrderButtonClicked= onOrderButtonClicked,
                     pizzaName = pizza.name,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    orderViewModel=  orderViewModel
                 )
             }
 
@@ -173,8 +179,10 @@ class DetailsPizzaScreen {
         pizzaName:String,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
+        orderViewModel:OrderViewModel,
         onOrderButtonClicked: () -> Unit={}
     ){
+
 
         val pizze by viewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
         val customOrderSentDialog =  remember { mutableStateOf(false) }
@@ -293,7 +301,7 @@ class DetailsPizzaScreen {
                             .padding(0.dp, 15.dp)
 
                     ) {
-                        PickerExample()
+                        PickerExample(orderViewModel)
                     }
                     val cost = 4.40 * pizze
                     Text(

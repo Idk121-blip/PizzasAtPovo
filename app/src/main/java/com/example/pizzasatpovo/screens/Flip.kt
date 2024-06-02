@@ -1,3 +1,4 @@
+import android.icu.util.Calendar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
@@ -36,10 +37,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pizzasatpovo.data.OrderViewModel
+import com.google.firebase.Timestamp
+import java.util.Date
 
-@Preview(showBackground = true)
 @Composable
 fun PickerExample(
+    orderViewModel: OrderViewModel,
     modifier: Modifier = Modifier
 ) {
         Column(
@@ -49,9 +53,12 @@ fun PickerExample(
         ) {
             val hours = remember { (11..14).map { it.toString() } }
             val hoursPickerState = rememberPickerState()
-            val minutes = remember { (0..59).map {
+
+
+            val minutes = remember { (0..59).step(5).map {
                 if(it in 0..9) "0$it" else it.toString()
             } }
+
             val minutesPickerState = rememberPickerState()
 
             Row (modifier = modifier.width(100.dp)){
@@ -73,6 +80,17 @@ fun PickerExample(
                     textModifier = Modifier.padding(2.dp)
                 )
             }
+
+            val calendar = Calendar.getInstance()
+            calendar.time = Date() // Set your date object here
+            if (hoursPickerState.selectedItem!=""){
+                calendar.set(Calendar.HOUR_OF_DAY, hoursPickerState.selectedItem.toInt())
+                calendar.set(Calendar.MINUTE, minutesPickerState.selectedItem.toInt())
+            }
+            calendar.set(Calendar.SECOND, 0)
+            orderViewModel.setTime(Timestamp(calendar.time))
+
+
         }
 }
 
@@ -94,9 +112,8 @@ fun Picker(
     visibleItemsCount: Int,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
-    //dividerColor: Color = LocalContentColor.current, TODO check if it is possible to remove
-) {
 
+) {
     val visibleItemsMiddle = visibleItemsCount / 3
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 3

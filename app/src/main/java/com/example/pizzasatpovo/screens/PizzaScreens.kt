@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,11 +27,14 @@ import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserOrderViewModel
+import com.example.pizzasatpovo.data.NotificationViewModel
+import com.example.pizzasatpovo.data.OrderViewModel
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.google.firebase.Timestamp
+import java.util.Calendar
 enum class PizzaScreens {
     FirstPage,
     ListOfPizzas,
@@ -61,9 +63,10 @@ fun PizzasAtPovoApp(
     //val toppings by pizzaViewModel.toppings.collectAsStateWithLifecycle()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     //val favourites by pizzaViewModel.favourites.collectAsState()
-
-    val notificationViewModdel= viewModel<UserOrderViewModel>()
+    val orderViewModel = viewModel<OrderViewModel>()
+    val notificationViewModdel= viewModel<NotificationViewModel>()
     notificationViewModdel.setContext(applicationContext)
+    val timestamp by orderViewModel.time.collectAsStateWithLifecycle()
 
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
@@ -108,6 +111,10 @@ fun PizzasAtPovoApp(
 
             LaunchedEffect(key1 = state.isSignInSuccessful) {
                 if (state.isSignInSuccessful) {
+                    if (googleAuthUiClient.getSignedInUser()!!.role=="Chef"){
+                        navController.navigate(PizzaScreens.ChefOrders.name)
+                    }
+
                     val listResponseData= sendRetrieveData.getPizzas()
 
                     if (listResponseData==null){
@@ -128,9 +135,9 @@ fun PizzasAtPovoApp(
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }
                     Toast.makeText(
-                            applicationContext,
-                            "Sign in successful",
-                            Toast.LENGTH_LONG
+                        applicationContext,
+                        "Sign in successful",
+                        Toast.LENGTH_LONG
                     ).show()
 
                     navController.navigate(PizzaScreens.ListOfPizzas.name)
@@ -139,107 +146,114 @@ fun PizzasAtPovoApp(
             }
 
             FirstPageScreen().FirstPage(
-                    onLoginButtonClicked = {
-                        lifecycleScope.launch {
-                            val signInIntentSender = googleAuthUiClient.signIn()
-                            launcher.launch(
-                                    IntentSenderRequest.Builder(
-                                            signInIntentSender ?: return@launch
-                                    ).build()
-                            )
-                        }
+                onLoginButtonClicked = {
+                    lifecycleScope.launch {
+                        val signInIntentSender = googleAuthUiClient.signIn()
+                        launcher.launch(
+                            IntentSenderRequest.Builder(
+                                signInIntentSender ?: return@launch
+                            ).build()
+                        )
                     }
+                }
             )
         }
         composable(
-                route = PizzaScreens.ListOfPizzas.name
+            route = PizzaScreens.ListOfPizzas.name
         ){
 
             ListOfPizzasScreen().ListOfPizzasPage(
-                    navViewModel = controller,
-                    viewModel = pizzaViewModel,
-                    onAddToFavouritesClicked = {pizzaToAdd->
-                        lifecycleScope.launch {
-                            sendRetrieveData.addFavourite(pizzaToAdd)
-                        }
-                    },
-                    onRemoveFromFavouritesClicked ={pizzaToRemove->
-                        lifecycleScope.launch {
-                            sendRetrieveData.removeFavourite(pizzaToRemove)
-                        }
-                    },
+                navViewModel = controller,
+                viewModel = pizzaViewModel,
+                onAddToFavouritesClicked = {pizzaToAdd->
+                    lifecycleScope.launch {
+                        sendRetrieveData.addFavourite(pizzaToAdd)
+                    }
+                },
+                onRemoveFromFavouritesClicked ={pizzaToRemove->
+                    lifecycleScope.launch {
+                        sendRetrieveData.removeFavourite(pizzaToRemove)
+                    }
+                },
             )
 
         }
         composable(route= PizzaScreens.Account.name){
             AccountPageScreen().AccountPage(
-                    navController = controller,
-                    googleAuthUiClient = googleAuthUiClient,
-                    lifecycleScope = lifecycleScope,
-                    modifier = modifier,
-                    onLogOutButtonClicked =  {
-                        lifecycleScope.launch {
-                            googleAuthUiClient.signOut()
-                            navController.enableOnBackPressed(enabled = false)
-                            navController.navigate(PizzaScreens.FirstPage.name)
-                        }
-                    },
+                navController = controller,
+                googleAuthUiClient = googleAuthUiClient,
+                lifecycleScope = lifecycleScope,
+                modifier = modifier,
+                onLogOutButtonClicked =  {
+                    lifecycleScope.launch {
+                        googleAuthUiClient.signOut()
+                        navController.enableOnBackPressed(enabled = false)
+                        navController.navigate(PizzaScreens.FirstPage.name)
+                    }
+                },
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             DetailsPizzaScreen().DetailsPizzaPage(
-                    pizza = selectedPizza,
-                    onOrderButtonClicked = {
-                        lifecycleScope.launch {
-                            sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, Timestamp.now(), numberOfPizza)
-                            notificationViewModdel.addListenerForSpecificDocuments(
-                                    listOf(sendRetrieveData.sendRTOrderd(selectedPizza, "12.30", numberOfPizza, notificationViewModdel)!!))
-                        }
-                    },
-                    viewModel = pizzaViewModel,
-                    navViewModel = controller
+                pizza = selectedPizza,
+                onOrderButtonClicked = {
+                    lifecycleScope.launch {
+                        sendRetrieveData.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza)
+                        val cal = Calendar.getInstance()
+                        cal.time=timestamp.toDate()
+                        notificationViewModdel.addListenerForSpecificDocuments(
+                            listOf(sendRetrieveData.sendRTOrder(selectedPizza, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString(), numberOfPizza)!!))
+                    }
+                },
+                viewModel = pizzaViewModel,
+                orderViewModel = orderViewModel,
+                navViewModel = controller
             )
         }
 
         composable(route= PizzaScreens.NewPizza.name){
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             AddPizzaScreen().AddPizzaPage(
-                    navViewModel = controller,
-                    viewModel= pizzaViewModel,
-                    onOrderButtonClicked = {
-                        lifecycleScope.launch {
-                            sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = Timestamp.now())
-                            sendRetrieveData.sendRTOrderd(it, "12.30", numberOfPizza, notificationViewModdel)
-                        }
-
+                navViewModel = controller,
+                viewModel= pizzaViewModel,
+                orderViewModel = orderViewModel,
+                onOrderButtonClicked = {
+                    lifecycleScope.launch {
+                        sendRetrieveData.sendOrderRetrievedPizza(it, pizzaNumber = numberOfPizza, pickupTime = timestamp)
+                        val cal = Calendar.getInstance()
+                        cal.time=timestamp.toDate()
+                        notificationViewModdel.addListenerForSpecificDocuments(
+                        listOf( sendRetrieveData.sendRTOrder(it, cal.get(Calendar.HOUR_OF_DAY).toString()+"."+cal.get(Calendar.MINUTE).toString() , numberOfPizza)!!))
                     }
+
+                }
 
             )
         }
 
         composable(route= PizzaScreens.RecentOrders.name) {
             OrdersScreen().OrdersPage(
-                    navController = controller,
-                    lifecycleScope= lifecycleScope,
-                    sendRetrieveData = sendRetrieveData
+                navController = controller,
+                lifecycleScope= lifecycleScope,
+                sendRetrieveData = sendRetrieveData
             )
         }
 
         composable(route= PizzaScreens.Favourites.name){
             FavouritesScreen().FavouritesPage(
-                    navViewModel = controller,
-                    viewModel = pizzaViewModel,
-                    onAddToFavouritesClicked = {pizzaToAdd->
-                        lifecycleScope.launch {
-                            sendRetrieveData.addFavourite(pizzaToAdd)
-                        }
-                    },
-                    onRemoveFromFavouritesClicked ={pizzaToRemove->
-                        lifecycleScope.launch {
-                            sendRetrieveData.removeFavourite(pizzaToRemove)
-                        }
-                    },
+                navViewModel = controller,
+                viewModel = pizzaViewModel,
+                onAddToFavouritesClicked = {pizzaToAdd->
+                    lifecycleScope.launch {
+                        sendRetrieveData.addFavourite(pizzaToAdd)
+                    }
+                },
+                onRemoveFromFavouritesClicked ={pizzaToRemove->
+                    lifecycleScope.launch {
+                        sendRetrieveData.removeFavourite(pizzaToRemove)
+                    }
+                },
             )
         }
         composable(route= PizzaScreens.ChefOrders.name){
@@ -273,21 +287,21 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
 
     if (toppingResponse == null){
         Toast.makeText(
-                applicationContext,
-                "Error retrieving toppings",
-                Toast.LENGTH_LONG
+            applicationContext,
+            "Error retrieving toppings",
+            Toast.LENGTH_LONG
         ).show()
     }else if (!toppingResponse.isSuccessful){
         Toast.makeText(
-                applicationContext,
-                "Error retrieving pizzas",
-                Toast.LENGTH_LONG
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
         ).show()
     }else if (toppingResponse.retrievedObject == null){
         Toast.makeText(
-                applicationContext,
-                "Error retrieving pizzas",
-                Toast.LENGTH_LONG
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
         ).show()
     }else{
         toppings=toppingResponse.retrievedObject
@@ -298,15 +312,15 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
 
     if (reqRespone==null){
         Toast.makeText(
-                applicationContext,
-                "Error retrieving pizzas",
-                Toast.LENGTH_LONG
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
         ).show()
     }else if (!reqRespone.isSuccessful) {
         Toast.makeText(
-                applicationContext,
-                "Error retrieving pizzas",
-                Toast.LENGTH_LONG
+            applicationContext,
+            "Error retrieving pizzas",
+            Toast.LENGTH_LONG
         ).show()
     }else{
         pizzas = reqRespone.retrievedObject!!
@@ -325,3 +339,6 @@ suspend fun userLogged(applicationContext: Context, sendRetrieveData: SendRetrie
     pizzaViewModel.setPizzas(pizzas)
     pizzaViewModel.setFavourites(favourites)
 }
+
+
+

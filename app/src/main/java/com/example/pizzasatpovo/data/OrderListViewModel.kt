@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class OrdersViewModel : ViewModel() {
+class OrderListViewModel : ViewModel() {
     private val _orders = MutableStateFlow<ArrayList<Order>>(arrayListOf())
     val orders = _orders.asStateFlow()
     fun addOrders(orderArrayList: ArrayList<Order>) {

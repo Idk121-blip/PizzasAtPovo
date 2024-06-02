@@ -30,6 +30,7 @@ import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInScreen
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
+
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -44,12 +45,16 @@ class MainActivity : ComponentActivity() {
     private val  sendRetrieveData by lazy{
         SendRetrieveData(googleAuthUiClient)
     }
+
+
     @RequiresApi(Build.VERSION_CODES.O) //CHECK IF REMOVING IT WORKS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContent {
             ComposeGoogleSignInCleanArchitectureTheme {
-                Surface(){
+                Surface{
                     PizzasAtPovoApp(googleAuthUiClient, sendRetrieveData, lifecycleScope, applicationContext, activity = this)
                 }
             }
@@ -179,11 +184,11 @@ class MainActivity : ComponentActivity() {
 
                                 //send
 
-                                val ResponseFavourites= sendRetrieveData.retrieveFavourites()
+                                val responseFavourites= sendRetrieveData.retrieveFavourites()
 
-                                if (ResponseFavourites!=null){
-                                    if (ResponseFavourites.isSuccessful){
-                                        println(ResponseFavourites.retrievedObject)
+                                if (responseFavourites!=null){
+                                    if (responseFavourites.isSuccessful){
+                                        println(responseFavourites.retrievedObject)
                                     }
                                 }
 

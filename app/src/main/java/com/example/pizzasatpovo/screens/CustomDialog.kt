@@ -35,7 +35,7 @@ import com.example.pizzasatpovo.R
 
 @Composable
 fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOfPizzas: Int, pizzaName:String) {
-
+    //TODO LOADING PAGE WHEN SENDING ORDER AND THEN IF ORDER GOOD GO TO ORDERS PAGE ELSE SHOW ERROR MESSAGE
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
