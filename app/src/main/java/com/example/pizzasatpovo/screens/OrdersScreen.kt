@@ -81,6 +81,7 @@ class OrdersScreen {
                         ordersViewModel.addOrders(orders!!.retrievedObject ?: arrayListOf())
                         //println(orders)
                         navController2.navigate("OrdersPage")
+
                     }
 
                 }
@@ -92,8 +93,7 @@ class OrdersScreen {
                     Column {
                         Bars().AppBar(
                             text = "Ordini",
-                            modifier = modifier
-                                .height(30.dp)
+                            modifier = modifier.height(35.dp).padding(2.dp)
                         )
                         ListOfChargingOrders(
                             modifier = modifier
@@ -118,8 +118,7 @@ class OrdersScreen {
                     Column {
                         Bars().AppBar(
                             text = "Ordini",
-                            modifier = modifier
-                                .height(30.dp)
+                            modifier = modifier.height(35.dp).padding(2.dp)
                         )
                         ListOfOrders(
                             modifier = modifier
@@ -134,6 +133,8 @@ class OrdersScreen {
                 }
             }
         }
+
+
     }
 
     @Composable

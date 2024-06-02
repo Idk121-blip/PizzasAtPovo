@@ -76,8 +76,6 @@ class AddPizzaScreen {
                     modifier = modifier
                         .fillMaxSize()
                 ){
-
-
                     viewModel.resetNumberOfPizza()
                     DetailsPizzaScreen().OrderDetails(
                         pizzaName = "La tua pizza",
@@ -123,9 +121,11 @@ class AddPizzaScreen {
             Row {
                 for (topping in toppings){
                     if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
+                        personalizedOrderViewModel.addTopping(topping)
                         IngredientCard(
                             topping = topping,
                             personalizedOrderViewModel= personalizedOrderViewModel,
+                            defaultSelected = true
                         )
                     }
                 }
@@ -159,6 +159,7 @@ class AddPizzaScreen {
        defaultSelected:Boolean= false
    ) {
        var selected by remember { mutableStateOf(defaultSelected) }
+
 
        TooltipBox(
            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),

@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.screens
 
+import PickerExample
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +60,9 @@ class DetailsPizzaScreen {
         for (topping in pizza.toppings!!){
             listOfToppings= listOfToppings.plus(topping.name).plus(", ")
         }
+
         listOfToppings= listOfToppings.removeSuffix(", ")
+
         Box(modifier = modifier
             .fillMaxSize()
         ){
@@ -308,14 +311,16 @@ class DetailsPizzaScreen {
                     )
                 }
             }
-
+            println("Is empty? " + toppingsEmpty)
+            println()
             Button(
                 content = {
-                    Text(text = "ORDINA") //TODO: CHANGE THE DIMENSION
+                    Text(text = "ORDINA")
                 },
-                enabled = if(toppingsEmpty) { false } else { true },
+                enabled = !toppingsEmpty,
                 onClick = {
                     showDialog.value = true
+                          //onOrderButtonClicked()
                 },
                 shape = RoundedCornerShape(10.dp),
                 modifier = modifier

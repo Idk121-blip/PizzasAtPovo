@@ -65,8 +65,8 @@ class FavouritesScreen {
         ) {
             Column {
                 Bars().AppBar(
-                    modifier = modifier
-                        .height(30.dp)
+                    text = "Preferiti",
+                    modifier = modifier.height(35.dp).padding(2.dp)
                 )
                 ListOfPizzas(
                     viewModel = viewModel,

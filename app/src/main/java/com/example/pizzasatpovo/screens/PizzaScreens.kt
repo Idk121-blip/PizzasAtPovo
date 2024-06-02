@@ -57,7 +57,6 @@ fun PizzasAtPovoApp(
     applicationContext: Context,
     activity: Activity,
     modifier: Modifier = Modifier,
-
     navController: NavHostController = rememberNavController()
 ){
     val viewModel = viewModel<SignInViewModel>()
@@ -91,6 +90,7 @@ fun PizzasAtPovoApp(
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }
@@ -222,7 +222,6 @@ fun PizzasAtPovoApp(
         }
 
         composable(route= PizzaScreens.NewPizza.name){
-            println("3")
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
             AddPizzaScreen().AddPizzaPage(
                 navViewModel = controller,
@@ -288,7 +287,7 @@ fun PizzasAtPovoApp(
                     orderManager.processOrder(it)
                 }
 
-            }
+                    }
             )
         }
     }
@@ -323,6 +322,7 @@ suspend fun userLogged(applicationContext: Context, dataManager: DataManager, fa
         ).show()
     }else{
         toppings=toppingResponse.retrievedObject
+
     }
 
 

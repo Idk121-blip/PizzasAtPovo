@@ -55,6 +55,7 @@ import com.example.pizzasatpovo.data.viewModels.NavigationViewModel
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
+import com.example.pizzasatpovo.ui.components.LogoutButton
 import com.example.pizzasatpovo.ui.components.shimmerBrush
 import kotlinx.coroutines.launch
 
@@ -89,8 +90,7 @@ class AccountPageScreen {
                 Column {
                     Bars().AppBar(
                         text = "Account",
-                        modifier = modifier
-                            .height(30.dp)
+                        modifier = modifier.height(35.dp).padding(2.dp)
                     )
                     Column {
                         UserInfoCard(viewModel = viewModel)
