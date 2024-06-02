@@ -1,6 +1,5 @@
 package com.example.pizzasatpovo.presentation.db_interaction
 
-
 import com.example.pizzasatpovo.data.DBOrder
 import com.example.pizzasatpovo.data.Order
 import com.example.pizzasatpovo.data.Pizza
@@ -10,6 +9,8 @@ import com.example.pizzasatpovo.data.ResponseData
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
 import com.example.pizzasatpovo.data.UserData
+import com.example.pizzasatpovo.data.UserOrderViewModel
+import com.example.pizzasatpovo.data.UserOrders
 import com.example.pizzasatpovo.data.NotificationViewModel
 
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
@@ -107,6 +108,30 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
             }
         }
         return ResponseData(true, "Retrieved successfully", ordersToReturn)
+    }
+
+    suspend fun retrieveUserOrders():ResponseData<ArrayList<UserOrders>>? = auth.currentUser?.run {
+        val userData= googleAuthUiClient.retrieveUserData() ?: return ResponseData()
+        val orders:ArrayList<UserOrders> = arrayListOf()
+
+        if (userData.orders!=null){
+            for (documentReference in userData.orders!!) {
+                val dbOrder= documentReference.get().await().toObject(DBOrder::class.java)?: continue
+                val toppings: ArrayList<Topping> = arrayListOf()
+                for (toppingReference in dbOrder.topping){
+                    toppings.add(toppingReference.get().await().toObject(Topping::class.java)?:continue)
+                }
+                orders.add(UserOrders(
+                        image =  dbOrder.image,
+                        time = dbOrder.date.toString(),
+                        pizzaNumber = dbOrder.pizzaNumber,
+                        topping = toppings,
+                        uname = uid,
+                        pizzaName=dbOrder.pizzaName
+                ))
+            }
+        }
+        return ResponseData(true, "Retrieved successfully", orders)
     }
 
 
@@ -275,17 +300,14 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
 
         val toppingList: ArrayList<String> = arrayListOf()
-
-
-
-
         for (topping in pizza.toppings!!){
+            //TODO! add checks
             toppingList.add((topping).name)
         }
 
         val database= Firebase
-            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference
+                .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference
 
         val order= RealTimeOrder(topping = toppingList,
             pizzaNumber = pizzaNumber,
@@ -303,23 +325,18 @@ class SendRetrieveData (private val googleAuthUiClient: GoogleAuthUiClient) {
 
 
 
-    suspend fun processOrder(documentName: String){
-        val order: RealTimeOrder = Firebase
-            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
-            ?: return
+    suspend fun ProcessOrder(documentName: String){
+        var order: RealTimeOrder? = Firebase
+                .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("orders").child(documentName).get().await().getValue(RealTimeOrder::class.java)
+                ?: return
 
-            order.completed=true
+        order!!.completed=true
 
         Firebase
-            .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference.child("orders").child(documentName).setValue(order)
+                .database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("orders").child(documentName).setValue(order)
     }
 
-    suspend fun isThisSlotFree(time: String): Boolean{
-        val spots: Int= Firebase.database("https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app")
-            .reference.child("timeslots").child(time).get().await().getValue(Int::class.java) ?:return false
-        return spots>0
-    }
 
 }

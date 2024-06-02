@@ -26,14 +26,15 @@ import com.example.pizzasatpovo.data.NavigationViewModel
 import com.example.pizzasatpovo.data.PizzaViewModel
 import com.example.pizzasatpovo.data.RetrievedPizza
 import com.example.pizzasatpovo.data.Topping
+import com.example.pizzasatpovo.data.UserOrderViewModel
 import com.example.pizzasatpovo.data.NotificationViewModel
 import com.example.pizzasatpovo.data.OrderViewModel
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.presentation.db_interaction.SendRetrieveData
 import com.example.pizzasatpovo.presentation.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.presentation.sign_in.SignInViewModel
+import com.google.firebase.Timestamp
 import java.util.Calendar
-
 enum class PizzaScreens {
     FirstPage,
     ListOfPizzas,
@@ -48,13 +49,13 @@ enum class PizzaScreens {
 @Composable
 @SuppressLint("UnrememberedMutableState")
 fun PizzasAtPovoApp(
-    googleAuthUiClient: GoogleAuthUiClient,
-    sendRetrieveData: SendRetrieveData,
-    lifecycleScope: LifecycleCoroutineScope,
-    applicationContext: Context,
-    activity: Activity,
-    modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+        googleAuthUiClient: GoogleAuthUiClient,
+        sendRetrieveData: SendRetrieveData,
+        lifecycleScope: LifecycleCoroutineScope,
+        applicationContext: Context,
+        activity: Activity,
+        modifier: Modifier = Modifier,
+        navController: NavHostController = rememberNavController()
 ){
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,15 +67,16 @@ fun PizzasAtPovoApp(
     val notificationViewModdel= viewModel<NotificationViewModel>()
     notificationViewModdel.setContext(applicationContext)
     val timestamp by orderViewModel.time.collectAsStateWithLifecycle()
+
     val controller: NavigationViewModel = viewModel(factory = MyViewModelFactory(navController))
     NavHost(
-        navController = navController,
-        startDestination = PizzaScreens.FirstPage.name,
-        modifier = modifier
+            navController = navController,
+            startDestination = PizzaScreens.FirstPage.name,
+            modifier = modifier
     ){
 
         composable(
-            route = PizzaScreens.FirstPage.name
+                route = PizzaScreens.FirstPage.name
         ){
             LaunchedEffect(key1 = Unit) {
                 lifecycleScope.launch {
@@ -84,25 +86,27 @@ fun PizzasAtPovoApp(
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
                     }else{
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        navController.popBackStack()
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
                 }
             }
             val launcher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartIntentSenderForResult(),
-                onResult = { result ->
-                    if (result.resultCode == ComponentActivity.RESULT_OK) {
-                        lifecycleScope.launch {
-                            val signInResult = googleAuthUiClient.signInWithIntent(
-                                intent = result.data ?: return@launch
-                            )
-                            viewModel.onSignInResult(signInResult)
+                    contract = ActivityResultContracts.StartIntentSenderForResult(),
+                    onResult = { result ->
+                        if (result.resultCode == ComponentActivity.RESULT_OK) {
+                            lifecycleScope.launch {
+                                val signInResult = googleAuthUiClient.signInWithIntent(
+                                        intent = result.data ?: return@launch
+                                )
+                                viewModel.onSignInResult(signInResult)
+                            }
                         }
                     }
-                }
             )
 
             LaunchedEffect(key1 = state.isSignInSuccessful) {
@@ -115,15 +119,15 @@ fun PizzasAtPovoApp(
 
                     if (listResponseData==null){
                         Toast.makeText(
-                            applicationContext,
-                            "Error retrieving pizzas",
-                            Toast.LENGTH_LONG
+                                applicationContext,
+                                "Error retrieving pizzas",
+                                Toast.LENGTH_LONG
                         ).show()
                     }else if (!listResponseData.isSuccessful){
                         Toast.makeText(
-                            applicationContext,
-                            "Error retrieving pizzas",
-                            Toast.LENGTH_LONG
+                                applicationContext,
+                                "Error retrieving pizzas",
+                                Toast.LENGTH_LONG
                         ).show()
                     }else{
                         userLogged(applicationContext, sendRetrieveData, pizzaViewModel)
@@ -158,7 +162,6 @@ fun PizzasAtPovoApp(
             route = PizzaScreens.ListOfPizzas.name
         ){
 
-//            var context = LocalContext.current
             ListOfPizzasScreen().ListOfPizzasPage(
                 navViewModel = controller,
                 viewModel = pizzaViewModel,
@@ -254,11 +257,21 @@ fun PizzasAtPovoApp(
             )
         }
         composable(route= PizzaScreens.ChefOrders.name){
-            ChefOrdersScreen().ChefOrdersPage {
-                lifecycleScope.launch {
-                    sendRetrieveData.processOrder(it)
-                }
-            }
+            ChefOrdersScreen().ChefOrdersPage(
+                    onLogOutButtonClicked =  {
+                        lifecycleScope.launch {
+                            googleAuthUiClient.signOut()
+                            navController.enableOnBackPressed(enabled = false)
+                            navController.navigate(PizzaScreens.FirstPage.name)
+                        }
+                    },
+                    processOrder = {
+                        lifecycleScope.launch {
+                            sendRetrieveData.ProcessOrder(it)
+                        }
+
+                    }
+            )
         }
     }
 }
