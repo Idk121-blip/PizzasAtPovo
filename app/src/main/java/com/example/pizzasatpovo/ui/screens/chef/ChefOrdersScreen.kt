@@ -1,6 +1,4 @@
 package com.example.pizzasatpovo.ui.screens.chef
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +43,6 @@ import com.example.pizzasatpovo.ui.components.LogoutButton
 import java.util.Calendar
 import java.util.Date
 import kotlin.math.ceil
-import androidx.compose.runtime.remember as remember1
 
 class ChefOrdersScreen {
     @Composable
@@ -112,7 +108,6 @@ class ChefOrdersScreen {
                                     val hour = if(t.isEmpty() || t[0] == ""){
                                         0
                                     } else {
-                                        println("T0: |" + t[0] + "|")
                                         (t[0].toInt() - hourNow)*60
                                     }
 
@@ -149,9 +144,6 @@ class ChefOrdersScreen {
                 }
             }
         }
-    }
-    private fun getMinutesLeft(until: Date): Int {
-        return ceil((until.time - Date().time) / 60_000.0).toInt()
     }
     private fun groupOrdersByTime(orders: List<RealTimeOrder>): Map<String, List<RealTimeOrder>> {
         return orders.groupBy { it.time }

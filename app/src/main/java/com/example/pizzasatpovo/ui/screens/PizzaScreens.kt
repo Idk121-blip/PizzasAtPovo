@@ -47,7 +47,7 @@ import com.example.pizzasatpovo.database.OrderManager
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.data.viewmodel.SignInViewModel
-import com.example.pizzasatpovo.presentation.db_interaction.DataManager
+import com.example.pizzasatpovo.database.DataManager
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.screens.account.AccountPageScreen
 import com.example.pizzasatpovo.ui.screens.addpizza.AddPizzaScreen
@@ -265,8 +265,6 @@ fun PizzasAtPovoApp(
                 onOrderButtonClicked = {
                     message= "Ordine effettuato!"
                     lifecycleScope.launch {
-                        println(timestamp.seconds)
-                        println(Timestamp.now().seconds)
                         if (timestamp.seconds< Timestamp.now().seconds) {
                             message= "Orario non valido"
                             return@launch

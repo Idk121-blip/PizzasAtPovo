@@ -38,9 +38,7 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
             .get()
             .await()
             .getLong("orderAvailable")
-        println("---------------------------")
-        println(snapAvailable)
-        println("---------------------------")
+
         var availableSpot= (snapAvailable?: return ResponseData(false, message = "Orario non valido2")).toInt()
 
         if (availableSpot-pizzaNumber<0){
