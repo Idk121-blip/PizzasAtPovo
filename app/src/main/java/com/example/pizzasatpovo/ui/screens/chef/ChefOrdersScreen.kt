@@ -41,8 +41,6 @@ import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.LogoutButton
 import java.util.Calendar
-import java.util.Date
-import kotlin.math.ceil
 
 class ChefOrdersScreen {
     @Composable

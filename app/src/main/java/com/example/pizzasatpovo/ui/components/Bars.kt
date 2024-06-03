@@ -44,9 +44,9 @@ class Bars {
     @Composable
 
     fun AppBar(
+        modifier: Modifier = Modifier,
         text: String = "Pizza at Povo",
         fontSize: TextUnit = 18.sp,
-        modifier: Modifier = Modifier
     ){
         Column (
             verticalArrangement = Arrangement.Center,

@@ -340,7 +340,7 @@ class OrdersScreen {
             }
         }
     }
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "DefaultLocale")
     @Composable
     fun SingleOrderCard(
         order: Order,

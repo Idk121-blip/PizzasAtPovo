@@ -45,7 +45,7 @@ import com.example.pizzasatpovo.data.viewmodel.TimeOrderViewModel
 import com.example.pizzasatpovo.database.FavouritesManager
 import com.example.pizzasatpovo.database.OrderManager
 import kotlinx.coroutines.launch
-import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
+import com.example.pizzasatpovo.database.GoogleAuthUiClient
 import com.example.pizzasatpovo.data.viewmodel.SignInViewModel
 import com.example.pizzasatpovo.database.DataManager
 import com.example.pizzasatpovo.ui.components.BackgroundImage

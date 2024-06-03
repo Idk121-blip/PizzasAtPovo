@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.pizzasatpovo.R
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun CustomDialog(
     setShowDialog: (Boolean) -> Unit,
