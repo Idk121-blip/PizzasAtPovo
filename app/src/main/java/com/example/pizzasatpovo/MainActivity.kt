@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
         )
     }
     private val dataManager by lazy{
-        DataManager(googleAuthUiClient)
+        DataManager()
     }
     private val orderManager by lazy{
         OrderManager(googleAuthUiClient)

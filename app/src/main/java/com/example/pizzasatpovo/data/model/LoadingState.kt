@@ -1,7 +1,7 @@
 package com.example.pizzasatpovo.data.model
 
 data class LoadingState(
-    val isFinished: Boolean = false,
+    val isFinished: Boolean = true,
     val loadingInError: String? = null
 )
 

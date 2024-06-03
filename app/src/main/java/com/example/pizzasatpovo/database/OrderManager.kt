@@ -22,7 +22,7 @@ import kotlinx.coroutines.tasks.await
 class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
 
     private val auth = Firebase.auth
-    private val dbString = "dbstring"
+    private val dbString = "https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app"
 
     private suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
         val db = Firebase.firestore
@@ -133,10 +133,5 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
         val order = dbRef.get().await().getValue(RealTimeOrder::class.java) ?: return
         order.completed = true
         dbRef.setValue(order)
-    }
-
-    suspend fun isThisSlotFree(time: String): Boolean {
-        val spots: Int = Firebase.database(dbString).reference.child("timeslots").child(time).get().await().getValue(Int::class.java) ?: return false
-        return spots > 0
     }
 }

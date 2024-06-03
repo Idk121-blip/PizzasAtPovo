@@ -23,7 +23,7 @@ fun Allergen(
     modifier: Modifier = Modifier,
     available: Boolean = true,
     allergen:String,
-){
+) {
     Card (
         shape = RoundedCornerShape(5.dp),
         colors = if(available){
