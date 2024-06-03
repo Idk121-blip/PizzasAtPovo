@@ -16,9 +16,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.tasks.await
 
 @Suppress("LABEL_NAME_CLASH")
@@ -27,13 +24,34 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
     private val auth = Firebase.auth
     private val dbString = "https://pizzasatpovo-default-rtdb.europe-west1.firebasedatabase.app"
 
-    private suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
+    private suspend fun sendOrder(pizza: Pizza, pickupTime: Timestamp, pizzaNumber: Int, time: String): ResponseData<DBOrder>? = auth.currentUser?.run {
         val db = Firebase.firestore
         val snapPrice = db.collection("menuPizzaPrice")
             .document("StandardMenuPrice")
             .get()
             .await()
         val price = snapPrice.toObject(PizzaPrice::class.java)
+
+
+        val snapAvailable= db.collection("timeslots")
+            .document(time)
+            .get()
+            .await()
+            .getLong("orderAvailable")
+        println("---------------------------")
+        println(snapAvailable)
+        println("---------------------------")
+        var availableSpot= (snapAvailable?: return ResponseData(false, message = "Orario non valido2")).toInt()
+
+        if (availableSpot-pizzaNumber<0){
+            return ResponseData(false, message = "Slot non disponibili")
+        }
+
+        availableSpot-=pizzaNumber
+        val data = hashMapOf(
+            "orderAvailable" to availableSpot
+        )
+        db.collection("timeslots").document(time).set(data)
 
         if (pizzaNumber < 1) return ResponseData(false, message = "Numero di pizze non valido")
         if (price == null) return ResponseData(false, message = "Errore nella richiesta del prezzo al Database")
@@ -62,8 +80,11 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
         return ResponseData(true, "Ordine effettuato!", dbOrder)
     }
 
-    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
+    suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int, time:String ): ResponseData<DBOrder>? = auth.currentUser?.run {
         if (retrievedPizza.toppings == null) return ResponseData(false, "Number of toppings not valid (null)")
+
+
+
 
         val pizza = Pizza(
             name = retrievedPizza.name,
@@ -75,7 +96,7 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
             }
         )
 
-        return sendOrder(pizza, pickupTime, pizzaNumber)
+        return sendOrder(pizza, pickupTime, pizzaNumber,time )
     }
 
     suspend fun retrieveOrders(): ResponseData<ArrayList<Order>>? = auth.currentUser?.run {

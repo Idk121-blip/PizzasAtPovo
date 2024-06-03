@@ -7,6 +7,7 @@ import com.example.pizzasatpovo.data.model.Topping
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
@@ -43,5 +44,25 @@ class DataManager {
             toppingsArray.add(pizzaSnapshot.toObject(Topping::class.java))
         }
         return ResponseData(true, "Fetched successfully", toppingsArray)
+    }
+
+    suspend fun setTimeSlots(){
+        val db = Firebase.firestore
+        val data = hashMapOf(
+            "orderAvailable" to 4
+        )
+        for (i in (11..14)){
+            for (j in (0..55).step(5)){
+                if (j==0){
+                    db.collection("timeslots").document("$i:00").set(data)
+                    continue
+                }
+                if (j==5){
+                    db.collection("timeslots").document("$i:05").set(data)
+                    continue
+                }
+                db.collection("timeslots").document("$i:$j").set(data)
+            }
+        }
     }
 }
