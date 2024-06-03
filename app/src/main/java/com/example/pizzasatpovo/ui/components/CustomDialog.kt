@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.colorspace.ColorSpace
+import androidx.compose.ui.graphics.colorspace.Rgb
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -118,7 +120,7 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
 }
 
 @Composable
-fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
+fun CustomDialogDatabaseResponse(message:String, setShowDialog: (Boolean) -> Unit) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -148,13 +150,15 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                         )
                     }
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                        Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(75.dp))
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Text(text = "Ordine effettuato!")
-                    }
-                }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                            if (message=="Ordine effettuato!") Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(70.dp))
+                            else Image(painter = painterResource(id = R.drawable.order_not_sent), contentDescription = "Order not sent icon", Modifier.width(75.dp))
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Text(text = message)
+
             }
         }
+    }
+}
     }
 }

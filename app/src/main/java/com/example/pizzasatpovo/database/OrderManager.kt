@@ -16,6 +16,9 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.tasks.await
 
 @Suppress("LABEL_NAME_CLASH")
@@ -56,7 +59,7 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
                 user.credit = Math.round((user.credit - dbOrder.price) * 100.0) / 100.0
                 userRef.set(user)
             }
-        return ResponseData(true, "Ordine completato con successo", dbOrder)
+        return ResponseData(true, "Ordine effettuato!", dbOrder)
     }
 
     suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int): ResponseData<DBOrder>? = auth.currentUser?.run {
@@ -108,6 +111,7 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
 
         val user = googleAuthUiClient.retrieveUserData()!!
         if (user.credit < (price.price * pizzaNumber)) return null
+
 
         val toppingList = arrayListOf<String>().apply {
             pizza.toppings?.forEach { add(it.name) }

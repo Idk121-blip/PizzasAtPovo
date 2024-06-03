@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +46,7 @@ import com.example.pizzasatpovo.database.FavouritesManager
 import com.example.pizzasatpovo.database.OrderManager
 import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
-import com.example.pizzasatpovo.database.sign_in.SignInViewModel
+import com.example.pizzasatpovo.data.viewmodel.SignInViewModel
 import com.example.pizzasatpovo.presentation.db_interaction.DataManager
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.screens.account.AccountPageScreen
@@ -253,12 +252,18 @@ fun PizzasAtPovoApp(
             )
         }
         composable(route= PizzaScreens.DetailsPizza.name){
+
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
+            var message by remember {
+                mutableStateOf("")
+            }
             DetailsPizzaScreen().DetailsPizzaPage(
+                message = message,
                 pizza = selectedPizza,
                 onOrderButtonClicked = {
+                    message= "Ordine effettuato!"
                     lifecycleScope.launch {
-                        orderManager.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza)
+                        message= (orderManager.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza) ?: return@launch).message
                         val cal = Calendar.getInstance()
                         cal.time=timestamp.toDate()
                         var time= cal.get(Calendar.HOUR_OF_DAY).toString()+":"
@@ -270,8 +275,11 @@ fun PizzasAtPovoApp(
                             cal.get(Calendar.MINUTE).toString()
                         }
 
+
+                        val rtOrder= orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza) ?: return@launch
                         notificationViewModel.addListenerForSpecificDocuments(
-                            listOf(orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza)!!))
+                            listOf(rtOrder))
+
                     }
                 },
                 viewModel = pizzaViewModel,
@@ -282,7 +290,11 @@ fun PizzasAtPovoApp(
 
         composable(route= PizzaScreens.NewPizza.name){
             val numberOfPizza by pizzaViewModel.numberOfPizzaToOrder.collectAsStateWithLifecycle()
+            var message by remember {
+                mutableStateOf("Ordine effettuato")
+            }
             AddPizzaScreen().AddPizzaPage(
+                message = message,
                 navViewModel = controller,
                 viewModel= pizzaViewModel,
                 timeOrderViewModel = timeOrderViewModel,
@@ -299,8 +311,13 @@ fun PizzasAtPovoApp(
                         }else{
                             cal.get(Calendar.MINUTE).toString()
                         }
+                        val rtOrder= orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza)
+                        if (rtOrder==null){
+                            message = "Credito non disponibile"
+                            return@launch
+                        }
                         notificationViewModel.addListenerForSpecificDocuments(
-                            listOf(orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza)!!))
+                            listOf(rtOrder))
                     }
 
                 }
