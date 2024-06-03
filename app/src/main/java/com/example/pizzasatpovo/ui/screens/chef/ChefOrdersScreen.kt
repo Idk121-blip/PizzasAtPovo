@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.ui.screens.chef
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,6 @@ import kotlin.math.ceil
 class ChefOrdersScreen {
     @Composable
     fun ChefOrdersPage(
-
         processOrder: (String)->Unit,
         onLogOutButtonClicked: () -> Unit,
         modifier:Modifier = Modifier,
@@ -72,7 +72,7 @@ class ChefOrdersScreen {
                         onLogOutButtonClicked = onLogOutButtonClicked,
                         viewModel = chefViewModel,
                         modifier = modifier
-                            .align(Alignment.CenterEnd)
+                            .align(Alignment.CenterEnd).background(Color.Red)
                     )
                 }
                 var i = 0
@@ -80,7 +80,7 @@ class ChefOrdersScreen {
                     i++
                 }
 
-            val groupedOrders = groupOrdersByTime(orders)
+                val groupedOrders = groupOrdersByTime(orders)
                 LazyColumn {
                     groupedOrders.forEach { (time, orders) ->
                         val allOrdersCompleted = orders.all { it.completed }
@@ -99,18 +99,6 @@ class ChefOrdersScreen {
                             }
                         }
                     }
-//                        LazyColumn {
-//
-//                            items(orders) { order ->
-//
-//                                if (!order.completed)
-//                                    if (order.time.startsWith(hour) && order.time.endsWith(hour))
-//                                        SingleOrderCard(
-//                                            order = order,
-//                                            processOrder = { processOrder(order.id) })
-//
-//                            }
-//                        }
                 }
             }
         }

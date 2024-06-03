@@ -237,7 +237,7 @@ class OrdersScreen {
                         .format(
                             ordersList[order]
                                 .date.toDate()
-                        ) >= SimpleDateFormat("dd.MM.yyyy").format(Date()))
+                        ) == SimpleDateFormat("dd.MM.yyyy").format(Date()))
                 ) {
                     SingleOrderCard(
                         order = ordersList[order]

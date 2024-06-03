@@ -11,7 +11,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
 @Suppress("LABEL_NAME_CLASH")
-class DataManager(private val googleAuthUiClient: GoogleAuthUiClient) {
+class DataManager {
 
     private val auth = Firebase.auth
 

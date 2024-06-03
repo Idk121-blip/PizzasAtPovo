@@ -62,16 +62,15 @@ class AddPizzaScreen {
         Box(modifier = modifier
             .fillMaxSize()
         ){
-
             BackgroundImage()
             Column {
                 Bars().AppBarWithBackBtn(
                     pizzasName = "Crea la tua pizza",
                     navViewModel = navViewModel
                 )
-                IngredientList(toppings = toppings,
+                IngredientList(
+                    toppings = toppings,
                     personalizedOrderViewModel= personalizedOrderViewModel)
-                //White container
                 Column (
                     verticalArrangement = Arrangement.Bottom,
                     modifier = modifier
@@ -86,8 +85,7 @@ class AddPizzaScreen {
                             onOrderButtonClicked(personalizedOrderViewModel.getRetrievedPizza())
                         },
                         toppingsEmpty = isToppingEmpty
-                        )
-
+                    )
                 }
             }
             Column(
@@ -121,12 +119,11 @@ class AddPizzaScreen {
             )
             Row {
                 for (topping in toppings){
-                    if (topping.name=="Mozzarella"||topping.name=="Pomodoro"){
-                        personalizedOrderViewModel.addTopping(topping)
+                    if (topping.name == "Mozzarella"||topping.name == "Pomodoro"){
                         IngredientCard(
                             topping = topping,
                             personalizedOrderViewModel= personalizedOrderViewModel,
-                            defaultSelected = true
+
                         )
                     }
                 }

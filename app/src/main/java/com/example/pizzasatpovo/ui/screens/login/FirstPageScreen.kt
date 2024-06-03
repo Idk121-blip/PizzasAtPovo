@@ -38,6 +38,7 @@ class FirstPageScreen {
     @Composable
     fun FirstPage(
         modifier: Modifier = Modifier,
+        buttonAvailable: Boolean = true,
         onLoginButtonClicked: () -> Unit,
     ){
         Box(modifier = modifier
@@ -78,7 +79,7 @@ class FirstPageScreen {
                     DisplayText()
                 }
                 Row {
-                    DisplayButton( onLoginButtonClicked )
+                    DisplayButton( onLoginButtonClicked, buttonAvailable )
                 }
                 Row (
                     modifier = modifier
@@ -133,10 +134,12 @@ class FirstPageScreen {
     @Composable
     fun DisplayButton(
         onLoginButtonClicked: () -> Unit,
+        buttonAvailable: Boolean= true,
         modifier: Modifier = Modifier
     ){
         Button(
             onClick = onLoginButtonClicked,
+            enabled = buttonAvailable,
             colors = ButtonDefaults.buttonColors(uniColor),
             shape = RoundedCornerShape(25),
             modifier = modifier

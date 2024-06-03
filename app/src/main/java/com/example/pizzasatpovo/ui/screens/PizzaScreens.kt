@@ -9,10 +9,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,6 +49,7 @@ import kotlinx.coroutines.launch
 import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.example.pizzasatpovo.database.sign_in.SignInViewModel
 import com.example.pizzasatpovo.presentation.db_interaction.DataManager
+import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.screens.account.AccountPageScreen
 import com.example.pizzasatpovo.ui.screens.addpizza.AddPizzaScreen
 import com.example.pizzasatpovo.ui.screens.chef.ChefOrdersScreen
@@ -44,6 +61,7 @@ import com.example.pizzasatpovo.ui.screens.orders.OrdersScreen
 import java.util.Calendar
 
 enum class PizzaScreens {
+    LoadinPage,
     FirstPage,
     ListOfPizzas,
     DetailsPizza,
@@ -80,19 +98,17 @@ fun PizzasAtPovoApp(
 
     NavHost(
         navController = navController,
-        startDestination = PizzaScreens.FirstPage.name,
+        startDestination = PizzaScreens.LoadinPage.name,
         modifier = modifier
     ){
-
-        composable(
-            route = PizzaScreens.FirstPage.name
-        ){
+        composable(route= PizzaScreens.LoadinPage.name){
             LaunchedEffect(key1 = Unit) {
                 lifecycleScope.launch {
                     googleAuthUiClient.retrieveUserData()
                     if (googleAuthUiClient.getSignedInUser() == null) {
-                        //TODO THIS SHOULD REDIRECT TO LOGIN THAT RN IS THIS PAGE BUT SHOULD CHANGE
+                        navController.navigate(PizzaScreens.FirstPage.name)
                     }else if (googleAuthUiClient.getSignedInUser()!!.role!="Chef"){
+                        navController.popBackStack()
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         userLogged(applicationContext, dataManager,favouritesManager, pizzaViewModel)
                         navController.navigate(PizzaScreens.ListOfPizzas.name)
@@ -103,6 +119,28 @@ fun PizzasAtPovoApp(
                     }
                 }
             }
+            BackgroundImage()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Caricamento, attendere...",
+                        color = Color.White // Optional: Set text color to white for better visibility
+                    )
+                }
+            }
+        }
+        composable(
+            route = PizzaScreens.FirstPage.name
+        ){
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
@@ -119,30 +157,17 @@ fun PizzasAtPovoApp(
 
             LaunchedEffect(key1 = state.isSignInSuccessful) {
                 if (state.isSignInSuccessful) {
-
                     if (googleAuthUiClient.getSignedInUser()!!.role=="Chef"){
+                        navController.popBackStack()
+                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
+                    //TODO SCHERMATA DI CARICAMENTO
+                    userLogged(applicationContext, dataManager,favouritesManager, pizzaViewModel)
+                    navController.popBackStack()
+                    navController.enableOnBackPressed(enabled = false)
+                    navController.navigate(PizzaScreens.ListOfPizzas.name)
 
-                    val listResponseData= dataManager.getPizzas()
-
-                    if (listResponseData==null){
-                        Toast.makeText(
-                            applicationContext,
-                            "Error retrieving pizzas",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }else if (!listResponseData.isSuccessful){
-                        Toast.makeText(
-                            applicationContext,
-                            "Error retrieving pizzas",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }else{
-                        userLogged(applicationContext, dataManager,favouritesManager, pizzaViewModel)
-                        navController.enableOnBackPressed(enabled = false)
-                        navController.navigate(PizzaScreens.ListOfPizzas.name)
-                    }
                     Toast.makeText(
                         applicationContext,
                         "Sign in successful",
@@ -153,16 +178,42 @@ fun PizzasAtPovoApp(
                     viewModel.resetState()
                 }
             }
+            var buttonAvailable by remember {
+                mutableStateOf(true)
+            }
+
+            var lastSignInAttemptTime by remember { mutableLongStateOf(0L) }
+            val signInCoolDown = 30000L // 30 seconds cooldown
 
             FirstPageScreen().FirstPage(
+                buttonAvailable= buttonAvailable,
                 onLoginButtonClicked = {
+                    if (!buttonAvailable) return@FirstPage // Prevent multiple clicks
+
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastSignInAttemptTime < signInCoolDown) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Please wait before attempting to sign in again.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return@FirstPage
+                    }
+
+
                     lifecycleScope.launch {
-                        val signInIntentSender = googleAuthUiClient.signIn()
-                        launcher.launch(
-                            IntentSenderRequest.Builder(
-                                signInIntentSender ?: return@launch
-                            ).build()
-                        )
+                        buttonAvailable = false
+                        lastSignInAttemptTime = currentTime
+                        try {
+                            val signInIntentSender = googleAuthUiClient.signIn()
+                            launcher.launch(
+                                IntentSenderRequest.Builder(
+                                    signInIntentSender ?: return@launch
+                                ).build()
+                            )
+                        } finally {
+                            buttonAvailable = true
+                        }
                     }
                 }
             )
@@ -291,11 +342,11 @@ fun PizzasAtPovoApp(
                     }
                 },
                 processOrder = {
-                lifecycleScope.launch {
-                    orderManager.processOrder(it)
-                }
-
+                    lifecycleScope.launch {
+                        orderManager.processOrder(it)
                     }
+                },
+
             )
         }
     }
