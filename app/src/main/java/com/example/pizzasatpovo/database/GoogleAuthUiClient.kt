@@ -1,4 +1,4 @@
-package com.example.pizzasatpovo.database.sign_in
+package com.example.pizzasatpovo.database
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.example.pizzasatpovo.R
+import com.example.pizzasatpovo.data.model.SignInResult
 import com.example.pizzasatpovo.data.model.UserData
 import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.CancellationException

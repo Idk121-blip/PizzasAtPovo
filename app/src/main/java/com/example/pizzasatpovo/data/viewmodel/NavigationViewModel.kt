@@ -16,10 +16,6 @@ class NavigationViewModel(controller: NavHostController): ViewModel() {
     }
 
     fun goToDetails(){
-//        _navController.update {
-//            println("Name: ${PizzaScreens.DetailsPizza.name}")
-//            return it.navigate(PizzaScreens.DetailsPizza.name)
-//        }
         _navController.update{
             return it.navigate(PizzaScreens.DetailsPizza.name)
         }

@@ -52,7 +52,7 @@ import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.model.LoadingResult
 import com.example.pizzasatpovo.data.viewmodel.LoadingViewModel
 import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
-import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
+import com.example.pizzasatpovo.database.GoogleAuthUiClient
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.shimmerBrush

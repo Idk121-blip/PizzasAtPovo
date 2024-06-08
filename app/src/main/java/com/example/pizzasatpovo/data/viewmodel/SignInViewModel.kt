@@ -1,8 +1,8 @@
 package com.example.pizzasatpovo.data.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.pizzasatpovo.database.sign_in.SignInResult
-import com.example.pizzasatpovo.database.sign_in.SignInState
+import com.example.pizzasatpovo.data.model.SignInResult
+import com.example.pizzasatpovo.data.model.SignInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

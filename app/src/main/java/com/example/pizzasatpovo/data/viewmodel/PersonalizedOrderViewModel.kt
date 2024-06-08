@@ -19,7 +19,6 @@ class PersonalizedOrderViewModel: ViewModel() {
             newTopping
         }
         isEmpty.postValue(_toppings.value.isEmpty())
-        println("Empty add? " + isEmpty.value)
     }
 
     fun removeTopping(topping: Topping){
@@ -31,7 +30,6 @@ class PersonalizedOrderViewModel: ViewModel() {
             newTopping
         }
         isEmpty.postValue(_toppings.value.isEmpty())
-        println("Empty remove? " + isEmpty.value)
     }
 
     fun getRetrievedPizza(): RetrievedPizza {

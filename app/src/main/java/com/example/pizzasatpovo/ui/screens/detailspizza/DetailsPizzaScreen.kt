@@ -199,7 +199,6 @@ class DetailsPizzaScreen {
 
         val showDialog =  remember { mutableStateOf(false) }
         var minusButtonColors: ButtonColors = ButtonDefaults.buttonColors()
-        println()
         if(pizze == 1){
             minusButtonColors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
         }
@@ -316,8 +315,6 @@ class DetailsPizzaScreen {
                     )
                 }
             }
-            println("Is empty? " + toppingsEmpty)
-            println()
 
             Button(
                 content = {
