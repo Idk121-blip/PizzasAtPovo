@@ -78,8 +78,4 @@ dependencies {
     implementation (libs.androidx.lifecycle.runtime.compose.v260)
     implementation (libs.androidx.navigation.compose.v253)
     implementation (libs.coil.compose)
-
-
-
-
 }
