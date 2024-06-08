@@ -137,7 +137,7 @@ class ChefOrdersScreen {
                             .weight(0.8F)
                     ) {
                         Text(
-                            text = order.pizzaName,
+                            text = order.pizzaName+" "+ order.uname,
                             fontWeight = FontWeight.Bold,
                             overflow = TextOverflow.Clip,
                             maxLines = 3,
@@ -152,9 +152,7 @@ class ChefOrdersScreen {
                         )
                     }
                     Button(
-                        onClick = {
-                            processOrder()
-                                  },
+                        onClick = {processOrder() },
                         content = {
                             Icon(
                                 imageVector = Icons.Rounded.Done,
