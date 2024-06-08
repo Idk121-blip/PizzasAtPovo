@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.pizzasatpovo.R
+import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
 
 
 @SuppressLint("DefaultLocale")
@@ -40,9 +41,9 @@ fun CustomDialog(
     setShowDialog: (Boolean) -> Unit,
     sendOrder: () -> Unit,
     numberOfPizzas: Int,
-    pizzaName: String
+    pizzaName: String,
+    navViewModel: NavigationViewModel,
 ) {
-    //TODO LOADING PAGE WHEN SENDING ORDER AND THEN IF ORDER GOOD GO TO ORDERS PAGE ELSE SHOW ERROR MESSAGE
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -109,8 +110,11 @@ fun CustomDialog(
                         }
                         Button(
                             onClick = {
-                                setShowDialog(false)
+                                navViewModel.goToLoadingPage()
                                 sendOrder()
+                                navViewModel.popStack()
+                                setShowDialog(false)
+
                             },
                             shape = RoundedCornerShape(10.dp),
                             modifier = Modifier

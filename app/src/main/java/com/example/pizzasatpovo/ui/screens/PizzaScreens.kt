@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -85,8 +84,10 @@ fun PizzasAtPovoApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ){
+
     val viewModel = viewModel<SignInViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     val pizzaViewModel = viewModel<PizzaViewModel>()
     val selectedPizza by pizzaViewModel.selectedPizza.collectAsStateWithLifecycle()
     val timeOrderViewModel = viewModel<TimeOrderViewModel>()
@@ -145,7 +146,7 @@ fun PizzasAtPovoApp(
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
-                    if (result.resultCode == ComponentActivity.RESULT_OK) {
+                    if (result.resultCode == -1) {
                         lifecycleScope.launch {
                             val signInResult = googleAuthUiClient.signInWithIntent(
                                 intent = result.data ?: return@launch
@@ -163,9 +164,10 @@ fun PizzasAtPovoApp(
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         navController.navigate(PizzaScreens.ChefOrders.name)
                     }
-                    //TODO SCHERMATA DI CARICAMENTO
-                    userLogged(applicationContext, dataManager,favouritesManager, pizzaViewModel)
                     navController.popBackStack()
+                    navController.navigate(PizzaScreens.LoadinPage.name)
+                    userLogged(applicationContext, dataManager,favouritesManager, pizzaViewModel)
+
                     navController.enableOnBackPressed(enabled = false)
                     navController.navigate(PizzaScreens.ListOfPizzas.name)
 
@@ -174,7 +176,7 @@ fun PizzasAtPovoApp(
                         "Sign in successful",
                         Toast.LENGTH_LONG
                     ).show()
-
+                    navController.popBackStack()
                     navController.navigate(PizzaScreens.ListOfPizzas.name)
                     viewModel.resetState()
                 }

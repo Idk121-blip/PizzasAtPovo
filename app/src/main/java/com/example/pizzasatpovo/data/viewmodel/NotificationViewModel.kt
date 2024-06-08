@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.Service
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -95,8 +94,6 @@ class NotificationViewModel : ViewModel() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // TODO: Consider calling
-                // ActivityCompat#requestPermissions
                 return
             }
             notify(notificationId, builder.build())

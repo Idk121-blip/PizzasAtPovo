@@ -140,7 +140,6 @@ class ListOfPizzasScreen {
         LazyColumn (
             state= state,
             modifier = modifier
-//                .verticalScroll(())
                 .padding(30.dp, 10.dp)
         ){
             items(pizzas){ pizza->
