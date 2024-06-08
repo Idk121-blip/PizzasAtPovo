@@ -80,7 +80,6 @@ class OrdersScreen {
                     lifecycleScope.launch {
                         val orders = orderManager.retrieveOrders()
                         ordersViewModel.addOrders(orders!!.retrievedObject ?: arrayListOf())
-                        //println(orders)
                         navController2.navigate("OrdersPage")
 
                     }
@@ -191,7 +190,6 @@ class OrdersScreen {
         val ordersList by ordersViewModel.orders.collectAsStateWithLifecycle()
         var verticalArrangement: Arrangement.Vertical = Arrangement.Center
         val horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally
-        println("Size array list: " + ordersList.size)
         if (ordersList.size != 0) {
             verticalArrangement = Arrangement.Top
         }
@@ -342,7 +340,7 @@ class OrdersScreen {
             }
         }
     }
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "DefaultLocale")
     @Composable
     fun SingleOrderCard(
         order: Order,

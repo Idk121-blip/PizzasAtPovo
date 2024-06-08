@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,27 +34,33 @@ import androidx.compose.ui.window.Dialog
 import com.example.pizzasatpovo.R
 
 
+@SuppressLint("DefaultLocale")
 @Composable
-fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOfPizzas: Int, pizzaName:String) {
+fun CustomDialog(
+    setShowDialog: (Boolean) -> Unit,
+    sendOrder: () -> Unit,
+    numberOfPizzas: Int,
+    pizzaName: String
+) {
     //TODO LOADING PAGE WHEN SENDING ORDER AND THEN IF ORDER GOOD GO TO ORDERS PAGE ELSE SHOW ERROR MESSAGE
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = Color.LightGray
+            color = Color(217, 217, 217, 255)
         ) {
-            Box{
+            Box {
                 Spacer(modifier = Modifier.height(20.dp))
-                Column( modifier = Modifier.padding(20.dp, 25.dp, 20.dp, 0.dp)) {
+                Column(modifier = Modifier.padding(20.dp, 25.dp, 20.dp, 0.dp)) {
 
-                    Column (horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = "Ordinare $numberOfPizzas pizza",
-                                    fontSize = 20.sp,
-                                    fontFamily = FontFamily.Default,
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily.Default,
                             )
                             Text(
                                 text = " $pizzaName",
@@ -70,7 +77,7 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                                 fontFamily = FontFamily.Default,
                             )
                             Text(
-                                text = String.format("%.2f", numberOfPizzas*4.4),
+                                text = String.format("%.2f", numberOfPizzas * 4.4),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                                 fontWeight = FontWeight.Bold
@@ -84,7 +91,10 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
                     }
                     Row(modifier = Modifier.padding(20.dp)) {
                         Button(
-                            colors= ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(217, 217, 217, 255),
+                                contentColor = Color.Black
+                            ),
                             onClick = {
                                 setShowDialog(false)
                             },
@@ -118,11 +128,11 @@ fun CustomDialog(setShowDialog: (Boolean) -> Unit, sendOrder: ()->Unit, numberOf
 }
 
 @Composable
-fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
+fun CustomDialogDatabaseResponse(message: String, setShowDialog: (Boolean) -> Unit) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = Color.LightGray
+            color = Color(217, 217, 217, 255)
         ) {
             Box(
                 //contentAlignment = Alignment.ALIGN_CENTER
@@ -148,10 +158,26 @@ fun CustomDialogDatabaseResponse(setShowDialog: (Boolean) -> Unit) {
                         )
                     }
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                        Image(painter = painterResource(id = R.drawable.order_sent), contentDescription = "Order sent icon", Modifier.width(75.dp))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        if (message == "Ordine effettuato!") {
+                            Image(
+                                painter = painterResource(id = R.drawable.order_sent),
+                                contentDescription = "Order sent icon",
+                                Modifier.width(70.dp)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(id = R.drawable.order_not_sent),
+                                contentDescription = "Order not sent icon",
+                                Modifier.width(75.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.height(5.dp))
-                        Text(text = "Ordine effettuato!")
+                        Text(text = message)
+
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package com.example.pizzasatpovo
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import com.example.pizzasatpovo.database.FavouritesManager
 import com.example.pizzasatpovo.database.OrderManager
 import com.google.android.gms.auth.api.identity.Identity
-import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
-import com.example.pizzasatpovo.presentation.db_interaction.DataManager
+import com.example.pizzasatpovo.database.GoogleAuthUiClient
+import com.example.pizzasatpovo.database.DataManager
 import com.example.pizzasatpovo.ui.screens.PizzasAtPovoApp
 import com.example.pizzasatpovo.ui.theme.ComposeGoogleSignInCleanArchitectureTheme
 

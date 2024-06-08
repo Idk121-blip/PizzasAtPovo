@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
+@SuppressLint("DiscouragedApi")
 @Composable
 fun Allergen(
 //    allergen: Allergen,
@@ -38,7 +40,6 @@ fun Allergen(
     ){
         val context = LocalContext.current
         val name= allergen.plus("_allergen").lowercase()
-        println(name)
         val drawableId = remember(name) {
             context.resources.getIdentifier(
                 name,

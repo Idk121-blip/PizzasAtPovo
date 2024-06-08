@@ -79,7 +79,7 @@ class FirstPageScreen {
                     DisplayText()
                 }
                 Row {
-                    DisplayButton( onLoginButtonClicked, buttonAvailable )
+                    DisplayButton( onLoginButtonClicked, buttonAvailable= buttonAvailable )
                 }
                 Row (
                     modifier = modifier
@@ -134,8 +134,8 @@ class FirstPageScreen {
     @Composable
     fun DisplayButton(
         onLoginButtonClicked: () -> Unit,
+        modifier: Modifier = Modifier,
         buttonAvailable: Boolean= true,
-        modifier: Modifier = Modifier
     ){
         Button(
             onClick = onLoginButtonClicked,

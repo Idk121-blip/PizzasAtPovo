@@ -1,10 +1,9 @@
-package com.example.pizzasatpovo.presentation.db_interaction
+package com.example.pizzasatpovo.database
 
 import com.example.pizzasatpovo.data.model.Pizza
 import com.example.pizzasatpovo.data.model.ResponseData
 import com.example.pizzasatpovo.data.model.RetrievedPizza
 import com.example.pizzasatpovo.data.model.Topping
-import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -15,12 +14,6 @@ class DataManager {
 
     private val auth = Firebase.auth
 
-    suspend fun getPizza(name: String): ResponseData<Pizza>? = auth.currentUser?.run {
-        val pizza = Firebase.firestore.collection("pizzas").document(name).get().await().toObject(
-            Pizza::class.java)
-            ?: return ResponseData(false, "Pizza non trovata, riprova")
-        return ResponseData(true, "Pizza trovata con successo", pizza)
-    }
 
     suspend fun getPizzas(): ResponseData<ArrayList<RetrievedPizza>>? = auth.currentUser?.run {
         val pizzasArray: ArrayList<RetrievedPizza> = arrayListOf()
@@ -43,5 +36,25 @@ class DataManager {
             toppingsArray.add(pizzaSnapshot.toObject(Topping::class.java))
         }
         return ResponseData(true, "Fetched successfully", toppingsArray)
+    }
+
+    fun setTimeSlots(){
+        val db = Firebase.firestore
+        val data = hashMapOf(
+            "orderAvailable" to 4
+        )
+        for (i in (11..14)){
+            for (j in (0..55).step(5)){
+                if (j==0){
+                    db.collection("timeslots").document("$i:00").set(data)
+                    continue
+                }
+                if (j==5){
+                    db.collection("timeslots").document("$i:05").set(data)
+                    continue
+                }
+                db.collection("timeslots").document("$i:$j").set(data)
+            }
+        }
     }
 }

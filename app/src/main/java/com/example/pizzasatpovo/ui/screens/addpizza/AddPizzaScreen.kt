@@ -50,6 +50,7 @@ import com.example.pizzasatpovo.ui.screens.detailspizza.DetailsPizzaScreen
 class AddPizzaScreen {
     @Composable
     fun AddPizzaPage(
+        message:String,
         navViewModel: NavigationViewModel,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
@@ -78,6 +79,7 @@ class AddPizzaScreen {
                 ){
                     viewModel.resetNumberOfPizza()
                     DetailsPizzaScreen().OrderDetails(
+                        message= message,
                         pizzaName = "La tua pizza",
                         viewModel = viewModel,
                         timeOrderViewModel=timeOrderViewModel,

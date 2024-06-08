@@ -1,6 +1,4 @@
 package com.example.pizzasatpovo.ui.screens.chef
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,10 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,8 +40,7 @@ import com.example.pizzasatpovo.data.model.RealTimeOrder
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.LogoutButton
-import java.util.Date
-import kotlin.math.ceil
+import java.util.Calendar
 
 class ChefOrdersScreen {
     @Composable
@@ -72,26 +72,66 @@ class ChefOrdersScreen {
                         onLogOutButtonClicked = onLogOutButtonClicked,
                         viewModel = chefViewModel,
                         modifier = modifier
-                            .align(Alignment.CenterEnd).background(Color.Red)
+                            .align(Alignment.CenterEnd)
                     )
                 }
                 var i = 0
-                while (orders[i].completed) {
+                while (i<orders.size&&orders[i].completed) {
                     i++
                 }
-
+                val calendar = Calendar.getInstance()
                 val groupedOrders = groupOrdersByTime(orders)
+                val hourNow by remember {
+                    mutableIntStateOf(calendar.get(Calendar.HOUR_OF_DAY))
+                }
+                val minutesNow by remember {
+                    mutableIntStateOf(calendar.get( Calendar.MINUTE))
+                }
+
                 LazyColumn {
                     groupedOrders.forEach { (time, orders) ->
                         val allOrdersCompleted = orders.all { it.completed }
-                        if (!allOrdersCompleted) {
+
+                        if (!allOrdersCompleted ) {
                             item {
-                                Text(
-                                    text = time,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    modifier = modifier
-                                )
+                                Row (verticalAlignment = Alignment.CenterVertically){
+                                    val t= time.split(":")
+                                    Text(
+                                        text = "$time - ",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 25.sp,
+                                        modifier = modifier
+                                            .padding(0.dp, 2.dp)
+                                    )
+                                    val hour = if(t.isEmpty() || t[0] == ""){
+                                        0
+                                    } else {
+                                        (t[0].toInt() - hourNow)*60
+                                    }
+
+                                    val minutes = if(t.isEmpty() || t[0] == ""){
+                                        0
+                                    } else {
+                                        if (t[1].toInt()>=minutesNow){
+                                            hour + t[1].toInt() - minutesNow
+                                        }
+                                        else{
+                                            hour + t[1].toInt() - calendar.get(Calendar.MINUTE) -60
+                                        }
+
+                                    }
+
+                                    Text(
+                                        text = if(hour + minutes > 0){
+                                            "${hour + minutes} minuti rimanenti"
+                                        } else {
+                                            "Scaduto ${-(hour + minutes)} minuti fa"
+                                        },
+                                        color = Color.Red,
+                                        fontSize = 20.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
                             items(orders) { order ->
                                 SingleOrderCard(order = order,
@@ -102,9 +142,6 @@ class ChefOrdersScreen {
                 }
             }
         }
-    }
-    private fun getMinutesLeft(until: Date): Int {
-        return ceil((until.time - Date().time) / 60_000.0).toInt()
     }
     private fun groupOrdersByTime(orders: List<RealTimeOrder>): Map<String, List<RealTimeOrder>> {
         return orders.groupBy { it.time }
@@ -137,7 +174,7 @@ class ChefOrdersScreen {
                             .weight(0.8F)
                     ) {
                         Text(
-                            text = order.pizzaName,
+                            text = order.pizzaName+" "+ order.uname,
                             fontWeight = FontWeight.Bold,
                             overflow = TextOverflow.Clip,
                             maxLines = 3,
@@ -152,9 +189,7 @@ class ChefOrdersScreen {
                         )
                     }
                     Button(
-                        onClick = {
-                            processOrder()
-                                  },
+                        onClick = {processOrder() },
                         content = {
                             Icon(
                                 imageVector = Icons.Rounded.Done,

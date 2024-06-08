@@ -4,12 +4,12 @@ import com.example.pizzasatpovo.data.model.ResponseData
 import com.example.pizzasatpovo.data.model.RetrievedPizza
 import com.example.pizzasatpovo.data.model.Topping
 import com.example.pizzasatpovo.data.model.UserData
-import com.example.pizzasatpovo.database.sign_in.GoogleAuthUiClient
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
+@Suppress("LABEL_NAME_CLASH")
 class FavouritesManager(private val googleAuthUiClient: GoogleAuthUiClient) {
 
     private val auth = Firebase.auth

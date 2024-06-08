@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.pizzasatpovo.R
-import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
-import com.example.pizzasatpovo.data.viewmodel.TimeOrderViewModel
-import com.example.pizzasatpovo.data.viewmodel.PizzaViewModel
 import com.example.pizzasatpovo.data.model.RetrievedPizza
+import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
+import com.example.pizzasatpovo.data.viewmodel.PizzaViewModel
+import com.example.pizzasatpovo.data.viewmodel.TimeOrderViewModel
 import com.example.pizzasatpovo.ui.components.Allergen
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.CustomDialog
@@ -51,6 +51,7 @@ import com.example.pizzasatpovo.ui.components.FlipClock
 class DetailsPizzaScreen {
     @Composable
     fun DetailsPizzaPage(
+        message:String,
         pizza: RetrievedPizza,
         viewModel: PizzaViewModel,
         navViewModel: NavigationViewModel,
@@ -149,6 +150,7 @@ class DetailsPizzaScreen {
             Box(modifier = modifier){
                 viewModel.resetNumberOfPizza()
                 OrderDetails(
+                    message= message,
                     onOrderButtonClicked= onOrderButtonClicked,
                     pizzaName = pizza.name,
                     viewModel = viewModel,
@@ -177,6 +179,7 @@ class DetailsPizzaScreen {
 
     @Composable
     fun OrderDetails(
+        message: String,
         pizzaName:String,
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
@@ -189,14 +192,13 @@ class DetailsPizzaScreen {
         val customOrderSentDialog =  remember { mutableStateOf(false) }
 
         if(customOrderSentDialog.value) {
-            CustomDialogDatabaseResponse(setShowDialog = {
+            CustomDialogDatabaseResponse(message=message,setShowDialog = {
                 customOrderSentDialog.value = it
             })
         }
 
         val showDialog =  remember { mutableStateOf(false) }
         var minusButtonColors: ButtonColors = ButtonDefaults.buttonColors()
-        println()
         if(pizze == 1){
             minusButtonColors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
         }
@@ -313,8 +315,7 @@ class DetailsPizzaScreen {
                     )
                 }
             }
-            println("Is empty? " + toppingsEmpty)
-            println()
+
             Button(
                 content = {
                     Text(text = "ORDINA")
