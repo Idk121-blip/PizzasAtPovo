@@ -76,7 +76,7 @@ class ChefOrdersScreen {
                     )
                 }
                 var i = 0
-                while (orders[i].completed) {
+                while (i<orders.size&&orders[i].completed) {
                     i++
                 }
                 val calendar = Calendar.getInstance()
@@ -92,7 +92,7 @@ class ChefOrdersScreen {
                     groupedOrders.forEach { (time, orders) ->
                         val allOrdersCompleted = orders.all { it.completed }
 
-                        if (!allOrdersCompleted) {
+                        if (!allOrdersCompleted ) {
                             item {
                                 Row (verticalAlignment = Alignment.CenterVertically){
                                     val t= time.split(":")
