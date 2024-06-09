@@ -15,6 +15,19 @@ class NavigationViewModel(controller: NavHostController): ViewModel() {
         }
     }
 
+    fun popStack(){
+        _navController.update {
+            it.popBackStack()
+            it
+        }
+    }
+
+    fun goToLoadingPage(){
+        _navController.update {
+            return it.navigate(PizzaScreens.LoadinPage.name)
+        }
+    }
+
     fun goToDetails(){
         _navController.update{
             return it.navigate(PizzaScreens.DetailsPizza.name)

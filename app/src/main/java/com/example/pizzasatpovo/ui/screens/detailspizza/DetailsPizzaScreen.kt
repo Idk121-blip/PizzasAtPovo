@@ -119,7 +119,6 @@ class DetailsPizzaScreen {
                         modifier = modifier
                             .padding(start = 70.dp)
                     ){
-                        //TODO
                         val allergens:ArrayList<String> = arrayListOf()
                         var vegetarian=true
                         for (topping in pizza.toppings){
@@ -154,6 +153,7 @@ class DetailsPizzaScreen {
                     onOrderButtonClicked= onOrderButtonClicked,
                     pizzaName = pizza.name,
                     viewModel = viewModel,
+                    navViewModel = navViewModel,
                     timeOrderViewModel=  timeOrderViewModel
                 )
             }
@@ -184,6 +184,7 @@ class DetailsPizzaScreen {
         viewModel: PizzaViewModel,
         modifier: Modifier = Modifier,
         timeOrderViewModel: TimeOrderViewModel,
+        navViewModel: NavigationViewModel,
         onOrderButtonClicked: () -> Unit={},
         toppingsEmpty: Boolean = false,
     ){
@@ -214,7 +215,8 @@ class DetailsPizzaScreen {
                     customOrderSentDialog.value = true
                 },
                 pizze,
-                pizzaName
+                pizzaName,
+                navViewModel
             )
         }
         Column (

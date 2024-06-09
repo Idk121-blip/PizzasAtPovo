@@ -332,8 +332,8 @@ class AccountPageScreen {
     @Composable
     fun LogoutButton(
         viewModel: LoadingViewModel,
+        onLogOutButtonClicked: () -> Unit,
         modifier: Modifier = Modifier,
-        onLogOutButtonClicked: () -> Unit = {}
     ){
         val interactionSource = remember { MutableInteractionSource() }
         val state by viewModel.state.collectAsStateWithLifecycle()
@@ -341,13 +341,12 @@ class AccountPageScreen {
         showShimmer.value= !state.isFinished
         Row(modifier = modifier
             .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-            .clickable (enabled = !showShimmer.value,
+            .clickable (
+                enabled = !showShimmer.value,
                 interactionSource = interactionSource,
                 indication = null) {
                 onLogOutButtonClicked()
             }
-
-
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout_icon),

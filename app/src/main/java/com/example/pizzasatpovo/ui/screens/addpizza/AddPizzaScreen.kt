@@ -86,7 +86,8 @@ class AddPizzaScreen {
                         onOrderButtonClicked = {
                             onOrderButtonClicked(personalizedOrderViewModel.getRetrievedPizza())
                         },
-                        toppingsEmpty = isToppingEmpty
+                        toppingsEmpty = isToppingEmpty,
+                        navViewModel = navViewModel
                     )
                 }
             }
@@ -96,7 +97,6 @@ class AddPizzaScreen {
                     .fillMaxWidth()
                     .align(Alignment.CenterEnd)
             ){
-                //TODO! REPLACE IMAGE OF MARGHERITA WITH THE FINAL ONE
                 AsyncImage(model = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png", contentDescription = "pizza image", modifier= modifier
                     .size(250.dp)
                     .align(Alignment.CenterHorizontally)

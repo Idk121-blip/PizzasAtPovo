@@ -51,7 +51,7 @@ class ChefOrdersScreen {
     ) {
         val viewModel = viewModel<ChefViewModel>()
         val chefViewModel = viewModel<LoadingViewModel>()
-        val orders by viewModel.orders.observeAsState(initial = arrayListOf(RealTimeOrder()))
+        val orders by viewModel.orders.observeAsState(initial = arrayListOf())
 
         Box {
             BackgroundImage()
@@ -91,8 +91,7 @@ class ChefOrdersScreen {
                 LazyColumn {
                     groupedOrders.forEach { (time, orders) ->
                         val allOrdersCompleted = orders.all { it.completed }
-
-                        if (!allOrdersCompleted ) {
+                        if (!allOrdersCompleted) {
                             item {
                                 Row (verticalAlignment = Alignment.CenterVertically){
                                     val t= time.split(":")
@@ -134,6 +133,7 @@ class ChefOrdersScreen {
                                 }
                             }
                             items(orders) { order ->
+                                println(order)
                                 SingleOrderCard(order = order,
                                     processOrder = { processOrder(order.id) })
                             }
@@ -174,7 +174,7 @@ class ChefOrdersScreen {
                             .weight(0.8F)
                     ) {
                         Text(
-                            text = order.pizzaName+" "+ order.uname,
+                            text = order.pizzaName+"  -  "+ order.uname,
                             fontWeight = FontWeight.Bold,
                             overflow = TextOverflow.Clip,
                             maxLines = 3,
