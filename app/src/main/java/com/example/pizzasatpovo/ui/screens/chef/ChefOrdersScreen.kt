@@ -1,4 +1,5 @@
 package com.example.pizzasatpovo.ui.screens.chef
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,7 @@ class ChefOrdersScreen {
             BackgroundImage()
             Column(
                 verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier
                     .padding(40.dp, 10.dp)
             ) {
@@ -137,9 +139,14 @@ class ChefOrdersScreen {
                                 SingleOrderCard(order = order,
                                     processOrder = { processOrder(order.id) })
                             }
+                            
                         }
                     }
                 }
+                ResetSlot(
+                    onResetButtonClicked = { /*TODO*/ },
+
+                )
             }
         }
     }
@@ -207,6 +214,20 @@ class ChefOrdersScreen {
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    fun ResetSlot(
+        onResetButtonClicked: () -> Unit,
+        modifier: Modifier = Modifier
+    ){
+        Button(
+            onClick = onResetButtonClicked,
+            modifier = modifier
+                .padding(25.dp)
+        ) {
+            Text(text = "Azzera slot pizze")
         }
     }
 }
