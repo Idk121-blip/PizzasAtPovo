@@ -112,13 +112,14 @@ class ChefOrdersScreen {
                                         0
                                     } else {
                                         if (t[1].toInt()>=minutesNow){
-                                            hour + t[1].toInt() - minutesNow
+                                            t[1].toInt() - minutesNow
                                         }
                                         else{
-                                            hour + t[1].toInt() - calendar.get(Calendar.MINUTE) -60
+                                            (60 - minutesNow) + t[1].toInt()
                                         }
-
                                     }
+                                    println("Hour: $hour")
+                                    println("Minutes: $minutes")
 
                                     Text(
                                         text = if(hour + minutes > 0){
