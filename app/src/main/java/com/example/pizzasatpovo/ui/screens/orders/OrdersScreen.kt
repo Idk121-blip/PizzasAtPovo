@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,7 +71,7 @@ class OrdersScreen {
 
         NavHost(
             navController = navController2,
-            startDestination = "LoadingPage",
+            startDestination = stringResource(R.string.loadingpage),
             modifier = modifier
         ) {
             composable(route = "LoadingPage") {
@@ -81,7 +82,6 @@ class OrdersScreen {
                         val orders = orderManager.retrieveOrders()
                         ordersViewModel.addOrders(orders!!.retrievedObject ?: arrayListOf())
                         navController2.navigate("OrdersPage")
-
                     }
 
                 }
@@ -92,13 +92,14 @@ class OrdersScreen {
                     BackgroundImage()
                     Column {
                         Bars().AppBar(
-                            text = "Ordini",
-                            modifier = modifier.height(35.dp).padding(2.dp)
+                            text = stringResource(R.string.ordini),
+                            modifier = modifier
+                                .height(35.dp)
+                                .padding(2.dp)
                         )
                         ListOfChargingOrders(
                             modifier = modifier
                                 .fillMaxHeight(),
-
                             )
                     }
                     Bars().BottomBar(
@@ -117,8 +118,10 @@ class OrdersScreen {
                     BackgroundImage()
                     Column {
                         Bars().AppBar(
-                            text = "Ordini",
-                            modifier = modifier.height(35.dp).padding(2.dp)
+                            text = stringResource(R.string.ordini),
+                            modifier = modifier
+                                .height(35.dp)
+                                .padding(2.dp)
                         )
                         ListOfOrders(
                             modifier = modifier
@@ -151,7 +154,7 @@ class OrdersScreen {
         ) {
             var order = 0
             Text(
-                text = "Recenti",
+                text = stringResource(R.string.recenti),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
                 modifier = modifier
@@ -162,7 +165,7 @@ class OrdersScreen {
             SingleOrderChargingCard()
 
             Text(
-                text = "Meno recenti",
+                text = stringResource(R.string.meno_recenti),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
                 modifier = modifier
@@ -204,18 +207,18 @@ class OrdersScreen {
 
             if (ordersList.size == 0) {
                 Text(
-                    text = "Non hai ancora effettuato",
+                    text = stringResource(R.string.non_hai_ancora_effettuato),
                     fontSize = 20.sp,
                     modifier = modifier
                 )
                 Text(
-                    text = "alcun ordine",
+                    text = stringResource(R.string.alcun_ordine),
                     fontSize = 20.sp,
                     modifier = modifier
                 )
                 Image(
                     painter = painterResource(id = R.drawable.margherita),
-                    contentDescription = "No order found",
+                    contentDescription = stringResource(R.string.no_order_found),
                     modifier = modifier
                         .size(150.dp)
                 )
@@ -223,7 +226,7 @@ class OrdersScreen {
             } else {
                 var order = 0
                 Text(
-                    text = "Recenti",
+                    text = stringResource(R.string.recenti),
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,
                     modifier = modifier
@@ -243,7 +246,7 @@ class OrdersScreen {
                     order++
                 }
                 Text(
-                    text = "Meno recenti",
+                    text = stringResource(R.string.meno_recenti),
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,
                     modifier = modifier
@@ -285,7 +288,7 @@ class OrdersScreen {
             ) {
                 AsyncImage(
                     model = "",
-                    contentDescription = "pizza image",
+                    contentDescription = stringResource(R.string.pizza_image),
                     modifier = modifier
                         .padding(end = 15.dp)
                         .clip(CircleShape)
@@ -304,22 +307,28 @@ class OrdersScreen {
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         fontSize = 18.sp,
-                        modifier = modifier.width(90.dp).height(30.dp).background(
+                        modifier = modifier
+                            .width(90.dp)
+                            .height(30.dp)
+                            .background(
                                 shimmerBrush(
                                     targetValue = 1300f,
                                     showShimmer = true
                                 )
-                        )
+                            )
                     )
                     Text(
                         text = "                                ",
                         fontSize = 16.sp,
-                        modifier= modifier.width(80.dp).height(30.dp).background(
-                            shimmerBrush(
-                                targetValue = 1300f,
-                                showShimmer = true
+                        modifier= modifier
+                            .width(80.dp)
+                            .height(30.dp)
+                            .background(
+                                shimmerBrush(
+                                    targetValue = 1300f,
+                                    showShimmer = true
+                                )
                             )
-                        )
                     )
                 }
                 Text(
@@ -328,7 +337,7 @@ class OrdersScreen {
                     fontWeight = FontWeight.Bold,
                     modifier = modifier
                         .fillMaxWidth()
-                        .padding(start= 10.dp, end= 20.dp)
+                        .padding(start = 10.dp, end = 20.dp)
                         .height(30.dp)
                         .background(
                             shimmerBrush(
@@ -364,7 +373,7 @@ class OrdersScreen {
             ){
                 AsyncImage(
                     model = order.image,
-                    contentDescription = "pizza image",
+                    contentDescription = stringResource(R.string.pizza_image),
                     modifier= modifier
                         .fillMaxHeight()
                         .padding(end = 15.dp)

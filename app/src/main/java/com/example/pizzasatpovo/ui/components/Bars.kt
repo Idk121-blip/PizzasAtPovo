@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -83,7 +84,7 @@ class Bars {
             ){
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = "Back to login",
+                    contentDescription = stringResource(R.string.back_to_login),
                     modifier = Modifier
                         .height(48.dp)
                         .weight(0.15F)
@@ -124,7 +125,7 @@ class Bars {
             Box {
                 Image(
                     painter = painterResource(id = R.drawable.nav_bar),
-                    contentDescription = "NavBar",
+                    contentDescription = stringResource(R.string.navbar),
                     alignment = Alignment.BottomCenter,
                     modifier = modifier
                         .fillMaxSize()
@@ -165,12 +166,12 @@ class Bars {
                         R.drawable.pizzas_selected
                     }else{ R.drawable.pizzas}
                 ),
-                contentDescription = "List of pizzas",
+                contentDescription = stringResource(R.string.list_of_pizzas),
 
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable (
+                    .clickable(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
@@ -183,11 +184,11 @@ class Bars {
                         R.drawable.favourites_selected
                     }else{ R.drawable.favourites}
                 ),
-                contentDescription = "Favourites",
+                contentDescription = stringResource(R.string.favourites),
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable (
+                    .clickable(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
@@ -204,11 +205,11 @@ class Bars {
                         R.drawable.orders_selected
                     }else{ R.drawable.orders}
                 ),
-                contentDescription = "Recent orders",
+                contentDescription = stringResource(R.string.recent_orders),
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable (
+                    .clickable(
                         interactionSource = interactionSource,
                         indication = null
                     )
@@ -222,14 +223,14 @@ class Bars {
                         R.drawable.account_selected
                     }else{ R.drawable.account}
                 ),
-                contentDescription = "Account",
+                contentDescription = stringResource(R.string.account),
                 modifier = Modifier
                     .size(dimIcons)
                     .weight(0.1F)
-                    .clickable (
+                    .clickable(
                         interactionSource = interactionSource,
                         indication = null
-                    )  {
+                    ) {
                         navController.goToAccount()
                     }
             )
@@ -240,7 +241,7 @@ class Bars {
             content = {
                 Image(
                     painter = painterResource(id = R.drawable.plus_icon),
-                    contentDescription = "Add pizza",
+                    contentDescription = stringResource(R.string.add_pizza),
                     contentScale = ContentScale.Fit,
                     modifier = modifier
                 )

@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -39,6 +40,7 @@ import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.viewmodel.TimeOrderViewModel
 import com.example.pizzasatpovo.data.viewmodel.PersonalizedOrderViewModel
 import com.example.pizzasatpovo.data.viewmodel.PizzaViewModel
@@ -66,7 +68,7 @@ class AddPizzaScreen {
             BackgroundImage()
             Column {
                 Bars().AppBarWithBackBtn(
-                    pizzasName = "Crea la tua pizza",
+                    pizzasName = stringResource(R.string.crea_la_tua_pizza),
                     navViewModel = navViewModel
                 )
                 IngredientList(
@@ -80,7 +82,7 @@ class AddPizzaScreen {
                     viewModel.resetNumberOfPizza()
                     DetailsPizzaScreen().OrderDetails(
                         message= message,
-                        pizzaName = "La tua pizza",
+                        pizzaName = stringResource(R.string.la_tua_pizza),
                         viewModel = viewModel,
                         timeOrderViewModel=timeOrderViewModel,
                         onOrderButtonClicked = {
@@ -97,7 +99,7 @@ class AddPizzaScreen {
                     .fillMaxWidth()
                     .align(Alignment.CenterEnd)
             ){
-                AsyncImage(model = "https://www.wanmpizza.com/wp-content/uploads/2022/09/pizza.png", contentDescription = "pizza image", modifier= modifier
+                AsyncImage(model = stringResource(R.string.pizza_for_add_pizza), contentDescription = "pizza image", modifier= modifier
                     .size(250.dp)
                     .align(Alignment.CenterHorizontally)
                 )
@@ -121,7 +123,9 @@ class AddPizzaScreen {
             )
             Row {
                 for (topping in toppings){
-                    if (topping.name == "Mozzarella"||topping.name == "Pomodoro"){
+                    if (topping.name == stringResource(R.string.mozzarella)
+                        ||topping.name == stringResource(R.string.pomodoro)
+                    ){
                         IngredientCard(
                             topping = topping,
                             personalizedOrderViewModel= personalizedOrderViewModel,
@@ -141,7 +145,8 @@ class AddPizzaScreen {
                     .horizontalScroll(rememberScrollState())
             ){
                 for (topping in toppings){
-                    if (topping.availability && topping.name!="Mozzarella" && topping.name!="Pomodoro"){
+                    if (topping.availability && topping.name!=stringResource(R.string.mozzarella)
+                        && topping.name!=stringResource(R.string.pomodoro)){
                         IngredientCard(topping = topping,
                             personalizedOrderViewModel= personalizedOrderViewModel)
                     }
@@ -193,7 +198,7 @@ class AddPizzaScreen {
                ) {
                    Image(
                        imageVector = if (selected) Icons.Default.CheckCircle else Icons.Default.AddCircle,
-                       contentDescription = "Selected",
+                       contentDescription = stringResource(R.string.selected),
                        modifier = modifier
                            .size(20.dp)
                            .align(Alignment.TopEnd)

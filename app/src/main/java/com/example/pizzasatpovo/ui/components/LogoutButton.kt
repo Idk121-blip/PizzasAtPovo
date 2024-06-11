@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,7 @@ fun LogoutButton(
     ) {
         Icon(
             painter = painterResource(id = R.drawable.logout_icon),
-            contentDescription = "Logout icon",
+            contentDescription = stringResource(R.string.logout_icon),
             tint = MaterialTheme.colorScheme.primary,
             modifier = modifier.size(30.dp)
         )

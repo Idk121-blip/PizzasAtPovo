@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
 import com.example.pizzasatpovo.data.viewmodel.PizzaViewModel
 import com.example.pizzasatpovo.data.model.RetrievedPizza
@@ -66,8 +68,10 @@ class FavouritesScreen {
         ) {
             Column {
                 Bars().AppBar(
-                    text = "Preferiti",
-                    modifier = modifier.height(35.dp).padding(2.dp)
+                    text = stringResource(R.string.preferiti),
+                    modifier = modifier
+                        .height(35.dp)
+                        .padding(2.dp)
                 )
                 ListOfPizzas(
                     viewModel = viewModel,
@@ -204,7 +208,7 @@ class FavouritesScreen {
                                 Toast
                                     .makeText(
                                         context,
-                                        "Pizza non disponibile",
+                                        context.getString(R.string.pizza_non_disponibile),
                                         Toast.LENGTH_LONG
                                     )
                                     .show()
@@ -214,7 +218,7 @@ class FavouritesScreen {
                 ) {
                     AsyncImage(
                         model = pizza.image,
-                        contentDescription = "pizza image",
+                        contentDescription = stringResource(R.string.pizza_image),
                         colorFilter = if(available) {
                             ColorFilter
                                 .colorMatrix(ColorMatrix().apply { setToSaturation(1f) })
@@ -253,7 +257,7 @@ class FavouritesScreen {
                             }
                             if(!available){
                                 Text(
-                                    text = "TERMINATO",
+                                    text = stringResource(R.string.terminato),
                                     color = Color.DarkGray,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
@@ -271,7 +275,7 @@ class FavouritesScreen {
                 }
                 Image(
                     imageVector =  if(favourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favourite icon",
+                    contentDescription = stringResource(R.string.favourite_icon),
                     modifier = modifier
                         .align(Alignment.TopEnd)
                         .clickable(

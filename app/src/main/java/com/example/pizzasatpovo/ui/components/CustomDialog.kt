@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -59,7 +60,7 @@ fun CustomDialog(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "Ordinare $numberOfPizzas pizza",
+                                text = stringResource(R.string.ordinare_pizza, numberOfPizzas),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                             )
@@ -73,7 +74,7 @@ fun CustomDialog(
                         }
                         Row(modifier = Modifier) {
                             Text(
-                                text = "per € ",
+                                text = stringResource(R.string.per),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                             )
@@ -84,7 +85,7 @@ fun CustomDialog(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "?",
+                                text = stringResource(R.string.question_mark),
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily.Default,
                             )
@@ -106,7 +107,7 @@ fun CustomDialog(
                                 .fillMaxWidth()
                                 .height(35.dp)
                         ) {
-                            Text(text = "Annulla")
+                            Text(text = stringResource(R.string.annulla))
                         }
                         Button(
                             onClick = {
@@ -122,7 +123,7 @@ fun CustomDialog(
                                 .weight(0.5F)
                                 .height(35.dp)
                         ) {
-                            Text(text = "Ordina")
+                            Text(text = stringResource(R.string.ordina))
                         }
                     }
                 }
@@ -139,7 +140,6 @@ fun CustomDialogDatabaseResponse(message: String, setShowDialog: (Boolean) -> Un
             color = Color(217, 217, 217, 255)
         ) {
             Box(
-                //contentAlignment = Alignment.ALIGN_CENTER
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
@@ -158,7 +158,6 @@ fun CustomDialogDatabaseResponse(message: String, setShowDialog: (Boolean) -> Un
                                 .width(30.dp)
                                 .height(30.dp)
                                 .clickable { setShowDialog(false) }
-
                         )
                     }
 
@@ -166,22 +165,21 @@ fun CustomDialogDatabaseResponse(message: String, setShowDialog: (Boolean) -> Un
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        if (message == "Ordine effettuato!") {
+                        if (message == stringResource(R.string.ordine_effettuato)) {
                             Image(
                                 painter = painterResource(id = R.drawable.order_sent),
-                                contentDescription = "Order sent icon",
+                                contentDescription = stringResource(R.string.order_sent_icon),
                                 Modifier.width(70.dp)
                             )
                         } else {
                             Image(
                                 painter = painterResource(id = R.drawable.order_not_sent),
-                                contentDescription = "Order not sent icon",
+                                contentDescription = stringResource(R.string.order_not_sent_icon),
                                 Modifier.width(75.dp)
                             )
                         }
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(text = message)
-
                     }
                 }
             }

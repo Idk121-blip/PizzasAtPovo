@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.ui.screens.account
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -89,51 +91,53 @@ class AccountPageScreen {
                 }
                 Column {
                     Bars().AppBar(
-                        text = "Account",
-                        modifier = modifier.height(35.dp).padding(2.dp)
+                        text = stringResource(R.string.account),
+                        modifier = modifier
+                            .height(35.dp)
+                            .padding(2.dp)
                     )
                     Column {
                         UserInfoCard(viewModel = viewModel)
 
-                        SectionTitle(text = "Impostazioni generali")
+                        SectionTitle(text = stringResource(R.string.impostazioni_generali))
                         Section(
-                            text = "Notifiche",
+                            text = stringResource(R.string.notifiche),
                             resourceId = R.drawable.notification_icon,
                             description = "Notification icon"
                         )
                         Section(
-                            text = "Lingua",
+                            text = stringResource(R.string.lingua),
                             resourceId = R.drawable.language_icon,
-                            description = "Language icon"
+                            description = stringResource(R.string.language_icon)
                         )
 
-                        SectionTitle(text = "Aiuto e supporto")
+                        SectionTitle(text = stringResource(R.string.aiuto_e_supporto))
                         Section(
-                            text = "FAQ",
+                            text = stringResource(R.string.faq),
                             resourceId = R.drawable.faq_icon,
-                            description = "FAQ icon"
+                            description = stringResource(R.string.faq_icon)
                         )
                         Section(
-                            text = "Contatta il supporto",
+                            text = stringResource(R.string.contatta_il_supporto),
                             resourceId = R.drawable.email_icon,
-                            description = "Support icon"
+                            description = stringResource(R.string.support_icon)
                         )
                         Section(
-                            text = "Lascia un feedback",
+                            text = stringResource(R.string.lascia_un_feedback),
                             resourceId = R.drawable.review_icon,
-                            description = "Feedback icon"
+                            description = stringResource(R.string.feedback_icon)
                         )
 
-                        SectionTitle(text = "Informazioni legali")
+                        SectionTitle(text = stringResource(R.string.informazioni_legali))
                         Section(
-                            text = "Termini e condizioni",
+                            text = stringResource(R.string.termini_e_condizioni),
                             resourceId = R.drawable.terms_and_conditions_icon,
-                            description = "Notifiction icon"
+                            description = stringResource(R.string.notifiction_icon)
                         )
                         Section(
-                            text = "Privacy e sicurezza",
+                            text = stringResource(R.string.privacy_e_sicurezza),
                             resourceId = R.drawable.privacy_and_security,
-                            description = "Language icon"
+                            description = stringResource(R.string.privacy_icon)
                         )
 
                         LogoutButton(
@@ -151,12 +155,7 @@ class AccountPageScreen {
         }
     }
 
-
-
-
-
-
-
+    @SuppressLint("DefaultLocale")
     @Composable
     fun UserInfoCard(
         viewModel: LoadingViewModel,
@@ -193,7 +192,7 @@ class AccountPageScreen {
                         AsyncImage(
                             model = userData.image,
                             contentScale = ContentScale.Crop,
-                            contentDescription = "user image",
+                            contentDescription = stringResource(R.string.user_image),
                             onSuccess = {  },
                             modifier= modifier
                                 .clip(CircleShape)
@@ -202,8 +201,7 @@ class AccountPageScreen {
                                         targetValue = 1300f,
                                         showShimmer = showShimmer.value
                                     )
-                                )
-                                .size(90.dp)
+                                ).size(90.dp)
                         )
                     }
                     Spacer(
@@ -213,7 +211,6 @@ class AccountPageScreen {
                     )
 
                     Text(
-
                         text = "" +if(showShimmer.value){"            "} else { "€ "+String.format("%.2f", userData.credit)},
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
@@ -252,7 +249,7 @@ class AccountPageScreen {
                 )
                 Image(
                     painter = painterResource(id = R.drawable.unitn_logo),
-                    contentDescription = "logo unitn",
+                    contentDescription = stringResource(R.string.logo_unitn),
                     modifier = modifier.padding(end= 15.dp, bottom = 5.dp, top = 5.dp)
                 )
             }
@@ -291,7 +288,7 @@ class AccountPageScreen {
                 modifier
                     .align(Alignment.CenterVertically)
                     .padding(start = 10.dp))
-            if(text == "Notifiche"){
+            if(text == stringResource(R.string.notifiche)){
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
@@ -308,14 +305,14 @@ class AccountPageScreen {
                         .height(10.dp)
                 )
             }
-            if(text == "Lingua"){
+            if(text == stringResource(R.string.lingua)){
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
                 )
                 Text(
-                    text = "Italiano",
+                    text = stringResource(R.string.italiano),
                     modifier = modifier
                         .align(Alignment.CenterVertically)
                         .padding(start = 10.dp)
@@ -341,20 +338,21 @@ class AccountPageScreen {
         showShimmer.value= !state.isFinished
         Row(modifier = modifier
             .padding(top = 25.dp, bottom = 2.dp, start = 25.dp, end = 25.dp)
-            .clickable (
+            .clickable(
                 enabled = !showShimmer.value,
                 interactionSource = interactionSource,
-                indication = null) {
+                indication = null
+            ) {
                 onLogOutButtonClicked()
             }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout_icon),
-                contentDescription = "Logout icon",
+                contentDescription = stringResource(R.string.logout_icon),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = modifier.size(30.dp))
             Text(
-                text = "Log out",
+                text = stringResource(R.string.log_out),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,

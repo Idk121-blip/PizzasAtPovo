@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.TextUnit
@@ -30,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.pizzasatpovo.R
 
 
-class FirstPageScreen {
+class LoginScreen {
     private val sizeText: TextUnit = 35.sp
     private val weightText: FontWeight = FontWeight.Bold
     private val uniColor: Color =  Color(0xffce0e2d)
@@ -46,7 +47,7 @@ class FirstPageScreen {
         ){
             Image(
                 painter = painterResource(id = R.drawable.background),
-                contentDescription = "Background image",
+                contentDescription = stringResource(R.string.background_image),
                 contentScale = ContentScale.FillBounds,
                 alpha = 0.5F,
                 modifier = modifier
@@ -64,7 +65,7 @@ class FirstPageScreen {
             ) {
                 //Row {
                     Text(
-                        text = "Pizza at Povo",
+                        text = stringResource(R.string.pizza_at_povo),
                         fontSize = 20.sp,
                         fontWeight = weightText,
                         modifier = modifier
@@ -86,7 +87,7 @@ class FirstPageScreen {
                 ){
                     Image(
                         painter = painterResource(id = R.drawable.login_image),
-                        contentDescription = "Login image",
+                        contentDescription = stringResource(R.string.login_image),
                         modifier = modifier
                             .padding(top = 70.dp)
                             .size(300.dp)
@@ -99,32 +100,32 @@ class FirstPageScreen {
     @Composable
     fun DisplayText(){
         Text(
-            text = "PRENOTA LA TUA ",
+            text = stringResource(R.string.prenota_la_tua),
             fontSize = sizeText,
             fontWeight = weightText
         )
         Row{
             Text(
-                text = "PIZZA ",
+                text = stringResource(R.string.pizza),
                 fontSize = sizeText,
                 fontWeight = weightText,
                 color = uniColor
             )
             Text(
-                text = "CON UN ",
+                text = stringResource(R.string.con_un),
                 fontSize = sizeText,
                 fontWeight = weightText
             )
         }
         Row {
             Text(
-                text = "CLICK",
+                text = stringResource(R.string.click),
                 fontSize = sizeText,
                 fontWeight = weightText,
                 color = uniColor
             )
             Text(
-                text = "!",
+                text = stringResource(R.string.exclamation_mark),
                 fontSize = sizeText,
                 fontWeight = weightText
             )
@@ -145,7 +146,7 @@ class FirstPageScreen {
             modifier = modifier
         ) {
             Text(
-                text = "LOGIN CON GOOGLE",
+                text = stringResource(R.string.login_con_google),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = modifier
@@ -155,7 +156,7 @@ class FirstPageScreen {
 
             Image(
                 painter = painterResource(id = R.drawable.google_icon),
-                contentDescription = "Login with Google",
+                contentDescription = stringResource(R.string.login_with_google),
                 modifier = modifier
                     .size(30.dp)
                     .clip(CircleShape)

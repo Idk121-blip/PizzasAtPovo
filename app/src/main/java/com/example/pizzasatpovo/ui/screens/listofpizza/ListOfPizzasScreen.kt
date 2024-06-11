@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.pizzasatpovo.R
 import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
 import com.example.pizzasatpovo.data.viewmodel.PizzaViewModel
 import com.example.pizzasatpovo.data.model.RetrievedPizza
@@ -68,8 +70,10 @@ class ListOfPizzasScreen {
                 .fillMaxSize()
         ){
             Bars().AppBar(
-                text = "Pizze di oggi",
-                modifier = modifier.height(35.dp).padding(2.dp)
+                text = stringResource(R.string.pizze_di_oggi),
+                modifier = modifier
+                    .height(35.dp)
+                    .padding(2.dp)
             )
             SearchBar(
                 viewModel= viewModel,
@@ -99,14 +103,14 @@ class ListOfPizzasScreen {
             },
             leadingIcon = { Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "SearchIcon"
+                contentDescription = stringResource(R.string.searchicon)
             ) },
             textStyle = TextStyle(
                 textAlign = TextAlign.Start,
             ),
             shape = RoundedCornerShape(15.dp),
             label = null,
-            placeholder = { Text(text = "Cerca ...") },
+            placeholder = { Text(text = stringResource(R.string.cerca)) },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
@@ -230,7 +234,7 @@ class ListOfPizzasScreen {
                 ) {
                     AsyncImage(
                         model = pizza.image,
-                        contentDescription = "pizza image",
+                        contentDescription = stringResource(R.string.pizza_image),
                         modifier = modifier
                             .fillMaxHeight()
                             .padding(end = 15.dp)
@@ -268,7 +272,7 @@ class ListOfPizzasScreen {
                 }
                 Image(
                     imageVector =  if(favourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favourite icon",
+                    contentDescription = stringResource(R.string.favourite_icon),
                     modifier = modifier
                         .align(Alignment.TopEnd)
                         .clickable(

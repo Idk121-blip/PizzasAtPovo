@@ -1,5 +1,6 @@
 package com.example.pizzasatpovo.ui.screens.detailspizza
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -72,7 +74,7 @@ class DetailsPizzaScreen {
             Box {
                 Image(
                     painter = painterResource(id = R.drawable.background),
-                    contentDescription = "Background image",
+                    contentDescription = stringResource(R.string.background_image),
                     contentScale = ContentScale.FillBounds,
                     alpha = 0.5F,
                     modifier = modifier
@@ -96,7 +98,7 @@ class DetailsPizzaScreen {
                 ) {
 
                         Text(
-                            text = "Ingredienti",
+                            text = stringResource(R.string.ingredienti),
                             fontWeight = FontWeight.Bold,
                             modifier = modifier
                                 .padding(top = 10.dp)
@@ -109,7 +111,7 @@ class DetailsPizzaScreen {
                                 .padding(start = 20.dp, top = 10.dp)
                         )
                         Text(
-                            text = "Allergeni",
+                            text = stringResource(R.string.allergeni),
                             fontWeight = FontWeight.Bold,
                             modifier = modifier
                                 .padding(top = 10.dp)
@@ -169,7 +171,7 @@ class DetailsPizzaScreen {
                     .fillMaxWidth()
                     .align(Alignment.CenterEnd)
             ){
-                AsyncImage(model = pizza.image, contentDescription = "pizza image", modifier= modifier
+                AsyncImage(model = pizza.image, contentDescription = stringResource(R.string.pizza_image), modifier= modifier
                     .size(250.dp)
                     .align(Alignment.CenterHorizontally)
                 )
@@ -177,6 +179,7 @@ class DetailsPizzaScreen {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     @Composable
     fun OrderDetails(
         message: String,
@@ -240,19 +243,19 @@ class DetailsPizzaScreen {
                         .padding(end = 10.dp)
                 ) {
                     Text(
-                        text = "Quantità: ",
+                        text = stringResource(R.string.quantit),
                         modifier = modifier
                             .padding(start = 20.dp)
                             .height(45.dp)
                     )
                     Text(
-                        text = "Orario: ",
+                        text = stringResource(R.string.orario),
                         modifier = modifier
                             .padding(start = 20.dp)
                             .height(45.dp)
                     )
                     Text(
-                        text = "Totale: ",
+                        text = stringResource(R.string.totale),
                         modifier = modifier
                             .padding(start = 20.dp)
                             .height(45.dp)
@@ -269,7 +272,7 @@ class DetailsPizzaScreen {
                             content = {
                                 Image(
                                     painter = painterResource(id = R.drawable.minus_icon),
-                                    contentDescription = "Add pizza",
+                                    contentDescription = stringResource(R.string.add_pizza),
                                     modifier = modifier.size(15.dp)
                                 )
                             },
@@ -291,7 +294,7 @@ class DetailsPizzaScreen {
                             content = {
                                 Icon(
                                     imageVector = Icons.Default.Add,
-                                    contentDescription = "Add pizza",
+                                    contentDescription = stringResource(R.string.add_pizza),
                                     modifier = modifier
                                 )
                             },
@@ -320,12 +323,11 @@ class DetailsPizzaScreen {
 
             Button(
                 content = {
-                    Text(text = "ORDINA")
+                    Text(text = stringResource(R.string.ordina))
                 },
                 enabled = !toppingsEmpty,
                 onClick = {
                     showDialog.value = true
-                          //onOrderButtonClicked()
                 },
                 shape = RoundedCornerShape(10.dp),
                 modifier = modifier

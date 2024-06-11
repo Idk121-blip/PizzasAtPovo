@@ -37,8 +37,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pizzasatpovo.data.viewmodel.MyViewModelFactory
 import com.example.pizzasatpovo.data.viewmodel.NavigationViewModel
 import com.example.pizzasatpovo.data.viewmodel.PizzaViewModel
-import com.example.pizzasatpovo.data.model.RetrievedPizza
-import com.example.pizzasatpovo.data.model.Topping
 import com.example.pizzasatpovo.data.viewmodel.NotificationViewModel
 import com.example.pizzasatpovo.data.viewmodel.TimeOrderViewModel
 import com.example.pizzasatpovo.database.FavouritesManager
@@ -55,7 +53,7 @@ import com.example.pizzasatpovo.ui.screens.chef.ChefOrdersScreen
 import com.example.pizzasatpovo.ui.screens.detailspizza.DetailsPizzaScreen
 import com.example.pizzasatpovo.ui.screens.favourites.FavouritesScreen
 import com.example.pizzasatpovo.ui.screens.listofpizza.ListOfPizzasScreen
-import com.example.pizzasatpovo.ui.screens.login.FirstPageScreen
+import com.example.pizzasatpovo.ui.screens.login.LoginScreen
 import com.example.pizzasatpovo.ui.screens.orders.OrdersScreen
 import com.google.firebase.Timestamp
 import java.util.Calendar
@@ -189,7 +187,7 @@ fun PizzasAtPovoApp(
             var lastSignInAttemptTime by remember { mutableLongStateOf(0L) }
             val signInCoolDown = 30000L // 30 seconds cooldown
 
-            FirstPageScreen().FirstPage(
+            LoginScreen().FirstPage(
                 buttonAvailable= buttonAvailable,
                 onLoginButtonClicked = {
                     if (!buttonAvailable) return@FirstPage // Prevent multiple clicks

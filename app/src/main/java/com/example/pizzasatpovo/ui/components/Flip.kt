@@ -164,19 +164,7 @@ fun Picker(
                 )
             }
         }
-
-//        HorizontalDivider(
-//            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
-//            color = dividerColor
-//        )
-//
-//        HorizontalDivider(
-//            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
-//            color = dividerColor
-//        )
-
     }
-
 }
 
 private fun Modifier.fadingEdge(brush: Brush) = this
