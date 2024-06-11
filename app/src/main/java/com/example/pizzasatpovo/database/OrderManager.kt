@@ -173,5 +173,7 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
                     }
             }
         }
+        Firebase.database(dbString).reference.child("orders").removeValue()
     }
+
 }

@@ -48,6 +48,7 @@ import com.example.pizzasatpovo.database.GoogleAuthUiClient
 import com.example.pizzasatpovo.data.viewmodel.SignInViewModel
 import com.example.pizzasatpovo.database.DataManager
 import com.example.pizzasatpovo.ui.components.BackgroundImage
+import com.example.pizzasatpovo.ui.components.userLogged
 import com.example.pizzasatpovo.ui.screens.account.AccountPageScreen
 import com.example.pizzasatpovo.ui.screens.addpizza.AddPizzaScreen
 import com.example.pizzasatpovo.ui.screens.chef.ChefOrdersScreen
@@ -386,66 +387,6 @@ fun PizzasAtPovoApp(
 }
 
 
-suspend fun userLogged(applicationContext: Context, dataManager: DataManager, favouritesManager: FavouritesManager, pizzaViewModel: PizzaViewModel) {
-    var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
-    var toppings: ArrayList<Topping> = arrayListOf()
-    val reqResponse= dataManager.getPizzas()
-    val toppingResponse= dataManager.getToppings()
-
-    if (toppingResponse == null){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving toppings",
-            Toast.LENGTH_LONG
-        ).show()
-    }else if (!toppingResponse.isSuccessful){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else if (toppingResponse.retrievedObject == null){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else{
-        toppings=toppingResponse.retrievedObject
-
-    }
-
-
-
-    if (reqResponse==null){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else if (!reqResponse.isSuccessful) {
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else{
-        pizzas = reqResponse.retrievedObject!!
-    }
-
-    val favouritesResponse = favouritesManager.retrieveFavourites()
-
-    val favourites = if (favouritesResponse!=null){
-        favouritesResponse.retrievedObject?: arrayListOf()
-    }else{
-        arrayListOf()
-    }
-
-
-    pizzaViewModel.setToppings(toppings)
-    pizzaViewModel.setPizzas(pizzas)
-    pizzaViewModel.setFavourites(favourites)
-}
 
 
 
