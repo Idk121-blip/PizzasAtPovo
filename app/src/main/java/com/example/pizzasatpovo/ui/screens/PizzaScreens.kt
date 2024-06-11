@@ -48,6 +48,7 @@ import com.example.pizzasatpovo.database.GoogleAuthUiClient
 import com.example.pizzasatpovo.data.viewmodel.SignInViewModel
 import com.example.pizzasatpovo.database.DataManager
 import com.example.pizzasatpovo.ui.components.BackgroundImage
+import com.example.pizzasatpovo.ui.components.userLogged
 import com.example.pizzasatpovo.ui.screens.account.AccountPageScreen
 import com.example.pizzasatpovo.ui.screens.addpizza.AddPizzaScreen
 import com.example.pizzasatpovo.ui.screens.chef.ChefOrdersScreen
@@ -261,6 +262,7 @@ fun PizzasAtPovoApp(
             var message by remember {
                 mutableStateOf("")
             }
+
             DetailsPizzaScreen().DetailsPizzaPage(
                 message = message,
                 pizza = selectedPizza,
@@ -284,8 +286,6 @@ fun PizzasAtPovoApp(
                         }
                         message= (orderManager.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza, time) ?: return@launch).message
 
-
-
                         val rtOrder= orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza) ?: return@launch
                         notificationViewModel.addListenerForSpecificDocuments(
                             listOf(rtOrder))
@@ -308,7 +308,7 @@ fun PizzasAtPovoApp(
                 navViewModel = controller,
                 viewModel= pizzaViewModel,
                 timeOrderViewModel = timeOrderViewModel,
-                onOrderButtonClicked = {
+                onOrderButtonClicked = { newPizza ->
                     lifecycleScope.launch {
                         if (timestamp.seconds< Timestamp.now().seconds) {
                             message= "Orario non valido"
@@ -325,11 +325,11 @@ fun PizzasAtPovoApp(
                             cal.get(Calendar.MINUTE).toString()
                         }
 
-                        message= (orderManager.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza, time) ?: return@launch).message
+                        message= (orderManager.sendOrderRetrievedPizza(newPizza, timestamp, numberOfPizza, time) ?: return@launch).message
 
 
 
-                        val rtOrder= orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza) ?: return@launch
+                        val rtOrder= orderManager.sendRTOrder(newPizza,  time, numberOfPizza) ?: return@launch
                         notificationViewModel.addListenerForSpecificDocuments(
                             listOf(rtOrder))
 
@@ -378,7 +378,9 @@ fun PizzasAtPovoApp(
                         orderManager.processOrder(it)
                     }
                 },
-
+                onResetButtonClicked = {
+                    orderManager.resetOrdersSlot()
+                }
             )
         }
     }
@@ -387,66 +389,6 @@ fun PizzasAtPovoApp(
 
 
 
-suspend fun userLogged(applicationContext: Context, dataManager: DataManager, favouritesManager: FavouritesManager, pizzaViewModel: PizzaViewModel) {
-    var pizzas: ArrayList<RetrievedPizza> = arrayListOf()
-    var toppings: ArrayList<Topping> = arrayListOf()
-    val reqResponse= dataManager.getPizzas()
-    val toppingResponse= dataManager.getToppings()
-
-    if (toppingResponse == null){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving toppings",
-            Toast.LENGTH_LONG
-        ).show()
-    }else if (!toppingResponse.isSuccessful){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else if (toppingResponse.retrievedObject == null){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else{
-        toppings=toppingResponse.retrievedObject
-
-    }
-
-
-
-    if (reqResponse==null){
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else if (!reqResponse.isSuccessful) {
-        Toast.makeText(
-            applicationContext,
-            "Error retrieving pizzas",
-            Toast.LENGTH_LONG
-        ).show()
-    }else{
-        pizzas = reqResponse.retrievedObject!!
-    }
-
-    val favouritesResponse = favouritesManager.retrieveFavourites()
-
-    val favourites = if (favouritesResponse!=null){
-        favouritesResponse.retrievedObject?: arrayListOf()
-    }else{
-        arrayListOf()
-    }
-
-
-    pizzaViewModel.setToppings(toppings)
-    pizzaViewModel.setPizzas(pizzas)
-    pizzaViewModel.setFavourites(favourites)
-}
 
 
 

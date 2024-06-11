@@ -1,4 +1,6 @@
 package com.example.pizzasatpovo.ui.screens.chef
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -21,10 +24,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,12 +39,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pizzasatpovo.data.model.RealTimeOrder
 import com.example.pizzasatpovo.data.viewmodel.ChefViewModel
 import com.example.pizzasatpovo.data.viewmodel.LoadingViewModel
-import com.example.pizzasatpovo.data.model.RealTimeOrder
 import com.example.pizzasatpovo.ui.components.BackgroundImage
 import com.example.pizzasatpovo.ui.components.Bars
 import com.example.pizzasatpovo.ui.components.LogoutButton
+import kotlinx.coroutines.delay
 import java.util.Calendar
 
 class ChefOrdersScreen {
@@ -47,6 +53,7 @@ class ChefOrdersScreen {
     fun ChefOrdersPage(
         processOrder: (String)->Unit,
         onLogOutButtonClicked: () -> Unit,
+        onResetButtonClicked: () -> Unit,
         modifier:Modifier = Modifier,
     ) {
         val viewModel = viewModel<ChefViewModel>()
@@ -57,6 +64,7 @@ class ChefOrdersScreen {
             BackgroundImage()
             Column(
                 verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier
                     .padding(40.dp, 10.dp)
             ) {
@@ -81,12 +89,23 @@ class ChefOrdersScreen {
                 }
                 val calendar = Calendar.getInstance()
                 val groupedOrders = groupOrdersByTime(orders)
-                val hourNow by remember {
-                    mutableIntStateOf(calendar.get(Calendar.HOUR_OF_DAY))
+
+                var hourNow by remember {
+                    mutableStateOf(calendar.get(Calendar.HOUR_OF_DAY))
                 }
-                val minutesNow by remember {
-                    mutableIntStateOf(calendar.get( Calendar.MINUTE))
+                var minutesNow by remember {
+                    mutableStateOf(calendar.get( Calendar.MINUTE))
                 }
+                // Update the current time every minute
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        delay(60000L) // Delay for 1 minute
+                        val newCalendar = Calendar.getInstance()
+                        hourNow = newCalendar.get(Calendar.HOUR_OF_DAY)
+                        minutesNow = newCalendar.get(Calendar.MINUTE)
+                    }
+                }
+
 
                 LazyColumn {
                     groupedOrders.forEach { (time, orders) ->
@@ -109,22 +128,23 @@ class ChefOrdersScreen {
                                     }
 
                                     val minutes = if(t.isEmpty() || t[0] == ""){
-                                        0
+                                        hour
                                     } else {
                                         if (t[1].toInt()>=minutesNow){
                                             hour + t[1].toInt() - minutesNow
                                         }
                                         else{
-                                            hour + t[1].toInt() - calendar.get(Calendar.MINUTE) -60
+                                            (hour - minutesNow) + t[1].toInt()
                                         }
-
                                     }
+                                    println("Hour: $hour")
+                                    println("Minutes: $minutes")
 
                                     Text(
-                                        text = if(hour + minutes > 0){
-                                            "${hour + minutes} minuti rimanenti"
+                                        text = if(minutes > 0){
+                                            "${minutes} minuti rimanenti"
                                         } else {
-                                            "Scaduto ${-(hour + minutes)} minuti fa"
+                                            "Scaduto ${-(minutes)} minuti fa"
                                         },
                                         color = Color.Red,
                                         fontSize = 20.sp,
@@ -135,11 +155,22 @@ class ChefOrdersScreen {
                             items(orders) { order ->
                                 println(order)
                                 SingleOrderCard(order = order,
-                                    processOrder = { processOrder(order.id) })
+                                    processOrder = { processOrder(order.id) }
+                                )
                             }
+
                         }
+
+                    }
+                    item {
+                        ResetSlot(
+                            onResetButtonClicked = { onResetButtonClicked() },
+                            modifier = modifier
+                                .fillMaxWidth()
+                        )
                     }
                 }
+
             }
         }
     }
@@ -153,6 +184,7 @@ class ChefOrdersScreen {
         processOrder: ()->Unit,
         order: RealTimeOrder = RealTimeOrder(uname = "NoOne", pizzaName = "Margherita", image = "", time = "07:30", pizzaNumber = 1, topping = arrayListOf("Pomodoro", "Mozzarella", "Prosciutto")),
     ){
+        if (order.completed) return
         Card (
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(
@@ -207,6 +239,22 @@ class ChefOrdersScreen {
                     )
                 }
             }
+        }
+    }
+
+    @Composable
+    fun ResetSlot(
+        onResetButtonClicked: () -> Unit,
+        modifier: Modifier = Modifier
+    ){
+
+        Button(
+            onClick = onResetButtonClicked,
+            modifier = modifier
+                .padding(450.dp, 25.dp)
+                .height(50.dp)
+        ) {
+            Text(text = "Azzera slot pizze", fontSize = 18.sp)
         }
     }
 }
