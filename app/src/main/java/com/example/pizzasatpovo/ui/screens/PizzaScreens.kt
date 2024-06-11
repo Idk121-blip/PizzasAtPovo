@@ -261,6 +261,7 @@ fun PizzasAtPovoApp(
             var message by remember {
                 mutableStateOf("")
             }
+
             DetailsPizzaScreen().DetailsPizzaPage(
                 message = message,
                 pizza = selectedPizza,
@@ -284,8 +285,6 @@ fun PizzasAtPovoApp(
                         }
                         message= (orderManager.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza, time) ?: return@launch).message
 
-
-
                         val rtOrder= orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza) ?: return@launch
                         notificationViewModel.addListenerForSpecificDocuments(
                             listOf(rtOrder))
@@ -308,7 +307,7 @@ fun PizzasAtPovoApp(
                 navViewModel = controller,
                 viewModel= pizzaViewModel,
                 timeOrderViewModel = timeOrderViewModel,
-                onOrderButtonClicked = {
+                onOrderButtonClicked = { newPizza ->
                     lifecycleScope.launch {
                         if (timestamp.seconds< Timestamp.now().seconds) {
                             message= "Orario non valido"
@@ -325,11 +324,11 @@ fun PizzasAtPovoApp(
                             cal.get(Calendar.MINUTE).toString()
                         }
 
-                        message= (orderManager.sendOrderRetrievedPizza(selectedPizza, timestamp, numberOfPizza, time) ?: return@launch).message
+                        message= (orderManager.sendOrderRetrievedPizza(newPizza, timestamp, numberOfPizza, time) ?: return@launch).message
 
 
 
-                        val rtOrder= orderManager.sendRTOrder(selectedPizza,  time, numberOfPizza) ?: return@launch
+                        val rtOrder= orderManager.sendRTOrder(newPizza,  time, numberOfPizza) ?: return@launch
                         notificationViewModel.addListenerForSpecificDocuments(
                             listOf(rtOrder))
 
