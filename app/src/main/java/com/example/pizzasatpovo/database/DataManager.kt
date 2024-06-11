@@ -37,6 +37,4 @@ class DataManager {
         }
         return ResponseData(true, "Fetched successfully", toppingsArray)
     }
-
-
 }

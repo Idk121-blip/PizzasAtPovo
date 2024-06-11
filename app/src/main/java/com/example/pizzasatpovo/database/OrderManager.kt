@@ -79,10 +79,6 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
 
     suspend fun sendOrderRetrievedPizza(retrievedPizza: RetrievedPizza, pickupTime: Timestamp, pizzaNumber: Int, time:String ): ResponseData<DBOrder>? = auth.currentUser?.run {
         if (retrievedPizza.toppings == null) return ResponseData(false, "Number of toppings not valid (null)")
-
-
-
-
         val pizza = Pizza(
             name = retrievedPizza.name,
             image = retrievedPizza.image,
@@ -155,5 +151,27 @@ class OrderManager(private val googleAuthUiClient: GoogleAuthUiClient) {
         val order = dbRef.get().await().getValue(RealTimeOrder::class.java) ?: return
         order.completed = true
         dbRef.setValue(order)
+    }
+
+    fun resetOrdersSlot(){
+        val db = Firebase.firestore
+
+        val data = hashMapOf(
+            "orderAvailable" to 4
+        )
+
+        for (i in 11..14) {
+            for (j in 0..55 step 5) {
+                val timeSlot = if (j < 10) "$i:0$j" else "$i:$j"
+                db.collection("timeslots").document(timeSlot)
+                    .set(data)
+                    .addOnSuccessListener {
+                        println("DocumentSnapshot successfully written for time slot $timeSlot")
+                    }
+                    .addOnFailureListener { e ->
+                        println("Error writing document for time slot $timeSlot: $e")
+                    }
+            }
+        }
     }
 }
