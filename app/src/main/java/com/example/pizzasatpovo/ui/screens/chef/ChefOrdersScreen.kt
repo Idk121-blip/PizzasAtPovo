@@ -48,6 +48,7 @@ class ChefOrdersScreen {
     fun ChefOrdersPage(
         processOrder: (String)->Unit,
         onLogOutButtonClicked: () -> Unit,
+        onResetButtonClicked: () -> Unit,
         modifier:Modifier = Modifier,
     ) {
         val viewModel = viewModel<ChefViewModel>()
@@ -144,7 +145,7 @@ class ChefOrdersScreen {
                     }
                 }
                 ResetSlot(
-                    onResetButtonClicked = { /*TODO*/ },
+                    onResetButtonClicked = { onResetButtonClicked() },
 
                 )
             }

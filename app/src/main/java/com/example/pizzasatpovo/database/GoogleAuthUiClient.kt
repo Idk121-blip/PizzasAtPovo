@@ -16,6 +16,7 @@ import com.google.firebase.firestore.ktx.firestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
+@Suppress("DEPRECATION")
 class GoogleAuthUiClient(
     private val context: Context,
     private val oneTapClient: SignInClient

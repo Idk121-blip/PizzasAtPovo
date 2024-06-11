@@ -378,13 +378,13 @@ fun PizzasAtPovoApp(
                         orderManager.processOrder(it)
                     }
                 },
-
+                onResetButtonClicked = {
+                    orderManager.resetOrdersSlot()
+                }
             )
         }
     }
 }
-
-
 
 
 suspend fun userLogged(applicationContext: Context, dataManager: DataManager, favouritesManager: FavouritesManager, pizzaViewModel: PizzaViewModel) {
@@ -447,6 +447,8 @@ suspend fun userLogged(applicationContext: Context, dataManager: DataManager, fa
     pizzaViewModel.setPizzas(pizzas)
     pizzaViewModel.setFavourites(favourites)
 }
+
+
 
 
 
